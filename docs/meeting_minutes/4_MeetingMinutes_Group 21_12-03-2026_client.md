@@ -47,6 +47,37 @@
 
 - Possible datasets and tools discussed include **DBCA Fuel Age datasets**, vegetation data from **Data WA**, and GIS software such as **QGIS** for spatial analysis and modelling.
 
+### **Questions and Answers**
+Students raised several questions during the meeting, including:
+
+1. Why are granite rocks important?
+   - Answer (Sean): Granite outcrops often contain Aboriginal cultural heritage sites such as lizard traps, grinding patches, rock art, gnamma holes, and stone arrangements. Granite is also vulnerable to fire because heat can cause the surface layers to break off (exfoliation), which can damage these cultural features.
+
+2. What datasets should be used for the project?
+   - Answer (Sean): Teams can obtain geological datasets showing granite outcrops from Data WA or other public geological sources. If detailed datasets are not available, aerial imagery can also be used to identify granite areas.
+
+3. Do we need to consider all heritage site types in ACHIS?
+   - Answer (Sean): For this project, focusing on granite-related sites is sufficient, as many cultural heritage features are associated with granite outcrops.
+
+4. What environmental factors are most important for predicting fire risk?
+   - Answer (Sean): Key factors include topography (especially slope), proximity to vegetation that can burn, and vegetation age. Sites located within approximately 100 metres of burnable vegetation are considered more at risk.
+
+5. What features should the project website include?
+   - Answer (Sean): Useful features include an interactive map, location search functionality, and risk visualisation for heritage sites. It would also be helpful if the system can analyse fire risk in areas where prescribed burns are planned.
+
+6. What is the appropriate scope of the study area?
+   - Answer (Sven): The project can focus on either the entire Wagyl Kaip region or a smaller study area. Choosing a smaller area (e.g., around 100–1000 hectares) may allow for more detailed analysis.
+
+7. Should the system model fire response during active fires?
+   - Answer (Sean): No. The system should focus on planning and prediction rather than emergency response. Its purpose is to estimate the risk to sites based on landscape characteristics.
+
+8. What variables should be prioritised in the predictive model?
+   - Answer (Sven): Teams should focus on known and stable variables such as geology (granite), slope, vegetation type, and vegetation age. Factors like wind can change quickly and may be less reliable for modelling.
+
+9. Do we need to include all heritage site types from ACHIS, or only granite-related sites?
+   - Answer (Sean): For the purpose of this project, focusing on granite outcrops would be sufficient and very helpful.
+   - Answer (Sven): Granite can be used as an important base layer in the model because it is a stable geological feature. However, the system should not ignore other types of heritage sites, as the project ultimately aims to support the protection of a broader range of Aboriginal heritage.
+
 ### **Agreed Task**
 - The team will review the suggested literature and datasets related to fire behaviour and vegetation.
 - The team will explore available datasets from Data WA and DBCA, including vegetation and fuel age data.
