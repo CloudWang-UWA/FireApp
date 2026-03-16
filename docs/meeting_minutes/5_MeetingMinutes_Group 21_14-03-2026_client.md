@@ -8,7 +8,7 @@
 | Place of Meeting: | Teams(Online) |
 | Recorder: | Cloud Wang |
 
-**Attendees :**
+**Attendees:**
 
 | Name | Student No. |
 | --- | --- |
@@ -24,30 +24,28 @@
 - Discuss Deliverable 1 preparation
 
 ### **Discussion**
-- Since some members were unable to attend the previous client meeting, the team held a catch-up meeting to review the project background and the key points discussed with the client.
+- Since some members were unable to attend the previous client meeting, we held a catch-up meeting to review the project background and the key points discussed with the client.
 
-- The team reviewed the **project goal**, which is to develop a GIS-based application that predicts potential locations of cultural heritage sites and evaluates their vulnerability to bushfires. The application will visualize this information on an interactive map to support fire management and mitigation activities.
+- Reviewed the **project goal**, which is to develop a GIS-based application that predicts potential locations of cultural heritage sites and evaluates their vulnerability to bushfires. The application will visualize this information on an interactive map to support fire management and mitigation activities.
 
-- The team discussed why the project is necessary. Although databases such as **ACHIS** and **InHerit** record some heritage sites, many sites remain unmapped. Fire managers currently lack a tool that can predict potential site locations and assess the fire risk to these sites.
+- Discussed why the project is necessary. Although databases such as **ACHIS** and **InHerit** record some heritage sites, many sites remain unmapped. Fire managers currently lack a tool that can predict potential site locations and assess the fire risk to these sites.
 
-- The team reviewed several **factors that may influence fire vulnerability**, including topography, vegetation, and geological features. Fire tends to spread faster uphill, and steeper slopes can increase fire intensity. Vegetation characteristics such as fuel load and vegetation age may also affect fire behaviour. Granite outcrops were identified as important indicators when predicting potential heritage site locations.
+- Reviewed several **factors that may influence fire vulnerability**, including topography, vegetation, and geological features. Fire tends to spread faster uphill, and steeper slopes can increase fire intensity. Vegetation characteristics such as fuel load and vegetation age may also affect fire behaviour. Granite outcrops were identified as important indicators when predicting potential heritage site locations.
 
-- The team discussed the idea of building a **risk classification model** using GIS data. For example, sites located on flat ground may have a lower risk level, while sites located on steeper slopes or near vegetation may have higher risk levels.
+- Discussed the idea of building a **risk classification model** using GIS data. For example, sites located on flat ground may have a lower risk level, while sites located on steeper slopes or near vegetation may have higher risk levels.
 
-- The team also reviewed the possible **study areas** suggested by the client from the DBCA Burn Options Program, including several areas around Franklin and Albany. One of these areas may be selected as the initial region for analysis.
+- Reviewed the possible **study areas** suggested by the client from the DBCA Burn Options Program, including several areas around Franklin and Albany. One of these areas may be selected as the initial region for analysis.
 
-- The team discussed the **technical workflow** for the project. Heritage site data may be exported from ACHIS as CSV files, converted to GeoJSON format, and then visualized in the application using mapping libraries.
+- Discussed the **technical workflow** for the project. Heritage site data may be exported from ACHIS as CSV files, converted to GeoJSON format, and then visualized in the application using mapping libraries.
 
 - Possible tools and technologies for development were discussed, including **Leaflet**, **OpenStreetMap**, and potentially **Mapbox** for map visualization, as well as **QGIS** for spatial data processing.
 
-- The team also reviewed the requirements for **Deliverable 1 (Project Specification and Plans)** and discussed the sections that need to be completed before the submission deadline.
+- Reviewed the requirements for **Deliverable 1 (Project Specification and Plans)** and the sections that need to be completed before the submission deadline.
 
 ### **Agreed Tasks**
-- The team will begin preparing **Deliverable 1**.
+- Begin preparing **Deliverable 1**.
 
-- Tasks for Deliverable 1 will be allocated among team members, and roles such as project manager and documenter will be assigned.
+- Continue exploring relevant datasets from Data WA and DBCA, including vegetation and fuel age datasets.
 
-- The team will continue exploring relevant datasets from Data WA and DBCA, including vegetation and fuel age datasets.
-
-- The team will further investigate the proposed workflow for exporting, processing, and visualizing GIS data for the prototype application.
+- Further investigate the proposed workflow for exporting, processing, and visualizing GIS data for the prototype application.
 

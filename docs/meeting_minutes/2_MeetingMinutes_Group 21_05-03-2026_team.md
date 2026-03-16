@@ -9,7 +9,7 @@
 | Client: | Prof. Sven Ouzman |
 | Recorder: | Cloud Wang |
 
-**Attendees :**
+**Attendees:**
 
 | Name | Student No. |
 | --- | --- |

@@ -9,7 +9,7 @@
 | Client | Prof. Sven Ouzman, Dr. Sean Winter |
 | Recorder: | Cloud Wang |
 
-**Attendees :**
+**Attendees:**
 
 | Name | Student No. |
 | --- | --- |
@@ -41,7 +41,7 @@
 
 - One possible modelling approach suggested by Sean is to create a **risk classification system** based on factors such as slope and distance from vegetation. For example, sites located on flat terrain may be considered low risk, while sites located on steeper slopes and closer to vegetation may be assigned higher risk levels.
 
-- Sean recommended selecting an initial **study area** from the DBCA **Burn Options Program**, which identifies areas where prescribed burns are likely to occur. The team could then assess the fire risk for heritage sites within one selected area.
+- Sean recommended selecting an initial **study area** from the DBCA **Burn Options Program**, which identifies areas where prescribed burns are likely to occur. Fire risk for heritage sites could then be assessed within the selected area.
 
 - Several candidate burn areas were mentioned, including FRK-114, FRK-113, FRK-115, FRK-116, FRK-108, FRK-094, ALB-042, ALB-071, and ALB-081. These areas are located around regions such as Franklin, Albany, and the Stirling Ranges.
 
@@ -79,8 +79,8 @@ Students raised several questions during the meeting, including:
    - Answer (Sven): Granite can be used as an important base layer in the model because it is a stable geological feature. However, the system should not ignore other types of heritage sites, as the project ultimately aims to support the protection of a broader range of Aboriginal heritage.
 
 ### **Agreed Task**
-- The team will review the suggested literature and datasets related to fire behaviour and vegetation.
-- The team will explore available datasets from Data WA and DBCA, including vegetation and fuel age data.
-- The team will investigate potential study areas from the DBCA Burn Options Program and select a suitable region containing granite formations.
-- The team will begin exploring how slope, vegetation proximity, and geological features can be incorporated into a simple fire vulnerability model using GIS tools.
+- Review the suggested literature and datasets related to fire behaviour and vegetation.
+- Explore available datasets from Data WA and DBCA, including vegetation and fuel age data.
+- Investigate potential study areas from the DBCA Burn Options Program and select a suitable region containing granite formations.
+- Begin exploring how slope, vegetation proximity, and geological features can be incorporated into a simple fire vulnerability model using GIS tools.
 

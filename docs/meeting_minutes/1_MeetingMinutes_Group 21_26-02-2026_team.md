@@ -8,7 +8,7 @@
 | Place of Meeting: | CSSE 207 |
 | Recorder: | Cloud Wang |
 
-**Attendees :**
+**Attendees:**
 
 | Name | Student No. |
 | --- | --- |
