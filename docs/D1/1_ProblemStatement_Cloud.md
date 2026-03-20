@@ -50,23 +50,33 @@ Sven Ouzman, the associate professor of School of Social Sciences, Archaeology, 
 - The system should provide consistent and reliable performance during operation.
 - The system should minimise downtime and handle errors gracefully.
 
-This interactive map application enables land managers to clearly distinguish between areas of varying risk levels, making it easier to identify locations that require immediate protection and those of lower priority. As a result, fire management actions can be planned and implemented more effectively, reducing the potential damage to cultural heritage sites. Improved fire management may also contribute to reduced carbon emissions, which can generate additional environmental and economic benefits.
+This interactive map application enables land managers to clearly distinguish between areas of varying risk levels, making it easier to identify locations that require immediate protection and those of lower priority. As a result, fire management actions can be planned and implemented more effectively, reducing the potential damage to cultural heritage sites. This directly supports the client's goal of empowering Indigenous land managers with actionable, data-driven tools for cultural heritage preservation.
 
 ## 1.3 Expected Deliverable
 
-The final deliverable of this project will be a web-based GIS application that supports the identification and visualization of cultural heritage sites and their vulnerability to bushfires. The system will integrate multiple datasets, including vegetation, fuel characteristics, geological features (e.g., granite outcrops), and burn areas, and present them on an interactive map.
+The Minimum Viable Product (MVP) for this project is a web-based GIS application designed to support the identification and visualization of cultural heritage sites and their vulnerability to wildfires.
 
-The application will allow users to explore spatial data, view heritage site locations, and understand their associated fire risk levels based on the combined influence of multiple environmental factors. Users will be able to interact with the map through functions such as zooming, filtering, and selecting specific regions. In addition, the system will support exporting selected data or results into formats such as Excel.
+The MVP will include the following key deliverables:
 
-The system is designed to be user-friendly and accessible, enabling land managers to make informed decisions for fire management and the protection of cultural heritage sites.
+- Interactive Map: The system will display cultural heritage site locations alongside selected environmental layers (e.g., vegetation, fuel load, granite outcrops, and burn areas) on an interactive map. Users will be able to perform basic interactions such as zooming, filtering, and selecting specific regions.
+
+- Risk Assessment: The system will provide a simple, rule-based estimation of fire risk based on environmental factors such as slope, vegetation, and fuel load.
+
+- Risk Visualization: The system will visualize fire risk levels directly on the map using a colour scale (e.g., green for low risk, yellow for medium risk, red for high risk).
+
+- Data Integration: The system will integrate multiple publicly available datasets and ensure they are correctly processed and aligned for visualization and analysis.
+
+- Data Export: The system will allow users to export selected data or results into formats such as CSV for external use (e.g., in Excel).
+
+The MVP will focus on the Wagyl Kaip Agreement Area in the Great Southern region of Western Australia, using publicly available datasets.
+
+The system is designed to be user-friendly and accessible, enabling land managers to explore spatial data and support informed decision-making for fire management and the protection of cultural heritage sites.
 
 ## 1.4 Success Criteria
-
-The success of the system will be evaluated based on the following criteria:
-
-- The system can successfully display cultural heritage sites and relevant environmental data on an interactive map.
-- The system can classify areas into different fire risk levels based on the combined influence of environmental factors such as slope, vegetation, and fuel characteristics.
-- Users can effectively interact with the map, including zooming, filtering, and selecting regions, without significant performance issues.
-- The system can correctly process and integrate multiple datasets for visualization and analysis.
-- The system can export selected data or results into formats such as Excel.
-- The system is easy to use and accessible to users with different levels of technical and visual literacy.
+The success of the system will be evaluated based on the following measurable criteria:
+- The system can successfully display cultural heritage sites and relevant environmental information on an interactive map, with map layers loading within 3 seconds under normal network conditions.
+- The system can classify areas into different fire risk levels based on environmental factors (e.g., slope, vegetation, fuel), following predefined classification rules consistently and correctly.
+- Users can effectively interact with the map (e.g., zooming, filtering, selecting regions), with response times under 1–2 seconds and no noticeable lag during typical usage.
+- The system can correctly process and integrate multiple datasets, with data alignment errors below 5% and no critical data loss during processing.
+- The system can export selected data or results into formats such as Excel, with a success rate of 100% for valid export requests and file generation within 5 seconds.
+- The system is easy to use and accessible, with at least 80% of test users able to complete key tasks (e.g., locating a site, applying filters) without assistance, and reporting positive usability feedback.
