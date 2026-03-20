@@ -68,7 +68,7 @@ Based on the interview with the client and the analysis of project specification
 
 *(Note: The mobile application for field data collection and live meteorological API integrations have been officially moved to Priority 2/Backlog to ensure the core MVP is delivered flawlessly).*
 
-The MVP scope was presented to and approved by the client, Dr. Sven Ouzman, via email on [Insert Date] March 2026.
+The MVP scope was presented to and approved by the client, Dr. Sven Ouzman, via email on 20 March 2026.
 
 **Detailed Storyboard for the GUI:**
 `https://uniwa.sharepoint.com/:b:/t/CITS5206SEM-12026-Group[X]/[Insert_GUI_Link_Here]`
