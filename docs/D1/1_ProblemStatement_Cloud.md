@@ -10,8 +10,8 @@ Currently, land managers often conduct prescribed burns or engage in firefightin
 
 Therefore, there is a need for a system that can identify the likely locations of cultural heritage sites and assess their vulnerability to wildfires based on environmental factors such as elevation, slope, vegetation type, fuel load, and proximity to water. For example, granite outcrops are often associated with cultural heritage sites, as they can serve as important water sources (e.g., gnamma holes) in arid environments, supporting human activities such as settlement and rock art. Therefore, areas with such landscape features are more likely to contain cultural heritage sites. This would enable land managers to prioritise high-risk areas and allocate resources more effectively, thereby minimising potential damage to heritage sites.
 
-## 1.2 Client' Needs & Justifications
-Sven Ouzman, the associate professor of School of Social Sciences, Archaeology, requires to develop a tool that allows land managers (especially Indigenous) to predict the impacts of fire on heritage sites so that appropriate mitigation measures can be put in place. His principal requiremnt is to build a web application to visualize cultural heritage sites as well as their level of risk on the map. Besides, he also has some other requirements for this application that can be put into two categories:
+## 1.2 Client Needs & Justifications
+Sven Ouzman, the associate professor of School of Social Sciences, Archaeology, requires to develop a tool that allows land managers (especially Indigenous) to predict the impacts of fire on heritage sites so that appropriate mitigation measures can be put in place. His principal requirement is to build a web application to visualize cultural heritage sites as well as their level of risk on the map. Besides, he also has some other requirements for this application that can be put into two categories:
 ### Functional requirements:
 - Data Processing: The system should process and convert raw data into suitable formats in GIS such as GeoJSON.
 
