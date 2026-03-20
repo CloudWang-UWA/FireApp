@@ -1,6 +1,6 @@
 # 1. Problem Statement
 ## 1.1 Problem Definition
-The objective of this project is to develop a system capable of identifying cultural heritage sites that are vulnerable to wildfires and visualising their associated risk levels on a map across Western Australia.
+The objective of this project is to develop a system capable of identifying areas likely to contain cultural heritage sites and visualising their potential vulnerability to wildfires on a map across Western Australia.
 
 Cultural heritage sites, including scar trees, rock art, and artefacts, are highly valuable for studying human history, as they carry cultural narratives and meanings. Such sites are fragile and can easily be damaged or destroyed. Wildfires have been a major threat to them, as they are often large in scale and high in intensity, causing irreversible damage to cultural heritage.
 
@@ -8,16 +8,16 @@ However, only a small portion of cultural heritage sites are currently recorded 
 
 Currently, land managers often conduct prescribed burns or engage in firefighting during catastrophic wildfires without sufficient information of heritage site locations and their risk levels, which limits their ability to effectively manage fires and protect these sites.
 
-Therefore, there is a need for a system that can identify the likely locations of cultural heritage sites and assess their vulnerability to wildfires based on environmental factors such as elevation, slope, vegetation type, fuel load, and proximity to water. For example, granite outcrops are often associated with cultural heritage sites, as they can serve as important water sources (e.g., gnamma holes) in arid environments, supporting human activities such as settlement and rock art. Therefore, areas with such landscape features are more likely to contain cultural heritage sites. This would enable land managers to prioritise high-risk areas and allocate resources more effectively, thereby minimising potential damage to heritage sites.
+Therefore, there is a need for a system that can identify areas likely to contain cultural heritage sites and assess their vulnerability to wildfires based on environmental factors such as elevation, slope, vegetation type, fuel load, and proximity to water. For example, granite outcrops are often associated with cultural heritage sites, as they can serve as important water sources (e.g., gnamma holes) in arid environments, supporting human activities such as settlement and rock art. Therefore, areas with such landscape features are more likely to contain cultural heritage sites. This would enable land managers to prioritise high-risk areas and allocate resources more effectively, thereby minimising potential damage to heritage sites.
 
 ## 1.2 Client Needs & Justifications
 Sven Ouzman, the associate professor of School of Social Sciences, Archaeology, requires to develop a tool that allows land managers (especially Indigenous) to predict the impacts of fire on heritage sites so that appropriate mitigation measures can be put in place. His principal requirement is to build a web application to visualize cultural heritage sites as well as their level of risk on the map. Besides, he also has some other requirements for this application that can be put into two categories:
 ### Functional requirements:
 - Data Processing: The system should process and convert raw data into suitable formats in GIS such as GeoJSON.
 
-- Data Integration & Mapping: The system should overlay geographic heritage site locations (e.g., granite outcrops) with fire-related environment data (e.g., elevation, slope angle, fuel load, vegetation, water etc).
+- Data Integration & Mapping: The system should overlay geographic heritage site data and related landscape features (e.g., granite outcrops) with fire-related environmental data (e.g., elevation, slope angle, fuel load, vegetation, water).
 
-- Map Visualization: The system should display GIS data and cultural heritage sites on an interactive map. It should also visualize fire risk levels (e.g., green for low risk, yellow for medium risk, and red for high risk).
+- Map Visualization: Display GIS data and areas of potential cultural heritage sites on an interactive map. It should also visualize fire risk levels (e.g., green for low risk, yellow for medium risk, and red for high risk).
 
 - Risk Assessment: The system should assess fire risk based on environmental factors. The system may provide simple indicative analysis of potential high-risk areas based on risk assessment.
 
@@ -54,7 +54,7 @@ This interactive map application enables land managers to clearly distinguish be
 
 ## 1.3 Expected Deliverable
 
-The Minimum Viable Product (MVP) for this project is a web-based GIS application designed to support the identification and visualization of cultural heritage sites and their vulnerability to wildfires.
+The Minimum Viable Product (MVP) for this project is a web-based GIS application designed to support the identification of areas likely to contain cultural heritage sites and the visualization of their potential vulnerability to wildfires.
 
 The MVP will include the following key deliverables:
 
