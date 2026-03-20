@@ -50,7 +50,7 @@ During the initial interviews with Dr. Sven Ouzman, the project goals and strict
 
 | Category | Details | Source (Client Quote / Context) |
 | :--- | :--- | :--- |
-| **Geographical Scope** | The project will not cover all of Western Australia. The MVP will focus on a specific, manageable bounding box (e.g., a sample area in the Kimberley). | *"Western Australia is too big. I'm not expecting you to cover the whole state... choose a specific area that corresponds to a native title group or a municipal shire." - Sven* |
+| **Geographical Scope** | The project will not cover all of Western Australia. The MVP will focus broadly on the Wagyl Kaip Agreement Area in the Great Southern region of Western Australia, using publicly available datasets. | *"Western Australia is too big. I'm not expecting you to cover the whole state... choose a specific area that corresponds to a native title group or a municipal shire." - Sven* |
 | **Accessibility & UI** | The risk map will use redundant visual encodings (shapes, numbers) alongside colors, avoiding a pure red-green traffic light system. | *"8% of Caucasian males are red-green colorblind... they are not going to see your red. You have to think of another way of telling them." - Sven* |
 | **Data Sovereignty & Security** | The system must implement Role-Based Access Control (RBAC). Exact GPS coordinates of sensitive sites will not be publicly displayed. | *"The copyright doesn't always stay with you... the data belongs to the Traditional Owners. You cannot put highly sensitive exact coordinates on a public map." - Sven* |
 | **Data Export Capability** | The web application must include a feature to export the queried risk assessment data into CSV/Excel formats. | *"We are dealing with town councils and shires. They don't always have the software to do this... everyone has got Excel." - Sven* |
@@ -69,12 +69,6 @@ Based on the interview with the client and the analysis of project specification
 *(Note: The mobile application for field data collection and live meteorological API integrations have been officially moved to Priority 2/Backlog to ensure the core MVP is delivered flawlessly).*
 
 The MVP scope was presented to and approved by the client, Dr. Sven Ouzman, via email on 20 March 2026.
-
-**Detailed Storyboard for the GUI:**
-`https://uniwa.sharepoint.com/:b:/t/CITS5206SEM-12026-Group[X]/[Insert_GUI_Link_Here]`
-
-**High Level UML User and System Interaction Diagram:**
-`https://github.com/UWA-CITS5206-2026/Group[X]-HeritageFireRisk/blob/main/Docs/UML_Diagram.png`
 
 ## 2.5 Revisions & Feedback
 
