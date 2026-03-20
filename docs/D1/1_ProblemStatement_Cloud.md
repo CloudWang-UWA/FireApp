@@ -17,7 +17,7 @@ Sven Ouzman, the associate professor of School of Social Sciences, Archaeology, 
 
 - Data Integration & Mapping: The system should overlay geographic heritage site data and related landscape features (e.g., granite outcrops) with fire-related environmental data (e.g., elevation, slope angle, fuel load, vegetation, water).
 
-- Map Visualization: Display GIS data and areas of potential cultural heritage sites on an interactive map. It should also visualize fire risk levels (e.g., green for low risk, yellow for medium risk, and red for high risk).
+- Map Visualization: The system should display GIS data and areas of potential cultural heritage sites on an interactive map. It should also visualize fire risk levels (e.g., green for low risk, yellow for medium risk, and red for high risk).
 
 - Risk Assessment: The system should assess fire risk based on environmental factors. The system may provide simple indicative analysis of potential high-risk areas based on risk assessment.
 
