@@ -17,7 +17,7 @@ Sven Ouzman, the associate professor of School of Social Sciences, Archaeology, 
 
 - Data Integration & Mapping: The system should overlay geographic heritage site data and related landscape features (e.g., granite outcrops) with fire-related environmental data (e.g., elevation, slope angle, fuel load, vegetation, water).
 
-- Map Visualization: The system should display GIS data and areas of potential cultural heritage sites on an interactive map. It should also visualize fire risk levels (e.g., green for low risk, yellow for medium risk, and red for high risk).
+- Map Visualization: The system should display GIS data and areas with potential cultural heritage sites on an interactive map. It should also visualize fire risk levels (e.g., green for low risk, yellow for medium risk, and red for high risk).
 
 - Risk Assessment: The system should assess fire risk based on environmental factors. The system may provide simple indicative analysis of potential high-risk areas based on risk assessment.
 
@@ -58,7 +58,7 @@ The Minimum Viable Product (MVP) for this project is a web-based GIS application
 
 The MVP will include the following key deliverables:
 
-- Interactive Map: The system will display GIS data and areas of potential cultural heritage sites alongside selected environmental layers (e.g., vegetation, fuel load, granite outcrops, and burn areas) on an interactive map. Users will be able to perform basic interactions such as zooming, filtering, and selecting specific regions.
+- Interactive Map: The system will display GIS data and areas with potential cultural heritage sites alongside selected environmental layers (e.g., vegetation, fuel load, granite outcrops, and burn areas) on an interactive map. Users will be able to perform basic interactions such as zooming, filtering, and selecting specific regions.
 
 - Risk Assessment: The system will provide a simple, rule-based estimation of fire risk based on environmental factors such as slope, vegetation, and fuel load.
 
@@ -74,7 +74,7 @@ The system is designed to be user-friendly and accessible, enabling land manager
 
 ## 1.4 Success Criteria
 The success of the system will be evaluated based on the following measurable criteria:
-- The system can successfully display areas of potential cultural heritage sites and relevant environmental information on an interactive map, with map layers loading within 3 seconds under normal network conditions.
+- The system can successfully display areas with potential cultural heritage sites and relevant environmental information on an interactive map, with map layers loading within 3 seconds under normal network conditions.
 - The system can classify areas into different fire risk levels based on environmental factors (e.g., slope, vegetation, fuel), following predefined classification rules consistently and correctly.
 - Users can effectively interact with the map (e.g., zooming, filtering, selecting regions), with response times under 1–2 seconds and no noticeable lag during typical usage.
 - The system can correctly process and integrate multiple datasets, with data alignment errors below 5% and no critical data loss during processing.
