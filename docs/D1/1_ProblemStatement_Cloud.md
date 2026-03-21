@@ -62,13 +62,11 @@ The MVP will include the following key deliverables:
 
 - Risk Assessment: The system will provide a simple, rule-based estimation of fire risk based on environmental factors such as slope, vegetation, and fuel load.
 
-- Risk Visualization: The system will visualize fire risk levels directly on the map using a colour scale (e.g., green for low risk, yellow for medium risk, red for high risk).
+- Risk Visualization: The system will visualize fire risk levels directly on the map using a colour scale (e.g., green for low risk, yellow for medium risk, red for high risk). Colour-blind friendly schemes and supplementary visual cues (e.g., shapes or labels) will be applied to ensure accessibility.
 
 - Data Processing: The system will clean, prepare, and integrate selected datasets (e.g., vegetation, slope, fuel load, and granite outcrops) into formats suitable for visualization and basic analysis.
 
 - Data Export: The system will allow users to export selected data or results into formats such as CSV for external use (e.g., in Excel).
-
-- Accessible Visual Design: The system will use colour-blind friendly colour schemes and supplementary visual cues (e.g., shapes or labels) to clearly differentiate risk levels on the map.
 
 The MVP will focus on the Wagyl Kaip Agreement Area in the Great Southern region of Western Australia, using publicly available datasets.
 
