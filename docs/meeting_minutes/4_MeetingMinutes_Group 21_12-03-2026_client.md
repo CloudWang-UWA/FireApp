@@ -47,6 +47,8 @@
 
 - Possible datasets and tools discussed include **DBCA Fuel Age datasets**, vegetation data from **Data WA**, and GIS software such as **QGIS** for spatial analysis and modelling.
 
+- The team developed a preliminary demo that processed cultural heritage data from ACHIS (CSV format), converted it into GeoJSON, and visualised it on the map. The demo was presented to Sven, who found it impressive and indicated that the approach was appropriate.
+
 ### **Questions and Answers**
 Students raised several questions during the meeting, including:
 
