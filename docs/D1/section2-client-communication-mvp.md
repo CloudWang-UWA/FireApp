@@ -7,7 +7,7 @@ Since the system is designed to assist land managers and Indigenous groups in pr
 **Key Stakeholders:**
 *   **Primary Client / Domain Expert:** Dr. Sven Ouzman (Associate Professor, School of Social Sciences, Archaeology, UWA).
 *   **Project Facilitator:** Karla Ivkovic (CITS5206 Teaching Team).
-*   **Main Users:** Indigenous Land Owners, Ranger Groups, Department of Biodiversity, Conservation and Attractions (DBCA) personnel, and local Shire councils.
+*   **Main Users:** Indigenous Land Owners, Ranger Groups, heritage experts (e.g., Sean Winter from Wagyl Kaip Aboriginal Corporation), Department of Biodiversity, Conservation and Attractions (DBCA) personnel, and local Shire councils.
 *   **Development Team:** Group 21, responsible for designing, implementing, and delivering the system.
 
 ## 2.2 Client Communication Details
@@ -52,7 +52,7 @@ During the initial interviews with Dr. Sven Ouzman, the project goals and strict
 | :--- | :--- | :--- |
 | **Geographical Scope** | The project will not cover all of Western Australia. The MVP will focus broadly on the Wagyl Kaip Agreement Area in the Great Southern region of Western Australia, using publicly available datasets. | *"Western Australia is too big. I'm not expecting you to cover the whole state... choose a specific area that corresponds to a native title group or a municipal shire." - Sven* |
 | **Accessibility & UI** | The risk map will use redundant visual encodings (shapes, numbers) alongside colors, avoiding a pure red-green traffic light system. | *"8% of Caucasian males are red-green colorblind... they are not going to see your red. You have to think of another way of telling them." - Sven* |
-| **Data Sovereignty & Security** | The system must implement Role-Based Access Control (RBAC). Exact GPS coordinates of sensitive sites will not be publicly displayed. | *"The copyright doesn't always stay with you... the data belongs to the Traditional Owners. You cannot put highly sensitive exact coordinates on a public map." - Sven* |
+| **Data Sovereignty & Security** | Sensitive location data will not be publicly displayed. Public-facing outputs should identify areas with potential cultural heritage sites rather than exact site coordinates. | *"The copyright doesn't always stay with you... the data belongs to the Traditional Owners. You cannot put highly sensitive exact coordinates on a public map." - Sven* |
 | **Data Export Capability** | The web application must include a feature to export the queried risk assessment data into CSV/Excel formats. | *"We are dealing with town councils and shires. They don't always have the software to do this... everyone has got Excel." - Sven* |
 | **Algorithmic Variables** | The risk calculation engine must factor in material vulnerability, topography, and fuel load. | *"A fire is not going to damage stone tools... but if it's a wooden house or a culturally modified tree, it's a high risk. Fire also travels differently depending on the topography." - Sven* |
 
@@ -60,13 +60,12 @@ During the initial interviews with Dr. Sven Ouzman, the project goals and strict
 
 Based on the interview with the client and the analysis of project specifications, the agreed MVP will include the following core functional requirements. The development strategy strictly adheres to the client's directive: *"Do one thing well rather than two things poorly."*
 
-1.  **Interactive Web-based GIS Dashboard:** A web application capable of overlaying geographical cultural heritage site locations (mock/sample data for the PoC) with environmental data layers (topography, vegetation).
-2.  **Static Risk Assessment Engine:** A deterministic backend algorithm that calculates a 'Total Fire Risk Score' (e.g., Low, Medium, High, Extreme) for each site based on material vulnerability, topography, and fuel load.
-3.  **Role-Based Access Control (RBAC) System:** A secure authentication module ensuring that exact coordinate data is restricted to authorized personnel (e.g., Rangers, Admins), while public users view obfuscated or buffered region data to respect Indigenous Data Sovereignty.
-4.  **Accessible Visual Indicators:** Application of color-blind friendly coding and supplementary visual shapes on the map to distinctly differentiate risk levels and site types.
-5.  **Administrative Data Export:** A function allowing authorized users to export queried spatial and risk data into standardized Excel (CSV) formats for offline administrative use.
+1.  **Web-based GIS Application:** A web application capable of visualizing areas with potential cultural heritage sites (using mock/sample data for the PoC) together with environmental data layers (topography, vegetation) on an interactive map.
+2.  **Static Risk Assessment Engine:** A deterministic backend algorithm that calculates a 'Total Fire Risk Score' (e.g., Low, Medium, High, Extreme) for each mapped feature based on material vulnerability, topography, and fuel load.
+3.  **Accessible Visual Indicators:** Application of color-blind friendly coding and supplementary visual shapes on the map to distinctly differentiate risk levels and site types.
+4.  **Administrative Data Export:** A function allowing authorized users to export queried spatial and risk data into standardized Excel (CSV) formats for offline administrative use.
 
-*(Note: The mobile application for field data collection and live meteorological API integrations have been officially moved to Priority 2/Backlog to ensure the core MVP is delivered flawlessly).*
+*(Note: The mobile application for field data collection and live meteorological API integrations have been officially moved to Priority 2/Backlog. RBAC is considered a potential future enhancement outside the core MVP to ensure the current scope remains feasible).*
 
 The MVP scope was presented to and approved by the client, Dr. Sven Ouzman, via email on 20 March 2026.
 
