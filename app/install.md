@@ -22,5 +22,9 @@ Heritage Fire Watch - Install Guide
 - Install frontend packages:
   `npm install`
 
+**Run project**
+- Run backend: `python backend/app.py`
+- Run frontend: cd frontend, `npm run dev`
+
 
 
