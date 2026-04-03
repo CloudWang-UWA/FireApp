@@ -73,6 +73,7 @@ def login():
 
 @auth_bp.get("/me")
 def me():
+    # Used by frontend to restore the current logged-in user
     if g.current_user is None:
         abort(401, description="Authentication required")
 

@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 INSTANCE_DIR = os.path.join(BASE_DIR, "instance")
 SQLITE_PATH = os.path.join(INSTANCE_DIR, "fire_app_demo.db")
 
-# Keep the dev SQLite file under backend/instance.
+# Use a local SQLite file for the demo so the backend can run without extra DB setup.
 os.makedirs(INSTANCE_DIR, exist_ok=True)
 
 app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
@@ -27,6 +27,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+# Allow the frontend to call backend APIs during development
 CORS(
     app,
     resources={r"/api/*": {"origins": "*"}},
@@ -38,6 +39,7 @@ db.init_app(app)
 
 @app.before_request
 def load_current_user() -> None:
+     # Load the logged-in user once per request so routes can access it through g.
     g.current_user = get_current_user()
 
 
@@ -50,6 +52,7 @@ def handle_known_errors(error):
 
 @app.route("/api/test")
 def test():
+    # Simple endpoint used to confirm that the backend and layer config are loaded.
     return jsonify(
         {
             "message": "backend works",
