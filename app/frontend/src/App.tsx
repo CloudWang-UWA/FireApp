@@ -57,6 +57,7 @@ function App() {
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
 
+  // Load all configured GIS layers when the app starts
   useEffect(() => {
     let isCancelled = false
 
@@ -94,6 +95,7 @@ function App() {
     }
   }, [])
 
+  // Restore the saved user session from the stored token
   useEffect(() => {
     if (!authToken) {
       setCurrentUser(null)
@@ -125,7 +127,7 @@ function App() {
       }
     }
 
-    // Try to restore the saved session before showing the workspace.
+    // Try to restore the saved session before showing the map.
     void loadCurrentUser()
 
     return () => {
@@ -133,6 +135,7 @@ function App() {
     }
   }, [authToken])
 
+  // Handle login and registration with the same form flow
   async function submitAuthForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsAuthLoading(true)
@@ -157,6 +160,7 @@ function App() {
     }
   }
 
+  // Clear local auth state whether or not the logout request succeeds
   async function handleLogout() {
     setIsAuthLoading(true)
     setAuthError('')
@@ -193,6 +197,7 @@ function App() {
     )
   }
 
+  // Build the login page before passing it into the route config
   const loginPage = (
     <main className="auth-shell">
       <section className="auth-gate-card">
@@ -200,7 +205,7 @@ function App() {
           <p className="eyebrow">Heritage Fire Watch</p>
           <h1>Sign in to continue</h1>
           <p className="intro">
-            Access the heritage fire mapping workspace by signing in with your
+            Access the heritage fire vulnerability map by signing in with your
             account first.
           </p>
         </div>
@@ -245,10 +250,11 @@ function App() {
     </header>
   ) : null
 
-  const workspacePage = currentUser ? (
-    <main className="workspace-shell">
+  // Main authenticated map page
+  const mapPage = currentUser ? (
+    <main className="map-shell">
       {topbar}
-      <section className="workspace-body">
+      <section className="map-body">
         <aside className="sidebar">
           <div className="sidebar-scroll">
             <Layers
@@ -269,9 +275,9 @@ function App() {
   ) : null
 
   const profilePage = currentUser ? (
-    <main className="workspace-shell">
+    <main className="map-shell">
       {topbar}
-      <section className="workspace-body workspace-body--profile">
+      <section className="map-body map-body--profile">
         <Profile
           currentUser={currentUser}
           onBack={() => navigate('/app')}
@@ -286,7 +292,7 @@ function App() {
     <AppRoutes
       currentUser={Boolean(currentUser)}
       loginPage={loginPage}
-      workspacePage={workspacePage}
+      mapPage={mapPage}
       profilePage={profilePage}
     />
   )

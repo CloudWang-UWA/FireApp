@@ -2,6 +2,8 @@ import type { FormEvent } from 'react'
 
 import type { AuthFormState, AuthMode, AuthUser } from '../../types/auth'
 
+// Auth UI component for login and registration
+// Handles form input and displays current user state
 export function Auth({
   authMode,
   setAuthMode,
@@ -28,6 +30,7 @@ export function Auth({
   return (
     <div className="status-card">
       <h2>Account</h2>
+      {/* If user is logged in, show profile info */}
       {currentUser ? (
         <div className="auth-stack">
           <p className="auth-user-name">{currentUser.displayName}</p>
@@ -38,6 +41,7 @@ export function Auth({
         </div>
       ) : (
         <>
+          {/* Toggle between login and register modes */}
           <div className="segmented-control">
             <button
               className={
@@ -62,8 +66,10 @@ export function Auth({
               Register
             </button>
           </div>
-
+          
+          {/* Auth form for login or registration */}
           <form className="auth-form" onSubmit={onSubmit}>
+            {/* Only show display name field in register mode */}
             {authMode === 'register' ? (
               <label className="field">
                 <span>Display name</span>
@@ -112,7 +118,6 @@ export function Auth({
                 required
               />
             </label>
-
             <button
               className={
                 authMode === 'login'
@@ -131,7 +136,8 @@ export function Auth({
           </form>
         </>
       )}
-
+      
+      {/* Feedback messages */}
       {authMessage ? <p className="feedback success">{authMessage}</p> : null}
       {authError ? <p className="feedback error">{authError}</p> : null}
     </div>

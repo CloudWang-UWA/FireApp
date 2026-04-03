@@ -1,6 +1,7 @@
 import { BASEMAP_CONFIG } from '../../config/map'
 import type { BasemapKey } from '../../types/map'
 
+// UI for selecting different basemap layers (OpenStreetMap or Google Satellite)
 export function Basemap({
   basemap,
   setBasemap,

@@ -1,6 +1,7 @@
 import { API_BASE_URL, TOKEN_STORAGE_KEY } from '../config/map'
 import type { AuthFormState, AuthUser } from '../types/auth'
 
+// Structure of authentication API response
 type AuthPayload = {
   error?: string
   message?: string
@@ -8,6 +9,7 @@ type AuthPayload = {
   user?: AuthUser
 }
 
+// Parse server response and handle common errors
 async function parseResponse(response: Response) {
   const payload = (await response.json()) as AuthPayload
 
@@ -18,6 +20,7 @@ async function parseResponse(response: Response) {
   return payload
 }
 
+// Get token from localStorage (empty string if not found)
 export function getStoredToken() {
   return window.localStorage.getItem(TOKEN_STORAGE_KEY) ?? ''
 }
@@ -30,6 +33,7 @@ export function storeToken(token: string) {
   }
 }
 
+// Send registration request to backend
 export async function register(form: AuthFormState) {
   const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
     method: 'POST',
@@ -46,6 +50,7 @@ export async function register(form: AuthFormState) {
   return parseResponse(response)
 }
 
+// Login user and return token + user info
 export async function login(form: AuthFormState) {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: 'POST',
@@ -61,6 +66,7 @@ export async function login(form: AuthFormState) {
   return parseResponse(response)
 }
 
+// Fetch current user info using token
 export async function getCurrentUser(token: string) {
   const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
     headers: {
@@ -71,6 +77,7 @@ export async function getCurrentUser(token: string) {
   return parseResponse(response)
 }
 
+// Logout user (invalidate token on server)
 export async function logout(token: string) {
   const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
     method: 'POST',

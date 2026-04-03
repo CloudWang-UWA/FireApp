@@ -1,6 +1,7 @@
 import { LAYER_CONFIG } from '../../config/map'
 import type { LayerKey, LayerStateMap } from '../../types/map'
 
+// Layer control panel for toggling map layers
 export function Layers({
   layers,
   visibleLayers,
@@ -16,6 +17,7 @@ export function Layers({
     <div className="status-card">
       <h2>Layers</h2>
       <div className="layer-list">
+        {/* Render available layers from configuration */}
         {LAYER_CONFIG.map(({ key, label, color }) => (
           <label className="layer-item" key={key}>
             <span className="layer-toggle">

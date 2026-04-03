@@ -7,6 +7,7 @@ import { BASEMAP_CONFIG, INITIAL_CENTER, LAYER_CONFIG } from '../../config/map'
 import type { BasemapKey, LayerKey, LayerStateMap } from '../../types/map'
 import { buildPopupContent, getCombinedLayerBounds } from '../../utils/geojson'
 
+// Keep the map view focused on the loaded project layers
 function MapViewController({ layers }: { layers: LayerStateMap }) {
   const map = useMap()
 
@@ -22,6 +23,7 @@ function MapViewController({ layers }: { layers: LayerStateMap }) {
   return null
 }
 
+// Render visible GeoJSON layers on top of the selected basemap
 export function MapView({
   basemap,
   layers,
@@ -46,9 +48,11 @@ export function MapView({
           subdomains={BASEMAP_CONFIG[basemap].subdomains}
           url={BASEMAP_CONFIG[basemap].url}
         />
-
+        
+        {/* Fit the map to loaded layer bounds */}
         <MapViewController layers={layers} />
-
+        
+        {/* Render configured layers that are visible and already loaded */}
         {LAYER_CONFIG.map(({ key, color }) => {
           const data = layers[key].data
           if (!visibleLayers[key] || !data) {

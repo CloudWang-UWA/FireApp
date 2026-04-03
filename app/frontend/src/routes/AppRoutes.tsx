@@ -4,12 +4,12 @@ import type { ReactNode } from 'react'
 export function AppRoutes({
   currentUser,
   loginPage,
-  workspacePage,
+  mapPage,
   profilePage,
 }: {
   currentUser: boolean
   loginPage: ReactNode
-  workspacePage: ReactNode
+  mapPage: ReactNode
   profilePage: ReactNode
 }) {
   return (
@@ -20,7 +20,7 @@ export function AppRoutes({
       />
       <Route
         path="/app"
-        element={currentUser ? workspacePage : <Navigate replace to="/login" />}
+        element={currentUser ? mapPage : <Navigate replace to="/login" />}
       />
       <Route
         path="/profile"

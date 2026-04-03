@@ -1,3 +1,4 @@
+// Utilities for preparing GeoJSON data for map rendering and popups
 import L from 'leaflet'
 
 import { LAYER_CONFIG } from '../config/map'
@@ -15,6 +16,7 @@ function ringArea(coordinates: number[][]) {
   return Math.abs(area) / 2
 }
 
+// Compute polygon area for sorting site features before rendering
 function geometryArea(geometry: GeoJSON.Geometry | null | undefined): number {
   if (!geometry) {
     return 0
@@ -55,6 +57,7 @@ export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJson
   }
 }
 
+// Merge bounds from all loaded layers so the map can fit the full dataset
 export function getCombinedLayerBounds(layers: LayerStateMap) {
   const bounds = L.latLngBounds([])
 

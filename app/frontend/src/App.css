@@ -41,7 +41,7 @@
   color: #2c2118;
 }
 
-.workspace-shell {
+.map-shell {
   height: 100vh;
   display: grid;
   grid-template-rows: 76px 1fr;
@@ -116,7 +116,7 @@
   color: rgba(248, 243, 234, 0.74);
 }
 
-.workspace-body {
+.map-body {
   min-height: 0;
   display: grid;
   grid-template-columns: 360px 1fr;
@@ -403,19 +403,19 @@ code {
 }
 
 @media (max-width: 1080px) {
-  .workspace-body {
+  .map-body {
     grid-template-columns: 320px 1fr;
   }
 }
 
 @media (max-width: 960px) {
   .auth-gate-card,
-  .workspace-body,
+  .map-body,
   .profile-grid {
     grid-template-columns: 1fr;
   }
 
-  .workspace-shell {
+  .map-shell {
     height: auto;
     min-height: 100vh;
     grid-template-rows: auto 1fr;
@@ -434,7 +434,7 @@ code {
     justify-content: flex-start;
   }
 
-  .workspace-body {
+  .map-body {
     overflow: visible;
   }
 

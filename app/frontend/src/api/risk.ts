@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '../config/map'
 
+// Check whether precomputed risk data is available
 export async function fetchRiskStatus() {
   const response = await fetch(`${API_BASE_URL}/api/risk/status`)
 

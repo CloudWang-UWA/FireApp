@@ -1,5 +1,6 @@
 import type { AuthUser } from '../../types/auth'
 
+// Profile view showing basic user information
 export function Profile({
   currentUser,
   onBack,
@@ -22,6 +23,7 @@ export function Profile({
         </p>
 
         <div className="profile-grid">
+          {/* Basic account information */}
           <div className="status-card">
             <h2>Account</h2>
             <p>
@@ -39,10 +41,10 @@ export function Profile({
             </p>
           </div>
         </div>
-
+        {/* Navigation and account actions */}
         <div className="profile-actions">
           <button className="secondary-button" onClick={onBack} type="button">
-            Back to workspace
+            Back to map
           </button>
           <button className="primary-button danger-button" onClick={onLogout} type="button">
             {isAuthLoading ? 'Working...' : 'Log out'}
