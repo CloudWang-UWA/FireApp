@@ -7,5 +7,5 @@ def get_risk_status() -> dict:
     }
 
 
-def get_hazard_result(fuel_code, slope_deg, fire_year):
-    return calculate_hazard(fuel_code, slope_deg, fire_year)
+def get_hazard_result(fuel_code, slope_deg, fire_year, fire_type):
+    return calculate_hazard(fuel_code, slope_deg, fire_year, fire_type)

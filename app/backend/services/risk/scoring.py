@@ -34,7 +34,7 @@ def get_slope_score(slope_deg):
 
     return None
 
-def get_fire_history_score(fire_year):
+def get_fire_history_score(fire_year, fire_type):
     if (fire_year is None):
         return FireHistoryScore.NO_RECENT_FIRE
     
@@ -48,7 +48,7 @@ def get_fire_history_score(fire_year):
                 return score
         else:
             if lower <= year_since_fire < upper:
-                return score
+                return score if fire_type == "PB" else FireHistoryScore.NO_RECENT_FIRE
 
     return FireHistoryScore.NO_RECENT_FIRE
 

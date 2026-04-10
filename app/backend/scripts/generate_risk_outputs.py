@@ -43,11 +43,16 @@ def main() -> None:
 
             if matched_fire_history.empty:
                 fire_year = None
+                fire_type = None
             else:
-                fire_year = matched_fire_history["fih_year1"].max() # get the most recent year
+                latest_fire = matched_fire_history.loc[
+                    matched_fire_history["fih_year1"].idxmax()
+                ]
+                fire_year = latest_fire["fih_year1"]
+                fire_type = latest_fire["fih_fire_t"]
             
             # calculate result
-            result = get_hazard_result(fuel_code, slope_deg, fire_year)
+            result = get_hazard_result(fuel_code, slope_deg, fire_year, fire_type)
 
             # generate final geojson file
             left, top = fuel_data.transform * (fuel_col, fuel_row)
@@ -59,6 +64,7 @@ def main() -> None:
                     "fuel_code": int(fuel_code),
                     "slope_deg": None if slope_deg is None else float(slope_deg),
                     "fire_year": None if fire_year is None else int(fire_year),
+                    "fire_type": fire_type,
                     "hazard_score": result["hazard_score"],
                     "hazard_level": None if result["hazard_level"] is None else int(result["hazard_level"]),
                 },
