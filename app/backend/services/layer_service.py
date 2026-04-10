@@ -9,11 +9,12 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 # Map layer names to their corresponding files
 LAYER_FILES = {
     "site": DATA_DIR / "sites.geojson",
+    "site_vulnerability": DATA_DIR / "risk_outputs" / "site_vulnerability.geojson",
     "granite": DATA_DIR / "granite.geojson",
     "fuel": DATA_DIR / "fuel.geojson",
     "vegetation": DATA_DIR / "vegetation.geojson",
     "slope": DATA_DIR / "slope.geojson",
-    "risk_overview": DATA_DIR / "risk_outputs" / "risk_overview.geojson"
+    "hazard_overview": DATA_DIR / "risk_outputs" / "hazard_overview.geojson"
 }
 
 

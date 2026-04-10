@@ -91,3 +91,49 @@ HAZARD_SCORE_BANDS = [
     (3, 5, HazardLevel.MEDIUM),
     (5, None, HazardLevel.HIGH),
 ]
+
+# Site vulnerability based on heritage place type.
+class SiteVulnerabilityScore(IntEnum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+
+PLACE_TYPE_ALIASES = {
+    "Plant Res": "Plant Resource",
+    "Repository / St": "Repository / Storage Place",
+}
+
+
+PLACE_TYPE_SCORE_MAP = {
+    "Artefacts / Scatter": SiteVulnerabilityScore.MEDIUM,
+    "BP Dating Details": SiteVulnerabilityScore.LOW,
+    "Birthplace": SiteVulnerabilityScore.HIGH,
+    "Burial": SiteVulnerabilityScore.HIGH,
+    "Camp": SiteVulnerabilityScore.HIGH,
+    "Creation / Dreaming Narrative": SiteVulnerabilityScore.MEDIUM,
+    "Engraving": SiteVulnerabilityScore.LOW,
+    "Fish Trap": SiteVulnerabilityScore.MEDIUM,
+    "Grinding areas / Grooves": SiteVulnerabilityScore.LOW,
+    "Historical": SiteVulnerabilityScore.HIGH,
+    "Hunting Place": SiteVulnerabilityScore.MEDIUM,
+    "Landscape / Seascape Feature": SiteVulnerabilityScore.LOW,
+    "Massacre": SiteVulnerabilityScore.HIGH,
+    "Meeting Place": SiteVulnerabilityScore.MEDIUM,
+    "Midden": SiteVulnerabilityScore.MEDIUM,
+    "Mission": SiteVulnerabilityScore.HIGH,
+    "Modified Tree": SiteVulnerabilityScore.HIGH,
+    "Ochre": SiteVulnerabilityScore.LOW,
+    "Other": SiteVulnerabilityScore.MEDIUM,
+    "Painting": SiteVulnerabilityScore.LOW,
+    "Plant Resource": SiteVulnerabilityScore.HIGH,
+    "Quarry": SiteVulnerabilityScore.LOW,
+    "Repository / Storage Place": SiteVulnerabilityScore.MEDIUM,
+    "Ritual / Ceremonial": SiteVulnerabilityScore.MEDIUM,
+    "Rock Shelter": SiteVulnerabilityScore.LOW,
+    "Shell": SiteVulnerabilityScore.MEDIUM,
+    "Stone Arrangement": SiteVulnerabilityScore.LOW,
+    "Sub surface cultural material": SiteVulnerabilityScore.MEDIUM,
+    "Traditional Structure": SiteVulnerabilityScore.HIGH,
+    "Water Source": SiteVulnerabilityScore.MEDIUM,
+}

@@ -30,6 +30,13 @@ function getHazardColor(level: unknown) {
   return 'transparent'
 }
 
+function getSiteVulnerabilityColor(score: unknown) {
+  if (score === 3) return '#b2182b'
+  if (score === 2) return '#ef8a62'
+  if (score === 1) return '#fddbc7'
+  return '#d9d9d9'
+}
+
 // Render visible GeoJSON layers on top of the selected basemap
 export function MapView({
   basemap,
@@ -72,19 +79,37 @@ export function MapView({
               data={data}
               style={(feature) => {
                 const hazardLevel = feature?.properties?.hazard_level
+                const placeTypeScore = feature?.properties?.place_type_score
                 const fillColor =
-                  key === 'risk_overview' ? getHazardColor(hazardLevel) : color
-                const isLowHazard = key === 'risk_overview' && hazardLevel === 1
+                  key === 'hazard_overview'
+                    ? getHazardColor(hazardLevel)
+                    : key === 'site_vulnerability'
+                      ? getSiteVulnerabilityColor(placeTypeScore)
+                      : color
+                const isLowHazard = key === 'hazard_overview' && hazardLevel === 1
 
                 return {
-                  color: key === 'risk_overview' ? 'transparent' : color,
-                  weight: key === 'risk_overview' ? 0 : 2,
-                  fillColor,
-                  fillOpacity: key === 'risk_overview'
-                    ? isLowHazard
+                  color:
+                    key === 'hazard_overview'
+                      ? 'transparent'
+                      : key === 'site_vulnerability'
+                        ? fillColor
+                        : color,
+                  weight:
+                    key === 'hazard_overview'
                       ? 0
-                      : 0.4
-                    : 0.28,
+                      : key === 'site_vulnerability'
+                        ? 2
+                        : 2,
+                  fillColor,
+                  fillOpacity:
+                    key === 'hazard_overview'
+                      ? isLowHazard
+                        ? 0
+                        : 0.4
+                      : key === 'site_vulnerability'
+                        ? 0.55
+                        : 0.28,
                 }
               }}
               pointToLayer={(_feature, latlng: LatLng) =>
@@ -97,7 +122,7 @@ export function MapView({
                 })
               }
               onEachFeature={(feature: GeoJSON.Feature, layer: LeafletLayer) => {
-                layer.bindPopup(buildPopupContent(feature.properties))
+                layer.bindPopup(buildPopupContent(key, feature.properties))
               }}
             />
           )

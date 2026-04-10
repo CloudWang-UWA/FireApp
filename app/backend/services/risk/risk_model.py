@@ -2,6 +2,7 @@ from .scoring import get_fuel_score
 from .scoring import get_hazard_level
 from .scoring import get_slope_score
 from .scoring import get_fire_history_score
+from .scoring import get_place_type_score
 
 def calculate_hazard(fuel_code, slope_deg, fire_year, fire_type):
     fuel_score = get_fuel_score(fuel_code)
@@ -27,3 +28,12 @@ def calculate_hazard(fuel_code, slope_deg, fire_year, fire_type):
         "hazard_score": hazard_score,
         "hazard_level": hazard_level
     }
+
+def calculate_site_vulnerability(place_type):
+    place_type_score = get_place_type_score(place_type)
+
+    return {
+        "place_type_score": place_type_score
+    }
+
+

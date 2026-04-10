@@ -5,13 +5,13 @@ import rasterio
 
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 
-# TODO: add sites later
 def load_sites_data():
-    pass
+    sites_path = DATA_DIR / "sites.gpkg"
+    return gpd.read_file(sites_path)
 
-# TODO: add granites later
 def load_granite_data():
-    pass
+    granite_path = DATA_DIR / "granite.gpkg"
+    return gpd.read_file(granite_path)
 
 def load_fuel_data():
     fuel_path = DATA_DIR / "fuel.tif"

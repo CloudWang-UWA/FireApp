@@ -44,7 +44,7 @@ function geometryArea(geometry: GeoJSON.Geometry | null | undefined): number {
 }
 
 export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJsonData {
-  if (layerKey !== 'site') {
+  if (layerKey !== 'site' && layerKey !== 'site_vulnerability') {
     return data
   }
 
@@ -77,10 +77,29 @@ export function getCombinedLayerBounds(layers: LayerStateMap) {
 }
 
 export function buildPopupContent(
+  layerKey: LayerKey,
   properties: GeoJSON.GeoJsonProperties | null | undefined,
 ) {
   if (!properties || Object.keys(properties).length === 0) {
     return '<strong>No properties</strong>'
+  }
+
+  if (layerKey === 'site_vulnerability') {
+    const rows: Array<[string, unknown]> = [
+      ['name', properties.name],
+      ['ach_identifier', properties.ach_identifier],
+      ['place_status', properties.place_status],
+      ['place_type', properties.place_type],
+      ['place_type_score', properties.place_type_score],
+    ]
+
+    return rows
+      .filter(([, value]) => value !== null && value !== undefined && value !== '')
+      .map(
+        ([key, value]) =>
+          `<div><strong>${key}:</strong> ${String(value)}</div>`,
+      )
+      .join('')
   }
 
   // Keep popups short enough that they do not take over the map.
