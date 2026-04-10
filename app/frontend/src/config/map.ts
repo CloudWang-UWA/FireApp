@@ -19,6 +19,7 @@ export const LAYER_CONFIG: Array<{
   { key: 'site', label: 'Site', color: '#c24d2c' },
   { key: 'site_vulnerability', label: 'Site Vulnerability', color: '#c24d2c' },
   { key: 'granite', label: 'Granite Outcrops', color: '#6c7a2b' },
+  { key: 'granite_influence', label: 'Granite Influence', color: '#6c7a2b' },
   { key: 'fuel', label: 'Fuel Load', color: '#d08c00' },
   { key: 'vegetation', label: 'Vegetation', color: '#237a57' },
   { key: 'slope', label: 'Slope', color: '#355c9a' },

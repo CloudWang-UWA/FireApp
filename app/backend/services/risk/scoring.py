@@ -5,6 +5,8 @@ from .lookups import FIRE_HISTORY_SCORE_BANDS
 from .lookups import HAZARD_SCORE_BANDS
 from .lookups import PLACE_TYPE_ALIASES
 from .lookups import PLACE_TYPE_SCORE_MAP
+from .lookups import GraniteScore
+from .lookups import GRANITE_DISTANCE_SCORE_BANDS
 from datetime import date
 
 def get_fuel_score(fuel_code):
@@ -85,6 +87,22 @@ def get_place_type_score(raw_place_type):
         return None
 
     return max(scores)
+
+
+def get_granite_score(on_granite, distance_to_granite):
+    if on_granite:
+        return GraniteScore.HIGH
+
+    if distance_to_granite is None:
+        return GraniteScore.NONE
+
+    distance_to_granite = float(distance_to_granite)
+
+    for upper, score in GRANITE_DISTANCE_SCORE_BANDS:
+        if distance_to_granite <= upper:
+            return score
+
+    return GraniteScore.NONE
 
 
 def get_hazard_level(hazard_score):

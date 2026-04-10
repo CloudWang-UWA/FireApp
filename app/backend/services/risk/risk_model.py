@@ -3,6 +3,7 @@ from .scoring import get_hazard_level
 from .scoring import get_slope_score
 from .scoring import get_fire_history_score
 from .scoring import get_place_type_score
+from .scoring import get_granite_score
 
 def calculate_hazard(fuel_code, slope_deg, fire_year, fire_type):
     fuel_score = get_fuel_score(fuel_code)
@@ -37,3 +38,11 @@ def calculate_site_vulnerability(place_type):
     }
 
 
+def calculate_granite_influence(on_granite, distance_to_granite):
+    granite_score = get_granite_score(on_granite, distance_to_granite)
+
+    return {
+        "on_granite": on_granite,
+        "distance_to_granite": distance_to_granite,
+        "granite_score": granite_score,
+    }

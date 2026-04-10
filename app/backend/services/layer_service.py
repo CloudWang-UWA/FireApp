@@ -11,6 +11,7 @@ LAYER_FILES = {
     "site": DATA_DIR / "sites.geojson",
     "site_vulnerability": DATA_DIR / "risk_outputs" / "site_vulnerability.geojson",
     "granite": DATA_DIR / "granite.geojson",
+    "granite_influence": DATA_DIR / "risk_outputs" / "granite_influence.geojson",
     "fuel": DATA_DIR / "fuel.geojson",
     "vegetation": DATA_DIR / "vegetation.geojson",
     "slope": DATA_DIR / "slope.geojson",

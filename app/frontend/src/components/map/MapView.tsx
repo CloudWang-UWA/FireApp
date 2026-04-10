@@ -37,6 +37,13 @@ function getSiteVulnerabilityColor(score: unknown) {
   return '#d9d9d9'
 }
 
+function getGraniteInfluenceColor(score: unknown) {
+  if (score === 3) return '#7f3b08'
+  if (score === 2) return '#b35806'
+  if (score === 1) return '#f1a340'
+  return 'transparent'
+}
+
 // Render visible GeoJSON layers on top of the selected basemap
 export function MapView({
   basemap,
@@ -80,11 +87,14 @@ export function MapView({
               style={(feature) => {
                 const hazardLevel = feature?.properties?.hazard_level
                 const placeTypeScore = feature?.properties?.place_type_score
+                const graniteScore = feature?.properties?.granite_score
                 const fillColor =
                   key === 'hazard_overview'
                     ? getHazardColor(hazardLevel)
                     : key === 'site_vulnerability'
                       ? getSiteVulnerabilityColor(placeTypeScore)
+                      : key === 'granite_influence'
+                        ? getGraniteInfluenceColor(graniteScore)
                       : color
                 const isLowHazard = key === 'hazard_overview' && hazardLevel === 1
 
@@ -94,12 +104,16 @@ export function MapView({
                       ? 'transparent'
                       : key === 'site_vulnerability'
                         ? fillColor
+                        : key === 'granite_influence'
+                          ? fillColor
                         : color,
                   weight:
                     key === 'hazard_overview'
                       ? 0
                       : key === 'site_vulnerability'
                         ? 2
+                        : key === 'granite_influence'
+                          ? 2
                         : 2,
                   fillColor,
                   fillOpacity:
@@ -109,6 +123,8 @@ export function MapView({
                         : 0.4
                       : key === 'site_vulnerability'
                         ? 0.55
+                        : key === 'granite_influence'
+                          ? 0.35
                         : 0.28,
                 }
               }}

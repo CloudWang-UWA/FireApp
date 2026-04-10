@@ -2,6 +2,7 @@ export type LayerKey =
   | 'site'
   | 'site_vulnerability'
   | 'granite'
+  | 'granite_influence'
   | 'fuel'
   | 'vegetation'
   | 'slope'

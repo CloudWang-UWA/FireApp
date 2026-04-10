@@ -44,7 +44,11 @@ function geometryArea(geometry: GeoJSON.Geometry | null | undefined): number {
 }
 
 export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJsonData {
-  if (layerKey !== 'site' && layerKey !== 'site_vulnerability') {
+  if (
+    layerKey !== 'site' &&
+    layerKey !== 'site_vulnerability' &&
+    layerKey !== 'granite_influence'
+  ) {
     return data
   }
 
@@ -91,6 +95,22 @@ export function buildPopupContent(
       ['place_status', properties.place_status],
       ['place_type', properties.place_type],
       ['place_type_score', properties.place_type_score],
+    ]
+
+    return rows
+      .filter(([, value]) => value !== null && value !== undefined && value !== '')
+      .map(
+        ([key, value]) =>
+          `<div><strong>${key}:</strong> ${String(value)}</div>`,
+      )
+      .join('')
+  }
+
+  if (layerKey === 'granite_influence') {
+    const rows: Array<[string, unknown]> = [
+      ['zone', properties.zone],
+      ['distance_band', properties.distance_band],
+      ['granite_score', properties.granite_score],
     ]
 
     return rows

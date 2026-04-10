@@ -99,6 +99,19 @@ class SiteVulnerabilityScore(IntEnum):
     HIGH = 3
 
 
+class GraniteScore(IntEnum):
+    NONE = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+
+GRANITE_DISTANCE_SCORE_BANDS = [
+    (100, GraniteScore.MEDIUM),
+    (250, GraniteScore.LOW),
+]
+
+
 PLACE_TYPE_ALIASES = {
     "Plant Res": "Plant Resource",
     "Repository / St": "Repository / Storage Place",
