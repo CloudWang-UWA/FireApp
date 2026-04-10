@@ -21,6 +21,7 @@ export const LAYER_CONFIG: Array<{
   { key: 'fuel', label: 'Fuel Load', color: '#d08c00' },
   { key: 'vegetation', label: 'Vegetation', color: '#237a57' },
   { key: 'slope', label: 'Slope', color: '#355c9a' },
+  { key: 'risk_overview', label: 'Risk Overview', color: '#ffffff' }
 ]
 
 // Configuration for available basemaps

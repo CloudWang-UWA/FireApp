@@ -13,6 +13,7 @@ LAYER_FILES = {
     "fuel": DATA_DIR / "fuel.geojson",
     "vegetation": DATA_DIR / "vegetation.geojson",
     "slope": DATA_DIR / "slope.geojson",
+    "risk_overview": DATA_DIR / "risk_outputs" / "risk_overview.geojson"
 }
 
 

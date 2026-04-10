@@ -23,6 +23,13 @@ function MapViewController({ layers }: { layers: LayerStateMap }) {
   return null
 }
 
+function getHazardColor(level: unknown) {
+  if (level === 3) return '#d73027'
+  if (level === 2) return '#fdb863'
+  if (level === 1) return 'transparent'
+  return 'transparent'
+}
+
 // Render visible GeoJSON layers on top of the selected basemap
 export function MapView({
   basemap,
@@ -63,12 +70,23 @@ export function MapView({
             <GeoJSON
               key={key}
               data={data}
-              style={() => ({
-                color,
-                weight: 2,
-                fillColor: color,
-                fillOpacity: 0.28,
-              })}
+              style={(feature) => {
+                const hazardLevel = feature?.properties?.hazard_level
+                const fillColor =
+                  key === 'risk_overview' ? getHazardColor(hazardLevel) : color
+                const isLowHazard = key === 'risk_overview' && hazardLevel === 1
+
+                return {
+                  color: key === 'risk_overview' ? 'transparent' : color,
+                  weight: key === 'risk_overview' ? 0 : 2,
+                  fillColor,
+                  fillOpacity: key === 'risk_overview'
+                    ? isLowHazard
+                      ? 0
+                      : 0.4
+                    : 0.28,
+                }
+              }}
               pointToLayer={(_feature, latlng: LatLng) =>
                 L.circleMarker(latlng, {
                   radius: 6,

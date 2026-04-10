@@ -7,6 +7,8 @@ class FuelScore(IntEnum):
     HIGH = 3
 
 FUEL_SCORE_MAP = {
+    0: FuelScore.NO_FUEL,    # No fuel data
+
     110: FuelScore.HIGH,     # Tall, closed forest
     120: FuelScore.HIGH,     # Closed forest
 
