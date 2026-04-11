@@ -18,7 +18,7 @@ EXCLUDED_SITE_IDS = {
 
 
 # Build potential heritage precaution from hazard cells and overlapping granite zones,
-# then remove cells that overlap recorded sites and merge neighbouring areas by level.
+# then save both the raw cell layer and a dissolved display layer.
 def main() -> None:
     hazard_data = load_hazard_overview_data()
     granite_data = load_granite_influence_data()
@@ -90,6 +90,7 @@ def main() -> None:
     kept_precaution_mask = recorded_site_mask == False
     precaution_data = hazard_data[kept_precaution_mask].copy()
     precaution_data = precaution_data.drop(columns=["hazard_row_id"])
+    raw_precaution_data = precaution_data.copy()
 
     # Merge neighbouring precaution cells with the same final level so the
     # output looks more like a zone map than a grid.
@@ -108,12 +109,18 @@ def main() -> None:
     output_dir = BACKEND_DIR / "data" / "risk_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    raw_gpkg_output_path = output_dir / "potential_heritage_precaution_raw.gpkg"
+    raw_geojson_output_path = output_dir / "potential_heritage_precaution_raw.geojson"
     gpkg_output_path = output_dir / "potential_heritage_precaution.gpkg"
     geojson_output_path = output_dir / "potential_heritage_precaution.geojson"
 
+    raw_precaution_data.to_file(raw_gpkg_output_path, driver="GPKG")
+    raw_precaution_data.to_file(raw_geojson_output_path, driver="GeoJSON")
     precaution_data.to_file(gpkg_output_path, driver="GPKG")
     precaution_data.to_file(geojson_output_path, driver="GeoJSON")
 
+    print(f"Saved to: {raw_gpkg_output_path}")
+    print(f"Saved to: {raw_geojson_output_path}")
     print(f"Saved to: {gpkg_output_path}")
     print(f"Saved to: {geojson_output_path}")
 

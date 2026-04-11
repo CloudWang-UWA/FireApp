@@ -17,7 +17,7 @@ EXCLUDED_SITE_IDS = {
 }
 
 # Build recorded site priority by matching each recorded site with hazard cells,
-# keeping the highest hazard score, and combining it with site vulnerability (place type score).
+# keeping the highest hazard score, and combining it with site vulnerability.
 def main() -> None:
     sites_data = load_site_vulnerability_data().copy()
     hazard_data = load_hazard_overview_data()
@@ -44,17 +44,17 @@ def main() -> None:
 
     hazard_scores = []
     hazard_levels = []
-    place_type_scores = []
+    site_vulnerability_scores = []
     recorded_site_priority_scores = []
     recorded_site_priority_levels = []
 
     for _, site in sites_data.iterrows():
         site_row_id = site["site_row_id"]
-        place_type_score = site.get("place_type_score")
-        if place_type_score is not None and not pd.isna(place_type_score):
-            place_type_score = int(place_type_score)
+        site_vulnerability_score = site.get("site_vulnerability_score")
+        if site_vulnerability_score is not None and not pd.isna(site_vulnerability_score):
+            site_vulnerability_score = int(site_vulnerability_score)
         else:
-            place_type_score = None
+            site_vulnerability_score = None
 
         # TODO: use area-weighted overlap instead of max hazard score if we need
         # a better summary for large recorded sites later.
@@ -76,7 +76,7 @@ def main() -> None:
         # combine hazard score with site vulnerability score
         priority_result = calculate_recorded_site_priority(
             hazard_score,
-            place_type_score,
+            site_vulnerability_score,
         )
         
         # append the results
@@ -84,8 +84,8 @@ def main() -> None:
         hazard_levels.append(
             None if hazard_level is None else int(hazard_level)
         )
-        place_type_scores.append(
-            None if place_type_score is None else int(place_type_score)
+        site_vulnerability_scores.append(
+            None if site_vulnerability_score is None else int(site_vulnerability_score)
         )
         recorded_site_priority_scores.append(
             priority_result["recorded_site_priority_score"]
@@ -98,7 +98,7 @@ def main() -> None:
 
     sites_data["hazard_score"] = hazard_scores
     sites_data["hazard_level"] = hazard_levels
-    sites_data["place_type_score"] = place_type_scores
+    sites_data["site_vulnerability_score"] = site_vulnerability_scores
     sites_data["recorded_site_priority_score"] = recorded_site_priority_scores
     sites_data["recorded_site_priority_level"] = recorded_site_priority_levels
 

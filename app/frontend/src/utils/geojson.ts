@@ -94,7 +94,7 @@ export function buildPopupContent(
       ['place_status', properties.place_status],
       ['place_type', properties.place_type],
       ['hazard_score', properties.hazard_score],
-      ['place_type_score', properties.place_type_score],
+      ['site_vulnerability_score', properties.site_vulnerability_score],
       ['recorded_site_priority_score', properties.recorded_site_priority_score],
       ['recorded_site_priority_level', properties.recorded_site_priority_level],
     ]

@@ -58,7 +58,7 @@ def get_fire_history_score(fire_year, fire_type):
     return FireHistoryScore.NO_RECENT_FIRE
 
 # Get the cultural heritage sites score based on their place type, eg. Artefacts / Scatter
-def get_place_type_score(raw_place_type):
+def get_site_vulnerability_score(raw_place_type):
     if (raw_place_type is None):
         return None
     
@@ -129,10 +129,10 @@ def normalize_hazard_score(hazard_score):
     return min(max(float(hazard_score) / 6.0, 0.0), 1.0)
 
 
-def normalize_site_vulnerability_score(place_type_score):
-    if place_type_score is None:
+def normalize_site_vulnerability_score(site_vulnerability_score):
+    if site_vulnerability_score is None:
         return None
-    return min(max(float(place_type_score) / 3.0, 0.0), 1.0)
+    return min(max(float(site_vulnerability_score) / 3.0, 0.0), 1.0)
 
 
 def normalize_granite_score(granite_score):
@@ -141,9 +141,9 @@ def normalize_granite_score(granite_score):
     return min(max(float(granite_score) / 3.0, 0.0), 1.0)
 
 # Caculate site priority score, combination of environmental factors and sites place type
-def get_recorded_site_priority_score(hazard_score, place_type_score):
+def get_recorded_site_priority_score(hazard_score, site_vulnerability_score):
     hazard = normalize_hazard_score(hazard_score)
-    site = normalize_site_vulnerability_score(place_type_score)
+    site = normalize_site_vulnerability_score(site_vulnerability_score)
 
     if hazard is None or site is None:
         return None
