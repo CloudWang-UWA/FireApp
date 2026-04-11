@@ -8,14 +8,8 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 
 # Map layer names to their corresponding files
 LAYER_FILES = {
-    "site": DATA_DIR / "sites.geojson",
-    "site_vulnerability": DATA_DIR / "risk_outputs" / "site_vulnerability.geojson",
-    "granite": DATA_DIR / "granite.geojson",
-    "granite_influence": DATA_DIR / "risk_outputs" / "granite_influence.geojson",
-    "fuel": DATA_DIR / "fuel.geojson",
-    "vegetation": DATA_DIR / "vegetation.geojson",
-    "slope": DATA_DIR / "slope.geojson",
-    "hazard_overview": DATA_DIR / "risk_outputs" / "hazard_overview.geojson"
+    "recorded_site_priority": DATA_DIR / "risk_outputs" / "recorded_site_priority.geojson",
+    "potential_heritage_precaution": DATA_DIR / "risk_outputs" / "potential_heritage_precaution.geojson",
 }
 
 

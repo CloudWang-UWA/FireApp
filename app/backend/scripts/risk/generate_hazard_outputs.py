@@ -1,11 +1,12 @@
 from pathlib import Path
 import sys
-import json
 
-BACKEND_DIR = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(BACKEND_DIR))
-
+import geopandas as gpd
 from shapely.geometry import Point
+from shapely.geometry import Polygon
+
+BACKEND_DIR = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(BACKEND_DIR))
 
 from services.risk.load_processed_data import load_fuel_data
 from services.risk.load_processed_data import load_slope_data
@@ -58,43 +59,39 @@ def main() -> None:
             left, top = fuel_data.transform * (fuel_col, fuel_row)
             right, bottom = fuel_data.transform * (fuel_col + 1, fuel_row + 1)
 
-            feature = {
-                "type": "Feature",
-                "properties": {
+            features.append(
+                {
                     "fuel_code": int(fuel_code),
                     "slope_deg": None if slope_deg is None else float(slope_deg),
                     "fire_year": None if fire_year is None else int(fire_year),
                     "fire_type": fire_type,
                     "hazard_score": result["hazard_score"],
                     "hazard_level": None if result["hazard_level"] is None else int(result["hazard_level"]),
-                },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[
-                        [left, top],
-                        [right, top],
-                        [right, bottom],
-                        [left, bottom],
-                        [left, top],
-                    ]]
-                },
-            }
-
-            features.append(feature)
-
-    geojson = {
-        "type": "FeatureCollection",
-        "features": features,
-    }
+                    "geometry": Polygon(
+                        [
+                            (left, top),
+                            (right, top),
+                            (right, bottom),
+                            (left, bottom),
+                            (left, top),
+                        ]
+                    ),
+                }
+            )
 
     output_dir = BACKEND_DIR / "data" / "risk_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_path = output_dir / "hazard_overview.geojson"
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(geojson, f, ensure_ascii=False)
+    hazard_layer = gpd.GeoDataFrame(features, crs=fuel_data.crs)
+    gpkg_output_path = output_dir / "hazard_overview.gpkg"
+    geojson_output_path = output_dir / "hazard_overview.geojson"
 
-    print(f"Saved to: {output_path}")
+    hazard_layer.to_file(gpkg_output_path, driver="GPKG")
+    hazard_layer.to_file(geojson_output_path, driver="GeoJSON")
+
+    print(f"Saved to: {gpkg_output_path}")
+    print(f"Saved to: {geojson_output_path}")
+
 
 if __name__ == "__main__":
     main()

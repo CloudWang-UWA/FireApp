@@ -16,14 +16,16 @@ export const LAYER_CONFIG: Array<{
   label: string
   color: string
 }> = [
-  { key: 'site', label: 'Site', color: '#c24d2c' },
-  { key: 'site_vulnerability', label: 'Site Vulnerability', color: '#c24d2c' },
-  { key: 'granite', label: 'Granite Outcrops', color: '#6c7a2b' },
-  { key: 'granite_influence', label: 'Granite Influence', color: '#6c7a2b' },
-  { key: 'fuel', label: 'Fuel Load', color: '#d08c00' },
-  { key: 'vegetation', label: 'Vegetation', color: '#237a57' },
-  { key: 'slope', label: 'Slope', color: '#355c9a' },
-  { key: 'hazard_overview', label: 'Hazard Overview', color: '#ffffff' }
+  {
+    key: 'recorded_site_priority',
+    label: 'Recorded Site Priority',
+    color: '#b2182b',
+  },
+  {
+    key: 'potential_heritage_precaution',
+    label: 'Potential Heritage Precaution',
+    color: '#ef8a62',
+  },
 ]
 
 // Configuration for available basemaps

@@ -23,25 +23,11 @@ function MapViewController({ layers }: { layers: LayerStateMap }) {
   return null
 }
 
-function getHazardColor(level: unknown) {
+function getPriorityColor(level: unknown) {
   if (level === 3) return '#d73027'
   if (level === 2) return '#fdb863'
-  if (level === 1) return 'transparent'
-  return 'transparent'
-}
-
-function getSiteVulnerabilityColor(score: unknown) {
-  if (score === 3) return '#b2182b'
-  if (score === 2) return '#ef8a62'
-  if (score === 1) return '#fddbc7'
+  if (level === 1) return '#fddbc7'
   return '#d9d9d9'
-}
-
-function getGraniteInfluenceColor(score: unknown) {
-  if (score === 3) return '#7f3b08'
-  if (score === 2) return '#b35806'
-  if (score === 1) return '#f1a340'
-  return 'transparent'
 }
 
 // Render visible GeoJSON layers on top of the selected basemap
@@ -85,47 +71,18 @@ export function MapView({
               key={key}
               data={data}
               style={(feature) => {
-                const hazardLevel = feature?.properties?.hazard_level
-                const placeTypeScore = feature?.properties?.place_type_score
-                const graniteScore = feature?.properties?.granite_score
-                const fillColor =
-                  key === 'hazard_overview'
-                    ? getHazardColor(hazardLevel)
-                    : key === 'site_vulnerability'
-                      ? getSiteVulnerabilityColor(placeTypeScore)
-                      : key === 'granite_influence'
-                        ? getGraniteInfluenceColor(graniteScore)
-                      : color
-                const isLowHazard = key === 'hazard_overview' && hazardLevel === 1
+                const priorityLevel =
+                  key === 'recorded_site_priority'
+                    ? feature?.properties?.recorded_site_priority_level
+                    : feature?.properties?.potential_heritage_precaution_level
+                const fillColor = getPriorityColor(priorityLevel)
 
                 return {
-                  color:
-                    key === 'hazard_overview'
-                      ? 'transparent'
-                      : key === 'site_vulnerability'
-                        ? fillColor
-                        : key === 'granite_influence'
-                          ? fillColor
-                        : color,
-                  weight:
-                    key === 'hazard_overview'
-                      ? 0
-                      : key === 'site_vulnerability'
-                        ? 2
-                        : key === 'granite_influence'
-                          ? 2
-                        : 2,
+                  color: fillColor,
+                  weight: key === 'recorded_site_priority' ? 2 : 1,
                   fillColor,
                   fillOpacity:
-                    key === 'hazard_overview'
-                      ? isLowHazard
-                        ? 0
-                        : 0.4
-                      : key === 'site_vulnerability'
-                        ? 0.55
-                        : key === 'granite_influence'
-                          ? 0.35
-                        : 0.28,
+                    key === 'recorded_site_priority' ? 0.55 : 0.3,
                 }
               }}
               pointToLayer={(_feature, latlng: LatLng) =>

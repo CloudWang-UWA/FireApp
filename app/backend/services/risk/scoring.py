@@ -7,6 +7,7 @@ from .lookups import PLACE_TYPE_ALIASES
 from .lookups import PLACE_TYPE_SCORE_MAP
 from .lookups import GraniteScore
 from .lookups import GRANITE_DISTANCE_SCORE_BANDS
+from .lookups import INTEGRATED_PRIORITY_BANDS
 from datetime import date
 
 def get_fuel_score(fuel_code):
@@ -117,6 +118,61 @@ def get_hazard_level(hazard_score):
                 return level
         else:
             if lower <= hazard_score < upper:
+                return level
+
+    return None
+
+# TODO: change the scaling factor so that it suits new data, we may extend our areas later
+def normalize_hazard_score(hazard_score):
+    if hazard_score is None:
+        return None
+    return min(max(float(hazard_score) / 6.0, 0.0), 1.0)
+
+
+def normalize_site_vulnerability_score(place_type_score):
+    if place_type_score is None:
+        return None
+    return min(max(float(place_type_score) / 3.0, 0.0), 1.0)
+
+
+def normalize_granite_score(granite_score):
+    if granite_score is None:
+        return None
+    return min(max(float(granite_score) / 3.0, 0.0), 1.0)
+
+# Caculate site priority score, combination of environmental factors and sites place type
+def get_recorded_site_priority_score(hazard_score, place_type_score):
+    hazard = normalize_hazard_score(hazard_score)
+    site = normalize_site_vulnerability_score(place_type_score)
+
+    if hazard is None or site is None:
+        return None
+
+    return 0.5 * hazard + 0.5 * site
+
+# Caculate potential heritage precaution score, combination of environmental factors and granite
+def get_potential_heritage_precaution_score(hazard_score, granite_score):
+    hazard = normalize_hazard_score(hazard_score)
+    granite = normalize_granite_score(granite_score)
+
+    if hazard is None or granite is None:
+        return None
+
+    return 0.7 * hazard + 0.3 * granite
+
+# Convert integrated score to level
+def get_integrated_priority_level(score):
+    if score is None:
+        return None
+
+    score = float(score)
+
+    for lower, upper, level in INTEGRATED_PRIORITY_BANDS:
+        if upper is None:
+            if score >= lower:
+                return level
+        else:
+            if lower <= score < upper:
                 return level
 
     return None

@@ -45,9 +45,8 @@ function geometryArea(geometry: GeoJSON.Geometry | null | undefined): number {
 
 export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJsonData {
   if (
-    layerKey !== 'site' &&
-    layerKey !== 'site_vulnerability' &&
-    layerKey !== 'granite_influence'
+    layerKey !== 'recorded_site_priority' &&
+    layerKey !== 'potential_heritage_precaution'
   ) {
     return data
   }
@@ -88,13 +87,16 @@ export function buildPopupContent(
     return '<strong>No properties</strong>'
   }
 
-  if (layerKey === 'site_vulnerability') {
+  if (layerKey === 'recorded_site_priority') {
     const rows: Array<[string, unknown]> = [
       ['name', properties.name],
       ['ach_identifier', properties.ach_identifier],
       ['place_status', properties.place_status],
       ['place_type', properties.place_type],
+      ['hazard_score', properties.hazard_score],
       ['place_type_score', properties.place_type_score],
+      ['recorded_site_priority_score', properties.recorded_site_priority_score],
+      ['recorded_site_priority_level', properties.recorded_site_priority_level],
     ]
 
     return rows
@@ -106,11 +108,19 @@ export function buildPopupContent(
       .join('')
   }
 
-  if (layerKey === 'granite_influence') {
+  if (layerKey === 'potential_heritage_precaution') {
     const rows: Array<[string, unknown]> = [
-      ['zone', properties.zone],
-      ['distance_band', properties.distance_band],
+      ['hazard_score', properties.hazard_score],
+      ['hazard_level', properties.hazard_level],
       ['granite_score', properties.granite_score],
+      [
+        'potential_heritage_precaution_score',
+        properties.potential_heritage_precaution_score,
+      ],
+      [
+        'potential_heritage_precaution_level',
+        properties.potential_heritage_precaution_level,
+      ],
     ]
 
     return rows

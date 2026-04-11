@@ -3,7 +3,7 @@ import sys
 
 import geopandas as gpd
 
-BACKEND_DIR = Path(__file__).resolve().parents[1]
+BACKEND_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BACKEND_DIR))
 
 from services.risk.load_processed_data import load_granite_data
@@ -35,10 +35,14 @@ def main() -> None:
     output_dir = BACKEND_DIR / "data" / "risk_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_path = output_dir / "granite_influence.geojson"
-    influence_layer.to_file(output_path, driver="GeoJSON")
+    gpkg_output_path = output_dir / "granite_influence.gpkg"
+    geojson_output_path = output_dir / "granite_influence.geojson"
 
-    print(f"Saved to: {output_path}")
+    influence_layer.to_file(gpkg_output_path, driver="GPKG")
+    influence_layer.to_file(geojson_output_path, driver="GeoJSON")
+
+    print(f"Saved to: {gpkg_output_path}")
+    print(f"Saved to: {geojson_output_path}")
 
 
 if __name__ == "__main__":

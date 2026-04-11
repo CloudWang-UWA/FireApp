@@ -150,3 +150,15 @@ PLACE_TYPE_SCORE_MAP = {
     "Traditional Structure": SiteVulnerabilityScore.HIGH,
     "Water Source": SiteVulnerabilityScore.MEDIUM,
 }
+
+class IntegratedPriorityLevel(IntEnum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+
+INTEGRATED_PRIORITY_BANDS = [
+    (0.0, 0.34, IntegratedPriorityLevel.LOW),
+    (0.34, 0.67, IntegratedPriorityLevel.MEDIUM),
+    (0.67, None, IntegratedPriorityLevel.HIGH),
+]

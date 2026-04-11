@@ -42,11 +42,8 @@ function App() {
     ) as LayerStateMap,
   )
   const [visibleLayers, setVisibleLayers] = useState<Record<LayerKey, boolean>>({
-    site: true,
-    granite: true,
-    fuel: false,
-    vegetation: false,
-    slope: false,
+    recorded_site_priority: true,
+    potential_heritage_precaution: true,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
   const [authMode, setAuthMode] = useState<AuthMode>('login')

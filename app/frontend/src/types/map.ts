@@ -1,12 +1,6 @@
 export type LayerKey =
-  | 'site'
-  | 'site_vulnerability'
-  | 'granite'
-  | 'granite_influence'
-  | 'fuel'
-  | 'vegetation'
-  | 'slope'
-  | 'hazard_overview'
+  | 'recorded_site_priority'
+  | 'potential_heritage_precaution'
 export type BasemapKey = 'osm' | 'googleSat'
 
 export type GeoJsonData = GeoJSON.FeatureCollection
