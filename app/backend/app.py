@@ -3,6 +3,7 @@ import os
 from flask import Flask, g, jsonify
 from flask_cors import CORS
 from models.user import db
+from models.uploaded_site import UploadedSite
 from routes.auth_routes import auth_bp
 from routes.export_routes import export_bp
 from routes.layer_routes import layer_bp

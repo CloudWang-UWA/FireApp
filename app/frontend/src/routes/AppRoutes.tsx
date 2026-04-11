@@ -6,12 +6,15 @@ export function AppRoutes({
   loginPage,
   mapPage,
   profilePage,
+  siteUploadPage,
 }: {
   currentUser: boolean
   loginPage: ReactNode
   mapPage: ReactNode
   profilePage: ReactNode
+  siteUploadPage: ReactNode
 }) {
+
   return (
     <Routes>
       <Route
@@ -25,6 +28,10 @@ export function AppRoutes({
       <Route
         path="/profile"
         element={currentUser ? profilePage : <Navigate replace to="/login" />}
+      />
+      <Route
+        path="/site-upload"
+        element={currentUser ? siteUploadPage : <Navigate replace to="/login" />}
       />
       <Route
         path="*"

@@ -10,6 +10,7 @@ import { Basemap } from './components/map/Basemap'
 import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
 import { Risk } from './components/risk/Risk'
+import { SiteUpload } from './components/site-upload/SiteUpload'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
 import {
@@ -33,6 +34,7 @@ const EMPTY_AUTH_FORM: AuthFormState = {
 
 function App() {
   const navigate = useNavigate()
+  const storedToken = getStoredToken()
   const [layers, setLayers] = useState<LayerStateMap>(() =>
     Object.fromEntries(
       LAYER_CONFIG.map(({ key }) => [
@@ -47,9 +49,9 @@ function App() {
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
   const [authMode, setAuthMode] = useState<AuthMode>('login')
-  const [authToken, setAuthToken] = useState<string>(() => getStoredToken())
+  const [authToken, setAuthToken] = useState<string>(storedToken)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
-  const [isAuthLoading, setIsAuthLoading] = useState(false)
+  const [isAuthLoading, setIsAuthLoading] = useState(Boolean(storedToken))
   const [authError, setAuthError] = useState('')
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
@@ -285,12 +287,17 @@ function App() {
     </main>
   ) : null
 
+  const siteUploadPage = currentUser ? (
+    <SiteUpload authToken={authToken} />
+  ) : null
+
   return (
     <AppRoutes
       currentUser={Boolean(currentUser)}
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}
+      siteUploadPage={siteUploadPage}
     />
   )
 }
