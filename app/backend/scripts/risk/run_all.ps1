@@ -2,4 +2,4 @@ py generate_hazard_outputs.py
 py generate_site_vulnerability.py
 py generate_granite_influence.py
 py generate_recorded_site_priority.py
-py generate_potential_heritage_precaution.py
+py generate_precaution_zone.py

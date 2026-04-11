@@ -5,7 +5,7 @@ from .scoring import get_fire_history_score
 from .scoring import get_site_vulnerability_score
 from .scoring import get_granite_score
 from .scoring import get_recorded_site_priority_score
-from .scoring import get_potential_heritage_precaution_score
+from .scoring import get_precaution_zone_score
 from .scoring import get_integrated_priority_level
 
 def calculate_hazard(fuel_code, slope_deg, fire_year, fire_type):
@@ -60,11 +60,11 @@ def calculate_recorded_site_priority(hazard_score, site_vulnerability_score):
     }
 
 
-def calculate_potential_heritage_precaution(hazard_score, granite_score):
-    precaution_score = get_potential_heritage_precaution_score(hazard_score, granite_score)
+def calculate_precaution_zone(hazard_score, granite_score):
+    precaution_score = get_precaution_zone_score(hazard_score, granite_score)
     precaution_level = get_integrated_priority_level(precaution_score)
 
     return {
-        "potential_heritage_precaution_score": precaution_score,
-        "potential_heritage_precaution_level": precaution_level,
+        "precaution_zone_score": precaution_score,
+        "precaution_zone_level": precaution_level,
     }

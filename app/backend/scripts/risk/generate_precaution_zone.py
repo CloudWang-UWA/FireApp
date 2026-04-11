@@ -10,7 +10,7 @@ sys.path.insert(0, str(BACKEND_DIR))
 from services.risk.load_processed_data import load_granite_influence_data
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_sites_data
-from services.risk.risk_model import calculate_potential_heritage_precaution
+from services.risk.risk_model import calculate_precaution_zone
 
 EXCLUDED_SITE_IDS = {
     "ACH-00032790", # This site is a complex polygon that includes several smaller sites.
@@ -65,7 +65,7 @@ def main() -> None:
             granite_score = 0
 
         # combine hazard score with granite score
-        precaution_result = calculate_potential_heritage_precaution(
+        precaution_result = calculate_precaution_zone(
             hazard_score,
             granite_score,
         )
@@ -73,17 +73,17 @@ def main() -> None:
         # append the results
         granite_scores.append(granite_score)
         precaution_scores.append(
-            precaution_result["potential_heritage_precaution_score"]
+            precaution_result["precaution_zone_score"]
         )
         precaution_levels.append(
             None
-            if precaution_result["potential_heritage_precaution_level"] is None
-            else int(precaution_result["potential_heritage_precaution_level"])
+            if precaution_result["precaution_zone_level"] is None
+            else int(precaution_result["precaution_zone_level"])
         )
 
     hazard_data["granite_score"] = granite_scores
-    hazard_data["potential_heritage_precaution_score"] = precaution_scores
-    hazard_data["potential_heritage_precaution_level"] = precaution_levels
+    hazard_data["precaution_zone_score"] = precaution_scores
+    hazard_data["precaution_zone_level"] = precaution_levels
 
     # remove hazard cells that overlap recorded sites
     recorded_site_mask = hazard_data.geometry.intersects(sites_data.union_all())
@@ -95,12 +95,12 @@ def main() -> None:
     # Merge neighbouring precaution cells with the same final level so the
     # output looks more like a zone map than a grid.
     precaution_data = precaution_data.dissolve(
-        by="potential_heritage_precaution_level",
+        by="precaution_zone_level",
         aggfunc={
             "hazard_score": "max",
             "hazard_level": "max",
             "granite_score": "max",
-            "potential_heritage_precaution_score": "max",
+            "precaution_zone_score": "max",
         },
     ).reset_index()
 
@@ -109,10 +109,10 @@ def main() -> None:
     output_dir = BACKEND_DIR / "data" / "risk_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    raw_gpkg_output_path = output_dir / "potential_heritage_precaution_raw.gpkg"
-    raw_geojson_output_path = output_dir / "potential_heritage_precaution_raw.geojson"
-    gpkg_output_path = output_dir / "potential_heritage_precaution.gpkg"
-    geojson_output_path = output_dir / "potential_heritage_precaution.geojson"
+    raw_gpkg_output_path = output_dir / "precaution_zone_raw.gpkg"
+    raw_geojson_output_path = output_dir / "precaution_zone_raw.geojson"
+    gpkg_output_path = output_dir / "precaution_zone.gpkg"
+    geojson_output_path = output_dir / "precaution_zone.geojson"
 
     raw_precaution_data.to_file(raw_gpkg_output_path, driver="GPKG")
     raw_precaution_data.to_file(raw_geojson_output_path, driver="GeoJSON")

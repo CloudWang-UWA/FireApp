@@ -74,7 +74,7 @@ export function MapView({
                 const priorityLevel =
                   key === 'recorded_site_priority'
                     ? feature?.properties?.recorded_site_priority_level
-                    : feature?.properties?.potential_heritage_precaution_level
+                    : feature?.properties?.precaution_zone_level
                 const fillColor = getPriorityColor(priorityLevel)
 
                 return {

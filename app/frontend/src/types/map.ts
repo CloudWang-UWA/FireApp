@@ -1,6 +1,6 @@
 export type LayerKey =
   | 'recorded_site_priority'
-  | 'potential_heritage_precaution'
+  | 'precaution_zone'
 export type BasemapKey = 'osm' | 'googleSat'
 
 export type GeoJsonData = GeoJSON.FeatureCollection

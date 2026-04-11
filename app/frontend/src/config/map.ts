@@ -18,11 +18,11 @@ export const LAYER_CONFIG: Array<{
 }> = [
   {
     key: 'recorded_site_priority',
-    label: 'Recorded Site Vulnerability',
+    label: 'Recorded Site Priority',
     color: '#b2182b',
   },
   {
-    key: 'potential_heritage_precaution',
+    key: 'precaution_zone',
     label: 'Precaution Areas',
     color: '#ef8a62',
   },

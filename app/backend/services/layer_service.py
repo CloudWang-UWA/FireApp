@@ -9,7 +9,7 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 # Map layer names to their corresponding files
 LAYER_FILES = {
     "recorded_site_priority": DATA_DIR / "risk_outputs" / "recorded_site_priority.geojson",
-    "potential_heritage_precaution": DATA_DIR / "risk_outputs" / "potential_heritage_precaution.geojson",
+    "precaution_zone": DATA_DIR / "risk_outputs" / "precaution_zone.geojson",
 }
 
 

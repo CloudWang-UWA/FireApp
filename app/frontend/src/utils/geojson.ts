@@ -46,7 +46,7 @@ function geometryArea(geometry: GeoJSON.Geometry | null | undefined): number {
 export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJsonData {
   if (
     layerKey !== 'recorded_site_priority' &&
-    layerKey !== 'potential_heritage_precaution'
+    layerKey !== 'precaution_zone'
   ) {
     return data
   }
@@ -108,18 +108,18 @@ export function buildPopupContent(
       .join('')
   }
 
-  if (layerKey === 'potential_heritage_precaution') {
+  if (layerKey === 'precaution_zone') {
     const rows: Array<[string, unknown]> = [
       ['hazard_score', properties.hazard_score],
       ['hazard_level', properties.hazard_level],
       ['granite_score', properties.granite_score],
       [
-        'potential_heritage_precaution_score',
-        properties.potential_heritage_precaution_score,
+        'precaution_zone_score',
+        properties.precaution_zone_score,
       ],
       [
-        'potential_heritage_precaution_level',
-        properties.potential_heritage_precaution_level,
+        'precaution_zone_level',
+        properties.precaution_zone_level,
       ],
     ]
 

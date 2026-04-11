@@ -43,7 +43,7 @@ function App() {
   )
   const [visibleLayers, setVisibleLayers] = useState<Record<LayerKey, boolean>>({
     recorded_site_priority: true,
-    potential_heritage_precaution: true,
+    precaution_zone: true,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
   const [authMode, setAuthMode] = useState<AuthMode>('login')

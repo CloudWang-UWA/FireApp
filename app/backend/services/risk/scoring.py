@@ -151,7 +151,7 @@ def get_recorded_site_priority_score(hazard_score, site_vulnerability_score):
     return 0.5 * hazard + 0.5 * site
 
 # Caculate potential heritage precaution score, combination of environmental factors and granite
-def get_potential_heritage_precaution_score(hazard_score, granite_score):
+def get_precaution_zone_score(hazard_score, granite_score):
     hazard = normalize_hazard_score(hazard_score)
     granite = normalize_granite_score(granite_score)
 
