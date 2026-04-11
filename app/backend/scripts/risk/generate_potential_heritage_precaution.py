@@ -18,7 +18,7 @@ EXCLUDED_SITE_IDS = {
 
 
 # Build potential heritage precaution from hazard cells and overlapping granite zones,
-# then remove cells that overlap recorded sites.
+# then remove cells that overlap recorded sites and merge neighbouring areas by level.
 def main() -> None:
     hazard_data = load_hazard_overview_data()
     granite_data = load_granite_influence_data()
@@ -90,6 +90,20 @@ def main() -> None:
     kept_precaution_mask = recorded_site_mask == False
     precaution_data = hazard_data[kept_precaution_mask].copy()
     precaution_data = precaution_data.drop(columns=["hazard_row_id"])
+
+    # Merge neighbouring precaution cells with the same final level so the
+    # output looks more like a zone map than a grid.
+    precaution_data = precaution_data.dissolve(
+        by="potential_heritage_precaution_level",
+        aggfunc={
+            "hazard_score": "max",
+            "hazard_level": "max",
+            "granite_score": "max",
+            "potential_heritage_precaution_score": "max",
+        },
+    ).reset_index()
+
+    precaution_data = precaution_data.explode(index_parts=False).reset_index(drop=True)
 
     output_dir = BACKEND_DIR / "data" / "risk_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)

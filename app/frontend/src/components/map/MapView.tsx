@@ -78,11 +78,11 @@ export function MapView({
                 const fillColor = getPriorityColor(priorityLevel)
 
                 return {
-                  color: fillColor,
-                  weight: key === 'recorded_site_priority' ? 2 : 1,
+                  color: key === 'recorded_site_priority' ? fillColor : 'transparent',
+                  weight: key === 'recorded_site_priority' ? 2 : 0,
                   fillColor,
                   fillOpacity:
-                    key === 'recorded_site_priority' ? 0.55 : 0.3,
+                    key === 'recorded_site_priority' ? 0.55 : 0.24,
                 }
               }}
               pointToLayer={(_feature, latlng: LatLng) =>
