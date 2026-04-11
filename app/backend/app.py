@@ -8,7 +8,7 @@ from routes.export_routes import export_bp
 from routes.layer_routes import layer_bp
 from routes.permission_routes import permission_bp
 from routes.risk_routes import risk_bp
-from routes.upload_routes import upload_bp
+from routes.site_upload_routes import site_upload_bp
 from services.auth_service import get_current_user
 from services.layer_service import LAYER_FILES
 
@@ -66,7 +66,7 @@ app.register_blueprint(layer_bp)
 app.register_blueprint(risk_bp)
 app.register_blueprint(permission_bp)
 app.register_blueprint(export_bp)
-app.register_blueprint(upload_bp)
+app.register_blueprint(site_upload_bp)
 
 with app.app_context():
     db.create_all()
