@@ -103,7 +103,7 @@ def main() -> None:
         },
     ).reset_index()
 
-    precaution_data = precaution_data.explode(index_parts=False).reset_index(drop=True)
+    # precaution_data = precaution_data.explode(index_parts=False).reset_index(drop=True)
 
     output_dir = BACKEND_DIR / "data" / "risk_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)
