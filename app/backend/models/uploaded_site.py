@@ -20,6 +20,22 @@ class UploadedSite(db.Model):
     location_source = db.Column(db.String(50), nullable=False, default="manual")
     status = db.Column(db.String(50), nullable=False, default="submitted")
 
+    # below is risk information
+    inside_study_area = db.Column(db.Boolean, nullable=False, default=False)
+
+    fuel_code = db.Column(db.Integer, nullable=True)
+    slope_deg = db.Column(db.Float, nullable=True)
+    fire_year = db.Column(db.Integer, nullable=True)
+    fire_type = db.Column(db.String(20), nullable=True)
+
+    hazard_score = db.Column(db.Integer, nullable=True)
+    hazard_level = db.Column(db.String(50), nullable=True)
+
+    site_vulnerability_score = db.Column(db.Integer, nullable=True)
+
+    site_priority_score = db.Column(db.Float, nullable=True)
+    site_priority_level = db.Column(db.String(50), nullable=True)
+
     created_by_user_id = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
@@ -55,4 +71,14 @@ class UploadedSite(db.Model):
             "createdByUserId": self.created_by_user_id,
             "createdAt": self.created_at.isoformat(),
             "updatedAt": self.updated_at.isoformat(),
+            "insideStudyArea": self.inside_study_area,
+            "fuelCode": self.fuel_code,
+            "slopeDeg": self.slope_deg,
+            "fireYear": self.fire_year,
+            "fireType": self.fire_type,
+            "hazardScore": self.hazard_score,
+            "hazardLevel": self.hazard_level,
+            "siteVulnerabilityScore": self.site_vulnerability_score,
+            "sitePriorityScore": self.site_priority_score,
+            "sitePriorityLevel": self.site_priority_level
         }

@@ -75,7 +75,7 @@ def is_inside_study_area(latitude: float, longitude: float) -> bool:
 
 def create_uploaded_site(site_data: dict, user_id: int) -> dict:
     validated_data = validate_uploaded_site_data(site_data)
-    
+
     # check whether the uploaded site is inside the study area
     inside_study_area = is_inside_study_area(
         validated_data["latitude"],
@@ -93,12 +93,10 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
         created_by_user_id=user_id,
     )
 
-    db.session.add(uploaded_site)
-    db.session.commit()
-
     site_risk = None
     is_risk_available = False
     out_of_area_warning = None
+    uploaded_site.inside_study_area = inside_study_area
 
     if inside_study_area:
         site_risk = calculate_uploaded_site_risk(
@@ -107,11 +105,34 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
             validated_data["longitude"],
             validated_data["site_size_m"],
         )
+
+        uploaded_site.fuel_code = site_risk["hazardInputs"]["fuel_code"]
+        uploaded_site.slope_deg = site_risk["hazardInputs"]["slope_deg"]
+        uploaded_site.fire_year = site_risk["hazardInputs"]["fire_year"]
+        uploaded_site.fire_type = site_risk["hazardInputs"]["fire_type"]
+
+        uploaded_site.hazard_score = site_risk["hazard"]["hazard_score"]
+        uploaded_site.hazard_level = site_risk["hazard"]["hazard_level"]
+
+        uploaded_site.site_vulnerability_score = site_risk["siteVulnerability"][
+            "site_vulnerability_score"
+        ]
+
+        uploaded_site.site_priority_score = site_risk["sitePriority"][
+            "site_priority_score"
+        ]
+        uploaded_site.site_priority_level = site_risk["sitePriority"][
+            "site_priority_level"
+        ]
+
         is_risk_available = True
     else:
         out_of_area_warning = (
             "This site is outside the current study area, so risk was not calculated."
         )
+
+    db.session.add(uploaded_site)
+    db.session.commit()
 
     return {
         "site": uploaded_site.to_dict(),
