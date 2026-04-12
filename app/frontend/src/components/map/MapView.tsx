@@ -132,9 +132,12 @@ export function MapView({
               pane={layerPaneMap[key]}
               style={(feature) => {
                 let priorityLevel
+<<<<<<< HEAD
                 const isPriorityLayer =
                   key === 'recorded_site_priority' ||
                   key === 'uploaded_site_priority'
+=======
+>>>>>>> d30bc13 (Save uploaded site risk and start showing uploaded sites on the map)
 
                 if (key === 'recorded_site_priority') {
                   priorityLevel = feature?.properties?.recorded_site_priority_level
