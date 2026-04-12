@@ -1,7 +1,11 @@
 import type { FormEvent } from 'react'
 import { useEffect, useState } from 'react'
 
-import { createSiteUpload } from '../../api/siteUpload'
+import {
+  createSiteUpload,
+  type SiteUploadResponse,
+} from '../../api/siteUpload'
+import { PLACE_TYPE_OPTIONS } from '../../config/placeTypes'
 
 type SiteUploadProps = {
   authToken: string
@@ -34,6 +38,8 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
   const [submitError, setSubmitError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [locationMessage, setLocationMessage] = useState('')
+  const [outOfAreaWarning, setOutOfAreaWarning] = useState('')
+  const [uploadSummary, setUploadSummary] = useState<SiteUploadResponse | null>(null)
 
   function fillCurrentLocation() {
     if (!navigator.geolocation) {
@@ -75,6 +81,7 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
     setIsSubmitting(true)
     setSubmitError('')
     setSuccessMessage('')
+    setOutOfAreaWarning('')
 
     const siteName = siteForm.name.trim()
 
@@ -86,7 +93,7 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
 
     try {
       // Convert string inputs to numbers before sending to backend
-      await createSiteUpload(authToken, {
+      const uploadResult = await createSiteUpload(authToken, {
         name: siteName,
         placeType: siteForm.placeType,
         notes: siteForm.notes,
@@ -97,6 +104,8 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
       })
 
       setSuccessMessage('Site uploaded successfully')
+      setUploadSummary(uploadResult)
+      setOutOfAreaWarning(uploadResult.outOfAreaWarning ?? '')
       setSiteForm((current) => ({
         ...EMPTY_FORM,
         latitude: current.latitude,
@@ -139,8 +148,7 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
 
           <label className="auth-field">
             <span>Place type</span>
-            <input
-              type="text"
+            <select
               value={siteForm.placeType}
               onChange={(event) =>
                 setSiteForm((current) => ({
@@ -149,7 +157,14 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
                 }))
               }
               required
-            />
+            >
+              <option value="">Select a place type</option>
+              {PLACE_TYPE_OPTIONS.map((placeType) => (
+                <option key={placeType} value={placeType}>
+                  {placeType}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="auth-field">
@@ -244,6 +259,23 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
             {isSubmitting ? 'Saving...' : 'Save site'}
           </button>
         </form>
+
+        {outOfAreaWarning ? (
+          <section className="upload-result upload-result--warning">
+            <h2>Study Area Warning</h2>
+            <p>{outOfAreaWarning}</p>
+          </section>
+        ) : null}
+
+        {uploadSummary && !outOfAreaWarning ? (
+          <section className="upload-result">
+            <h2>Upload Summary</h2>
+            <p>
+              Site <strong>{uploadSummary.site.name}</strong> was saved at{' '}
+              {uploadSummary.site.latitude}, {uploadSummary.site.longitude}.
+            </p>
+          </section>
+        ) : null}
       </section>
     </main>
   )

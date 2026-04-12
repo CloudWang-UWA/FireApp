@@ -118,5 +118,4 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
         "insideStudyArea": inside_study_area,
         "riskAvailable": is_risk_available,
         "outOfAreaWarning": out_of_area_warning,
-        "siteRisk": site_risk
     }
