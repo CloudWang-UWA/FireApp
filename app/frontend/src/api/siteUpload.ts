@@ -7,6 +7,7 @@ type SiteUploadRequest = {
   notes: string
   latitude: number
   longitude: number
+  siteSizeM: number
   locationSource: 'manual' | 'device_gps'
 }
 

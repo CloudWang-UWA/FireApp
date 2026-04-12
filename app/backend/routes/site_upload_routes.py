@@ -21,9 +21,8 @@ def create_site_upload():
     site_data = request.get_json(silent=True) or {}
 
     try:
-        uploaded_site = create_uploaded_site(site_data, g.current_user.id)
+        upload_result = create_uploaded_site(site_data, g.current_user.id)
     except ValueError as error:
         abort(400, description=str(error))
 
-    return jsonify({"site": uploaded_site}), 201
-
+    return jsonify(upload_result), 201

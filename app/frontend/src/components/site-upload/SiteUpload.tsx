@@ -13,6 +13,7 @@ type FormState = {
   notes: string
   latitude: string
   longitude: string
+  siteSizeM: string
   locationSource: 'manual' | 'device_gps'
 }
 
@@ -22,6 +23,7 @@ const EMPTY_FORM: FormState = {
   notes: '',
   latitude: '',
   longitude: '',
+  siteSizeM: '350',
   locationSource: 'manual',
 }
 
@@ -90,6 +92,7 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
         notes: siteForm.notes,
         latitude: Number(siteForm.latitude),
         longitude: Number(siteForm.longitude),
+        siteSizeM: Number(siteForm.siteSizeM),
         locationSource: siteForm.locationSource,
       })
 
@@ -192,6 +195,26 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
               }
               required
             />
+          </label>
+
+          <label className="auth-field">
+            <span>Site size (m)</span>
+            <input
+              type="number"
+              min="1"
+              step="any"
+              value={siteForm.siteSizeM}
+              onChange={(event) =>
+                setSiteForm((current) => ({
+                  ...current,
+                  siteSizeM: event.target.value,
+                }))
+              }
+              required
+            />
+            <small className="auth-help">
+              Enter the approximate side length of the square site
+            </small>
           </label>
 
           <button

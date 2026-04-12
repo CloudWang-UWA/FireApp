@@ -1,6 +1,12 @@
 from models.uploaded_site import UploadedSite
 from models.user import db
 
+# current study area
+STUDY_AREA_MIN_LON = 117.815611
+STUDY_AREA_MAX_LON = 118.023861
+STUDY_AREA_MIN_LAT = -35.129972
+STUDY_AREA_MAX_LAT = -35.050944
+
 def get_site_upload_status() -> dict:
     return {
         "ready": False,
@@ -36,6 +42,14 @@ def validate_uploaded_site_data(site_data: dict) -> dict:
     if longitude < -180 or longitude > 180:
         raise ValueError("Longitude must be between -180 and 180")
 
+    try:
+        site_size_m = float(site_data.get("siteSizeM", 350))
+    except (TypeError, ValueError):
+        raise ValueError("Site size must be a valid number")
+
+    if site_size_m <= 0:
+        raise ValueError("Site size must be greater than 0")
+
     if location_source not in {"manual", "device_gps"}:
         raise ValueError("Location source must be 'manual' or 'device_gps'")
 
@@ -45,12 +59,24 @@ def validate_uploaded_site_data(site_data: dict) -> dict:
         "notes": notes,
         "latitude": latitude,
         "longitude": longitude,
+        "site_size_m": site_size_m,
         "location_source": location_source,
     }
 
+def is_inside_study_area(latitude: float, longitude: float) -> bool:
+    return (
+        STUDY_AREA_MIN_LON <= longitude <= STUDY_AREA_MAX_LON
+        and STUDY_AREA_MIN_LAT <= latitude <= STUDY_AREA_MAX_LAT
+    )
 
 def create_uploaded_site(site_data: dict, user_id: int) -> dict:
     validated_data = validate_uploaded_site_data(site_data)
+    
+    # check whether the uploaded site is inside the study area
+    inside_study_area = is_inside_study_area(
+        validated_data["latitude"],
+        validated_data["longitude"],
+    )
 
     uploaded_site = UploadedSite(
         name=validated_data["name"],
@@ -58,6 +84,7 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
         notes=validated_data["notes"],
         latitude=validated_data["latitude"],
         longitude=validated_data["longitude"],
+        site_size_m=validated_data["site_size_m"],
         location_source=validated_data["location_source"],
         created_by_user_id=user_id,
     )
@@ -65,4 +92,8 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
     db.session.add(uploaded_site)
     db.session.commit()
 
-    return uploaded_site.to_dict()
+    return {
+        "site": uploaded_site.to_dict(),
+        "insideStudyArea": inside_study_area,
+    }
+
