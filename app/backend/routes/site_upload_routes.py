@@ -1,6 +1,6 @@
 from flask import Blueprint, abort, g, jsonify, request
 
-from services.site_upload_service import (
+from services.site_upload.site_upload_service import (
     create_uploaded_site,
     get_site_upload_status,
 )

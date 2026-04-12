@@ -1,11 +1,13 @@
 from models.uploaded_site import UploadedSite
 from models.user import db
+from services.site_upload.uploaded_site_risk_cal import calculate_uploaded_site_risk
 
 # current study area
 STUDY_AREA_MIN_LON = 117.815611
 STUDY_AREA_MAX_LON = 118.023861
 STUDY_AREA_MIN_LAT = -35.129972
 STUDY_AREA_MAX_LAT = -35.050944
+
 
 def get_site_upload_status() -> dict:
     return {
@@ -63,11 +65,13 @@ def validate_uploaded_site_data(site_data: dict) -> dict:
         "location_source": location_source,
     }
 
+
 def is_inside_study_area(latitude: float, longitude: float) -> bool:
     return (
         STUDY_AREA_MIN_LON <= longitude <= STUDY_AREA_MAX_LON
         and STUDY_AREA_MIN_LAT <= latitude <= STUDY_AREA_MAX_LAT
     )
+
 
 def create_uploaded_site(site_data: dict, user_id: int) -> dict:
     validated_data = validate_uploaded_site_data(site_data)
@@ -92,8 +96,27 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
     db.session.add(uploaded_site)
     db.session.commit()
 
+    site_risk = None
+    is_risk_available = False
+    out_of_area_warning = None
+
+    if inside_study_area:
+        site_risk = calculate_uploaded_site_risk(
+            validated_data["place_type"],
+            validated_data["latitude"],
+            validated_data["longitude"],
+            validated_data["site_size_m"],
+        )
+        is_risk_available = True
+    else:
+        out_of_area_warning = (
+            "This site is outside the current study area, so risk was not calculated."
+        )
+
     return {
         "site": uploaded_site.to_dict(),
         "insideStudyArea": inside_study_area,
+        "riskAvailable": is_risk_available,
+        "outOfAreaWarning": out_of_area_warning,
+        "siteRisk": site_risk
     }
-
