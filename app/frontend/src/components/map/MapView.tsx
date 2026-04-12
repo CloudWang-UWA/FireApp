@@ -72,6 +72,9 @@ export function MapView({
               data={data}
               style={(feature) => {
                 let priorityLevel
+                const isPriorityLayer =
+                  key === 'recorded_site_priority' ||
+                  key === 'uploaded_site_priority'
 
                 if (key === 'recorded_site_priority') {
                   priorityLevel = feature?.properties?.recorded_site_priority_level
@@ -84,11 +87,10 @@ export function MapView({
                 const fillColor = getPriorityColor(priorityLevel)
 
                 return {
-                  color: key === 'recorded_site_priority' ? fillColor : 'transparent',
-                  weight: key === 'recorded_site_priority' ? 2 : 0,
+                  color: isPriorityLayer ? fillColor : 'transparent',
+                  weight: isPriorityLayer ? 2 : 0,
                   fillColor,
-                  fillOpacity:
-                    key === 'recorded_site_priority' ? 0.55 : 0.24,
+                  fillOpacity: isPriorityLayer ? 0.55 : 0.24,
                 }
               }}
               pointToLayer={(_feature, latlng: LatLng) =>

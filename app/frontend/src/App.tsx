@@ -232,9 +232,23 @@ function App() {
 
   const topbar = currentUser ? (
     <header className="topbar">
-      <button className="topbar-brand" onClick={() => navigate('/app')} type="button">
-        Heritage Fire Watch
-      </button>
+      <div className="topbar-left">
+        <button
+          className="topbar-brand"
+          onClick={() => navigate('/app')}
+          type="button"
+        >
+          Heritage Fire Watch
+        </button>
+
+        <button
+          className="topbar-nav"
+          onClick={() => navigate('/site-upload')}
+          type="button"
+        >
+          Site Upload
+        </button>
+      </div>
 
       <button
         className="topbar-user"
@@ -289,7 +303,7 @@ function App() {
   ) : null
 
   const siteUploadPage = currentUser ? (
-    <SiteUpload authToken={authToken} />
+    <SiteUpload authToken={authToken} onBack={() => navigate('/app')} />
   ) : null
 
   return (

@@ -9,6 +9,7 @@ import { PLACE_TYPE_OPTIONS } from '../../config/placeTypes'
 
 type SiteUploadProps = {
   authToken: string
+  onBack: () => void
 }
 
 type FormState = {
@@ -31,7 +32,7 @@ const EMPTY_FORM: FormState = {
   locationSource: 'manual',
 }
 
-export function SiteUpload({ authToken }: SiteUploadProps) {
+export function SiteUpload({ authToken, onBack }: SiteUploadProps) {
   const [siteForm, setSiteForm] = useState<FormState>(EMPTY_FORM)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGettingLocation, setIsGettingLocation] = useState(false)
@@ -132,6 +133,10 @@ export function SiteUpload({ authToken }: SiteUploadProps) {
             assessment.
           </p>
         </div>
+
+        <button className="secondary-button upload-back-button" onClick={onBack} type="button">
+          Back to map
+        </button>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <label className="auth-field">

@@ -29,12 +29,12 @@ class UploadedSite(db.Model):
     fire_type = db.Column(db.String(20), nullable=True)
 
     hazard_score = db.Column(db.Integer, nullable=True)
-    hazard_level = db.Column(db.String(50), nullable=True)
+    hazard_level = db.Column(db.Integer, nullable=True)
 
     site_vulnerability_score = db.Column(db.Integer, nullable=True)
 
     site_priority_score = db.Column(db.Float, nullable=True)
-    site_priority_level = db.Column(db.String(50), nullable=True)
+    site_priority_level = db.Column(db.Integer, nullable=True)
 
     created_by_user_id = db.Column(
         db.Integer,
