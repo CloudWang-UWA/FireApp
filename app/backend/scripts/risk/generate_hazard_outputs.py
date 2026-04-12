@@ -2,7 +2,6 @@ from pathlib import Path
 import sys
 
 import geopandas as gpd
-from shapely.geometry import Point
 from shapely.geometry import Polygon
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -12,6 +11,9 @@ from services.risk.load_processed_data import load_fuel_data
 from services.risk.load_processed_data import load_slope_data
 from services.risk.load_processed_data import load_fire_history_data
 from services.risk.risk_service import get_hazard_result
+from services.risk.site_hazard import get_fire_history
+from services.risk.site_hazard import get_fuel_code
+from services.risk.site_hazard import get_slope_deg
 
 # study area 117.815611, 118.023861, -35.129972, -35.050944
 def main() -> None:
@@ -26,31 +28,16 @@ def main() -> None:
 
     for fuel_row in range(fuel_data.height):
         for fuel_col in range (fuel_data.width):
-            fuel_code = fuel_band[fuel_row, fuel_col]
-            
             # get coordinates of the center point
             center_x, center_y = fuel_data.transform * (fuel_col + 0.5, fuel_row + 0.5)
-            center_p = Point(center_x, center_y)
-            
-            # get slope data of the center point
-            slope_row, slope_col = slope_data.index(center_x, center_y)
-            slope_deg = slope_band[slope_row, slope_col]
 
-            if slope_deg == slope_data.nodata:
-                slope_deg = None
-
-            # get fire history data
-            matched_fire_history = fire_history_data[fire_history_data.geometry.intersects(center_p)]
-
-            if matched_fire_history.empty:
-                fire_year = None
-                fire_type = None
-            else:
-                latest_fire = matched_fire_history.loc[
-                    matched_fire_history["fih_year1"].idxmax()
-                ]
-                fire_year = latest_fire["fih_year1"]
-                fire_type = latest_fire["fih_fire_t"]
+            fuel_code = get_fuel_code(fuel_data, fuel_band, center_x, center_y)
+            slope_deg = get_slope_deg(slope_data, slope_band, center_x, center_y)
+            fire_year, fire_type = get_fire_history(
+                fire_history_data,
+                center_x,
+                center_y,
+            )
             
             # calculate result
             result = get_hazard_result(fuel_code, slope_deg, fire_year, fire_type)
@@ -61,7 +48,7 @@ def main() -> None:
 
             features.append(
                 {
-                    "fuel_code": int(fuel_code),
+                    "fuel_code": fuel_code,
                     "slope_deg": None if slope_deg is None else float(slope_deg),
                     "fire_year": None if fire_year is None else int(fire_year),
                     "fire_type": fire_type,
