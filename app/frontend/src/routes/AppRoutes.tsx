@@ -3,17 +3,22 @@ import type { ReactNode } from 'react'
 
 export function AppRoutes({
   currentUser,
+  isAuthLoading,
   loginPage,
   mapPage,
   profilePage,
   siteUploadPage,
 }: {
   currentUser: boolean
+  isAuthLoading: boolean
   loginPage: ReactNode
   mapPage: ReactNode
   profilePage: ReactNode
   siteUploadPage: ReactNode
 }) {
+  if (isAuthLoading) {
+    return null
+  }
 
   return (
     <Routes>

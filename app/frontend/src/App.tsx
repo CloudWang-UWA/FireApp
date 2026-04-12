@@ -46,6 +46,7 @@ function App() {
   const [visibleLayers, setVisibleLayers] = useState<Record<LayerKey, boolean>>({
     recorded_site_priority: true,
     precaution_zone: true,
+    uploaded_site_priority: true,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
   const [authMode, setAuthMode] = useState<AuthMode>('login')
@@ -294,6 +295,7 @@ function App() {
   return (
     <AppRoutes
       currentUser={Boolean(currentUser)}
+      isAuthLoading={isAuthLoading}
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}

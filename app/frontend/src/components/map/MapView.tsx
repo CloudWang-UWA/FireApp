@@ -71,10 +71,16 @@ export function MapView({
               key={key}
               data={data}
               style={(feature) => {
-                const priorityLevel =
-                  key === 'recorded_site_priority'
-                    ? feature?.properties?.recorded_site_priority_level
-                    : feature?.properties?.precaution_zone_level
+                let priorityLevel
+
+                if (key === 'recorded_site_priority') {
+                  priorityLevel = feature?.properties?.recorded_site_priority_level
+                } else if (key === 'uploaded_site_priority') {
+                  priorityLevel = feature?.properties?.site_priority_level
+                } else {
+                  priorityLevel = feature?.properties?.precaution_zone_level
+                }
+
                 const fillColor = getPriorityColor(priorityLevel)
 
                 return {
@@ -88,8 +94,13 @@ export function MapView({
               pointToLayer={(_feature, latlng: LatLng) =>
                 L.circleMarker(latlng, {
                   radius: 6,
-                  color,
-                  fillColor: color,
+                  color: key === 'uploaded_site_priority' ? '#8c510a' : color,
+                  fillColor:
+                    key === 'uploaded_site_priority'
+                      ? getPriorityColor(
+                          _feature?.properties?.site_priority_level,
+                        )
+                      : color,
                   fillOpacity: 0.8,
                   weight: 1,
                 })

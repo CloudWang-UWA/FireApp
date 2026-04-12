@@ -2,6 +2,9 @@ import json
 from pathlib import Path
 from io import BytesIO
 
+from models.uploaded_site import UploadedSite
+from models.user import db
+
 from flask import abort
 
 # All GeoJSON / GeoTIFF data is stored under the backend/data folder
@@ -56,6 +59,15 @@ def list_available_layers() -> list[dict]:
                 "path": str(file_path.name),
             }
         )
+
+    layers.append(
+        {
+            "name": "uploaded-sites",
+            "type": "geojson",
+            "available": True,
+            "path": "database",
+        }
+    )
 
     return layers
 
@@ -114,3 +126,41 @@ def get_raster_overlay_image(layer_name: str) -> tuple[BytesIO, str]:
     image_bytes = BytesIO(png_path.read_bytes())
     image_bytes.seek(0)
     return image_bytes, "image/png"
+    
+
+def load_uploaded_sites() -> dict:
+    uploaded_sites = db.session.execute(
+        db.select(UploadedSite).order_by(UploadedSite.id.asc())
+    ).scalars().all()
+
+    features = []
+
+    for site in uploaded_sites:
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [site.longitude, site.latitude],
+                },
+                "properties": {
+                    "id": site.id,
+                    "name": site.name,
+                    "place_type": site.place_type,
+                    "notes": site.notes,
+                    "status": site.status,
+                    "inside_study_area": site.inside_study_area,
+                    "hazard_score": site.hazard_score,
+                    "hazard_level": site.hazard_level,
+                    "site_vulnerability_score": site.site_vulnerability_score,
+                    "site_priority_score": site.site_priority_score,
+                    "site_priority_level": site.site_priority_level,
+                    "created_by_user_id": site.created_by_user_id,
+                },
+            }
+        )
+
+    return {
+        "type": "FeatureCollection",
+        "features": features,
+    }

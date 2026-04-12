@@ -4,3 +4,4 @@ flask-sqlalchemy
 psycopg[binary]
 geopandas
 rasterio
+shapely
