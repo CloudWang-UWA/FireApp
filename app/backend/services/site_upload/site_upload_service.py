@@ -106,11 +106,6 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
             validated_data["site_size_m"],
         )
 
-        uploaded_site.fuel_code = site_risk["hazardInputs"]["fuel_code"]
-        uploaded_site.slope_deg = site_risk["hazardInputs"]["slope_deg"]
-        uploaded_site.fire_year = site_risk["hazardInputs"]["fire_year"]
-        uploaded_site.fire_type = site_risk["hazardInputs"]["fire_type"]
-
         uploaded_site.hazard_score = site_risk["hazard"]["hazard_score"]
         uploaded_site.hazard_level = site_risk["hazard"]["hazard_level"]
 

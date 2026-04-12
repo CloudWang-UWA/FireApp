@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   createSiteUpload,
@@ -10,6 +10,7 @@ import { PLACE_TYPE_OPTIONS } from '../../config/placeTypes'
 type SiteUploadProps = {
   authToken: string
   onBack: () => void
+  onUploadSuccess: () => Promise<void> | void
 }
 
 type FormState = {
@@ -32,7 +33,11 @@ const EMPTY_FORM: FormState = {
   locationSource: 'manual',
 }
 
-export function SiteUpload({ authToken, onBack }: SiteUploadProps) {
+export function SiteUpload({
+  authToken,
+  onBack,
+  onUploadSuccess,
+}: SiteUploadProps) {
   const [siteForm, setSiteForm] = useState<FormState>(EMPTY_FORM)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGettingLocation, setIsGettingLocation] = useState(false)
@@ -41,6 +46,7 @@ export function SiteUpload({ authToken, onBack }: SiteUploadProps) {
   const [locationMessage, setLocationMessage] = useState('')
   const [outOfAreaWarning, setOutOfAreaWarning] = useState('')
   const [uploadSummary, setUploadSummary] = useState<SiteUploadResponse | null>(null)
+  const hasManualLocationEdit = useRef(false)
 
   function fillCurrentLocation() {
     if (!navigator.geolocation) {
@@ -53,6 +59,13 @@ export function SiteUpload({ authToken, onBack }: SiteUploadProps) {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        // Do not let a late GPS response overwrite coordinates the user already changed.
+        if (hasManualLocationEdit.current) {
+          setLocationMessage('Skipped auto location because coordinates were edited')
+          setIsGettingLocation(false)
+          return
+        }
+
         setSiteForm((current) => ({
           ...current,
           latitude: String(position.coords.latitude),
@@ -107,6 +120,7 @@ export function SiteUpload({ authToken, onBack }: SiteUploadProps) {
       setSuccessMessage('Site uploaded successfully')
       setUploadSummary(uploadResult)
       setOutOfAreaWarning(uploadResult.outOfAreaWarning ?? '')
+      await onUploadSuccess()
       setSiteForm((current) => ({
         ...EMPTY_FORM,
         latitude: current.latitude,
@@ -196,6 +210,9 @@ export function SiteUpload({ authToken, onBack }: SiteUploadProps) {
                   locationSource: 'manual',
                 }))
               }
+              onInput={() => {
+                hasManualLocationEdit.current = true
+              }}
               required
             />
           </label>
@@ -213,6 +230,9 @@ export function SiteUpload({ authToken, onBack }: SiteUploadProps) {
                   locationSource: 'manual',
                 }))
               }
+              onInput={() => {
+                hasManualLocationEdit.current = true
+              }}
               required
             />
           </label>

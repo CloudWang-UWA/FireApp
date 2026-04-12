@@ -35,6 +35,25 @@ const EMPTY_AUTH_FORM: AuthFormState = {
 function App() {
   const navigate = useNavigate()
   const storedToken = getStoredToken()
+  async function loadLayer(layerKey: LayerKey) {
+    try {
+      const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
+      setLayers((current) => ({
+        ...current,
+        [layerKey]: { data, isLoading: false, error: null },
+      }))
+    } catch (error) {
+      setLayers((current) => ({
+        ...current,
+        [layerKey]: {
+          data: null,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Unable to load layer',
+        },
+      }))
+    }
+  }
+
   const [layers, setLayers] = useState<LayerStateMap>(() =>
     Object.fromEntries(
       LAYER_CONFIG.map(({ key }) => [
@@ -61,7 +80,7 @@ function App() {
   useEffect(() => {
     let isCancelled = false
 
-    async function loadLayer(layerKey: LayerKey) {
+    async function loadLayerOnce(layerKey: LayerKey) {
       try {
         const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
         if (!isCancelled) {
@@ -87,7 +106,7 @@ function App() {
 
     // Keep the sidebar counts and the map in sync from the same layer state.
     for (const { key } of LAYER_CONFIG) {
-      void loadLayer(key)
+      void loadLayerOnce(key)
     }
 
     return () => {
@@ -303,7 +322,11 @@ function App() {
   ) : null
 
   const siteUploadPage = currentUser ? (
-    <SiteUpload authToken={authToken} onBack={() => navigate('/app')} />
+    <SiteUpload
+      authToken={authToken}
+      onBack={() => navigate('/app')}
+      onUploadSuccess={() => loadLayer('uploaded_site_priority')}
+    />
   ) : null
 
   return (

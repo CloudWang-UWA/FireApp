@@ -65,6 +65,11 @@ export function getCombinedLayerBounds(layers: LayerStateMap) {
   const bounds = L.latLngBounds([])
 
   for (const { key } of LAYER_CONFIG) {
+    // Keep the map focused on the study area even if uploaded sites are outside it.
+    if (key === 'uploaded_site_priority') {
+      continue
+    }
+
     const data = layers[key].data
     if (!data || data.features.length === 0) {
       continue

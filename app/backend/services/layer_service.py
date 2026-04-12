@@ -1,5 +1,4 @@
 import json
-import math
 from pathlib import Path
 from io import BytesIO
 
@@ -7,6 +6,8 @@ from models.uploaded_site import UploadedSite
 from models.user import db
 
 from flask import abort
+from shapely.geometry import mapping
+from services.risk.site_hazard import build_square_site
 
 # All GeoJSON / GeoTIFF data is stored under the backend/data folder
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -127,24 +128,6 @@ def get_raster_overlay_image(layer_name: str) -> tuple[BytesIO, str]:
     image_bytes = BytesIO(png_path.read_bytes())
     image_bytes.seek(0)
     return image_bytes, "image/png"
-    
-# draw the new site as a square. 111,320 is the approximate number of meters in 1 degree of latitude.
-def build_site_square(longitude: float, latitude: float, site_size_m: float) -> dict:
-    half_side_m = site_size_m / 2.0
-
-    lat_offset = half_side_m / 111320.0
-    lon_offset = half_side_m / (111320.0 * math.cos(math.radians(latitude)))
-
-    return {
-        "type": "Polygon",
-        "coordinates": [[
-            [longitude - lon_offset, latitude - lat_offset],
-            [longitude + lon_offset, latitude - lat_offset],
-            [longitude + lon_offset, latitude + lat_offset],
-            [longitude - lon_offset, latitude + lat_offset],
-            [longitude - lon_offset, latitude - lat_offset],
-        ]],
-    }
 
 
 def load_uploaded_sites() -> dict:
@@ -158,10 +141,12 @@ def load_uploaded_sites() -> dict:
         features.append(
             {
                 "type": "Feature",
-                "geometry": build_site_square(
-                    site.longitude,
-                    site.latitude,
-                    site.site_size_m,
+                "geometry": mapping(
+                    build_square_site(
+                        site.longitude,
+                        site.latitude,
+                        site.site_size_m,
+                    )
                 ),
                 "properties": {
                     "id": site.id,

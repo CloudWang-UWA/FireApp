@@ -40,6 +40,12 @@ export function MapView({
   layers: LayerStateMap
   visibleLayers: Record<LayerKey, boolean>
 }) {
+  const renderOrder: LayerKey[] = [
+    'precaution_zone',
+    'recorded_site_priority',
+    'uploaded_site_priority',
+  ]
+
   return (
     <section className="map-panel">
       <MapContainer
@@ -60,7 +66,13 @@ export function MapView({
         <MapViewController layers={layers} />
         
         {/* Render configured layers that are visible and already loaded */}
-        {LAYER_CONFIG.map(({ key, color }) => {
+        {renderOrder.map((key) => {
+          const layerConfig = LAYER_CONFIG.find((layer) => layer.key === key)
+          if (!layerConfig) {
+            return null
+          }
+
+          const { color } = layerConfig
           const data = layers[key].data
           if (!visibleLayers[key] || !data) {
             return null
