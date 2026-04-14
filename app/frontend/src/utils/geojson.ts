@@ -178,28 +178,6 @@ export function buildPopupContent(
     return buildPopupRows(rows)
   }
 
-  if (layerKey === 'uploaded_site_priority') {
-    const rows: Array<[string, unknown]> = [
-      ['name', properties.name],
-      ['place_type', properties.place_type],
-      ['status', properties.status],
-      ['inside_study_area', properties.inside_study_area],
-      ['hazard_score', properties.hazard_score],
-      ['hazard_level', properties.hazard_level],
-      ['site_vulnerability_score', properties.site_vulnerability_score],
-      ['site_priority_score', properties.site_priority_score],
-      ['site_priority_level', properties.site_priority_level],
-    ]
-
-    return rows
-      .filter(([, value]) => value !== null && value !== undefined && value !== '')
-      .map(
-        ([key, value]) =>
-          `<div><strong>${key}:</strong> ${String(value)}</div>`,
-      )
-      .join('')
-  }
-
   // Keep popups short enough that they do not take over the map.
   return Object.entries(properties)
     .slice(0, 8)
