@@ -43,6 +43,45 @@ function geometryArea(geometry: GeoJSON.Geometry | null | undefined): number {
   }
 }
 
+function getLevelLabel(level: unknown) {
+  const numericLevel = Number(level)
+
+  if (numericLevel === 3) return 'High'
+  if (numericLevel === 2) return 'Medium'
+  if (numericLevel === 1) return 'Low'
+  return String(level)
+}
+
+function getLevelColor(level: unknown) {
+  const numericLevel = Number(level)
+
+  if (numericLevel === 3) return '#d73027'
+  if (numericLevel === 2) return '#fdb863'
+  if (numericLevel === 1) return '#5b8c5a'
+  return '#4b5563'
+}
+
+function formatPopupValue(value: unknown) {
+  if (typeof value === 'number' && !Number.isInteger(value)) {
+    return value.toFixed(2)
+  }
+
+  return String(value)
+}
+
+function buildPopupRows(rows: Array<[string, unknown, boolean?]>) {
+  return rows
+    .filter(([, value]) => value !== null && value !== undefined && value !== '')
+    .map(([label, value, isLevel]) => {
+      if (isLevel) {
+        return `<div><strong>${label}:</strong> <span style="color: ${getLevelColor(value)}; font-weight: 700;">${getLevelLabel(value)}</span></div>`
+      }
+
+      return `<div><strong>${label}:</strong> ${formatPopupValue(value)}</div>`
+    })
+    .join('')
+}
+
 export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJsonData {
   if (
     layerKey !== 'recorded_site_priority' &&
@@ -104,7 +143,7 @@ export function buildPopupContent(
       siteType = 'Council'
     }
 
-    const rows: Array<[string, unknown]> = [
+    const rows: Array<[string, unknown, boolean?]> = [
       ['site_name', properties.name ?? properties.place_name],
       ['site_type', siteType],
       ['ach_identifier', properties.ach_identifier],
@@ -113,62 +152,30 @@ export function buildPopupContent(
       ['hazard_score', properties.hazard_score],
       ['site_vulnerability_score', properties.site_vulnerability_score],
       ['recorded_site_priority_score', properties.recorded_site_priority_score],
-      ['recorded_site_priority_level', properties.recorded_site_priority_level],
+      ['recorded_site_priority_level', properties.recorded_site_priority_level, true],
     ]
 
-    return rows
-      .filter(([, value]) => value !== null && value !== undefined && value !== '')
-      .map(
-        ([key, value]) =>
-          `<div><strong>${key}:</strong> ${String(value)}</div>`,
-      )
-      .join('')
+    return buildPopupRows(rows)
   }
 
   if (layerKey === 'precaution_zone') {
-    const rows: Array<[string, unknown]> = [
-      ['hazard_score', properties.hazard_score],
-      ['hazard_level', properties.hazard_level],
-      ['granite_score', properties.granite_score],
-      [
-        'precaution_zone_score',
-        properties.precaution_zone_score,
-      ],
-      [
-        'precaution_zone_level',
-        properties.precaution_zone_level,
-      ],
+    const rows: Array<[string, unknown, boolean?]> = [
+      ['Risk score', properties.precaution_zone_score],
+      ['Risk level', properties.precaution_zone_level, true],
     ]
 
-    return rows
-      .filter(([, value]) => value !== null && value !== undefined && value !== '')
-      .map(
-        ([key, value]) =>
-          `<div><strong>${key}:</strong> ${String(value)}</div>`,
-      )
-      .join('')
+    return buildPopupRows(rows)
   }
 
   if (layerKey === 'uploaded_site_priority') {
-    const rows: Array<[string, unknown]> = [
-      ['name', properties.name],
-      ['place_type', properties.place_type],
-      ['status', properties.status],
-      ['inside_study_area', properties.inside_study_area],
-      ['hazard_score', properties.hazard_score],
-      ['hazard_level', properties.hazard_level],
-      ['site_vulnerability_score', properties.site_vulnerability_score],
-      ['site_priority_score', properties.site_priority_score],
-      ['site_priority_level', properties.site_priority_level],
+    const rows: Array<[string, unknown, boolean?]> = [
+      ['Site name', properties.name],
+      ['Place type', properties.place_type],
+      ['Priority score', properties.site_priority_score],
+      ['Priority level', properties.site_priority_level, true],
     ]
 
-    return rows
-      .filter(([, value]) => value !== null && value !== undefined && value !== '')
-      .map(
-        ([key, value]) =>
-          `<div><strong>${key}:</strong> ${String(value)}</div>`,
-      )
-      .join('')
+    return buildPopupRows(rows)
   }
 
   // Keep popups short enough that they do not take over the map.
