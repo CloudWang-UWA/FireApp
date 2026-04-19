@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet'
+import { GeoJSON, MapContainer, Pane, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import type { LatLng, Layer as LeafletLayer } from 'leaflet'
 
@@ -45,6 +45,11 @@ export function MapView({
     'recorded_site_priority',
     'uploaded_site_priority',
   ]
+  const layerPaneMap: Record<LayerKey, string> = {
+    precaution_zone: 'precautionPane',
+    recorded_site_priority: 'recordedSitePane',
+    uploaded_site_priority: 'uploadedSitePane',
+  }
 
   return (
     <section className="map-panel">
@@ -61,6 +66,9 @@ export function MapView({
           subdomains={BASEMAP_CONFIG[basemap].subdomains}
           url={BASEMAP_CONFIG[basemap].url}
         />
+        <Pane name="precautionPane" style={{ zIndex: 410 }} />
+        <Pane name="recordedSitePane" style={{ zIndex: 420 }} />
+        <Pane name="uploadedSitePane" style={{ zIndex: 430 }} />
         
         {/* Fit the map to loaded layer bounds */}
         <MapViewController layers={layers} />
@@ -82,6 +90,7 @@ export function MapView({
             <GeoJSON
               key={key}
               data={data}
+              pane={layerPaneMap[key]}
               style={(feature) => {
                 let priorityLevel
                 const isPriorityLayer =
@@ -107,6 +116,7 @@ export function MapView({
               }}
               pointToLayer={(_feature, latlng: LatLng) =>
                 L.circleMarker(latlng, {
+                  pane: layerPaneMap[key],
                   radius: 6,
                   color: key === 'uploaded_site_priority' ? '#8c510a' : color,
                   fillColor:
