@@ -10,6 +10,7 @@ from .lookups import GRANITE_DISTANCE_SCORE_BANDS
 from .lookups import INTEGRATED_PRIORITY_BANDS
 from datetime import date
 
+
 def get_fuel_score(fuel_code):
     if (fuel_code is None):
         return None
@@ -39,6 +40,7 @@ def get_slope_score(slope_deg):
 
     return None
 
+
 def get_fire_history_score(fire_year, fire_type):
     if (fire_year is None):
         return FireHistoryScore.NO_RECENT_FIRE
@@ -56,6 +58,7 @@ def get_fire_history_score(fire_year, fire_type):
                 return score if fire_type == "PB" else FireHistoryScore.NO_RECENT_FIRE
 
     return FireHistoryScore.NO_RECENT_FIRE
+
 
 # Get the cultural heritage sites score based on their place type, eg. Artefacts / Scatter
 def get_site_vulnerability_score(raw_place_type):
@@ -122,6 +125,7 @@ def get_hazard_level(hazard_score):
 
     return None
 
+
 # TODO: change the scaling factor so that it suits new data, we may extend our areas later
 def normalize_hazard_score(hazard_score):
     if hazard_score is None:
@@ -140,8 +144,9 @@ def normalize_granite_score(granite_score):
         return None
     return min(max(float(granite_score) / 3.0, 0.0), 1.0)
 
+
 # Caculate site priority score, combination of environmental factors and sites place type
-def get_recorded_site_priority_score(hazard_score, site_vulnerability_score):
+def get_site_priority_score(hazard_score, site_vulnerability_score):
     hazard = normalize_hazard_score(hazard_score)
     site = normalize_site_vulnerability_score(site_vulnerability_score)
 
@@ -149,6 +154,7 @@ def get_recorded_site_priority_score(hazard_score, site_vulnerability_score):
         return None
 
     return 0.5 * hazard + 0.5 * site
+
 
 # Caculate potential heritage precaution score, combination of environmental factors and granite
 def get_precaution_zone_score(hazard_score, granite_score):
@@ -159,6 +165,7 @@ def get_precaution_zone_score(hazard_score, granite_score):
         return None
 
     return 0.7 * hazard + 0.3 * granite
+
 
 # Convert integrated score to level
 def get_integrated_priority_level(score):

@@ -9,7 +9,7 @@ sys.path.insert(0, str(BACKEND_DIR))
 
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_site_vulnerability_data
-from services.risk.risk_model import calculate_recorded_site_priority
+from services.risk.risk_model import calculate_site_priority
 from services.risk.scoring import get_hazard_level
 
 EXCLUDED_SITE_IDS = {
@@ -74,7 +74,7 @@ def main() -> None:
             hazard_level = get_hazard_level(hazard_score)
 
         # combine hazard score with site vulnerability score
-        priority_result = calculate_recorded_site_priority(
+        priority_result = calculate_site_priority(
             hazard_score,
             site_vulnerability_score,
         )
@@ -88,12 +88,12 @@ def main() -> None:
             None if site_vulnerability_score is None else int(site_vulnerability_score)
         )
         recorded_site_priority_scores.append(
-            priority_result["recorded_site_priority_score"]
+            priority_result["site_priority_score"]
         )
         recorded_site_priority_levels.append(
             None
-            if priority_result["recorded_site_priority_level"] is None
-            else int(priority_result["recorded_site_priority_level"])
+            if priority_result["site_priority_level"] is None
+            else int(priority_result["site_priority_level"])
         )
 
     sites_data["hazard_score"] = hazard_scores
