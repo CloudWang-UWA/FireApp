@@ -4,7 +4,8 @@ from services.layer_service import (
     get_raster_overlay_image,
     get_raster_overlay_info,
     list_available_layers,
-    load_geojson,
+    load_map_layer,
+    load_uploaded_sites,
 )
 
 
@@ -18,7 +19,7 @@ def list_layers():
 
 @layer_bp.get("/<layer_name>")
 def get_layer(layer_name: str):
-    return jsonify(load_geojson(layer_name))
+    return jsonify(load_map_layer(layer_name))
 
 
 @layer_bp.get("/<layer_name>/overlay")
