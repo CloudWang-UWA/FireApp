@@ -8,6 +8,8 @@ from models.user import db
 from flask import abort
 from shapely.geometry import mapping
 from services.risk.site_hazard import build_square_site
+import rasterio
+from rasterio.warp import transform_bounds
 
 # All GeoJSON / GeoTIFF data is stored under the backend/data folder
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -23,11 +25,6 @@ LAYER_FILES = {
 RASTER_FILES = {
     "fuel": DATA_DIR / "fuel.tif",
     "slope": DATA_DIR / "slope.tif",
-}
-
-RASTER_METADATA_FILES = {
-    "fuel": DATA_DIR / "fuel.json",
-    "slope": DATA_DIR / "slope.json",
 }
 
 RASTER_IMAGE_FILES = {
@@ -52,7 +49,7 @@ def list_available_layers() -> list[dict]:
             }
         )
 
-    for layer_name, file_path in RASTER_METADATA_FILES.items():
+    for layer_name, file_path in RASTER_FILES.items():
         layers.append(
             {
                 "name": layer_name,
@@ -92,26 +89,30 @@ def load_map_layer(layer_name: str) -> dict:
 
 def get_raster_overlay_info(layer_name: str) -> dict:
     # Return frontend overlay metadata, including bounds and the PNG URL.
-    metadata_path = RASTER_METADATA_FILES.get(layer_name)
+    tif_path = RASTER_FILES.get(layer_name)
     png_path = RASTER_IMAGE_FILES.get(layer_name)
 
-    if metadata_path is None or png_path is None:
+    if tif_path is None or png_path is None:
         abort(404, description=f"Unknown raster layer '{layer_name}'")
 
-    if not metadata_path.exists():
-        abort(404, description=f"Overlay metadata for '{layer_name}' was not found")
+    if not tif_path.exists():
+        abort(404, description=f"Raster file for '{layer_name}' was not found")
 
     if not png_path.exists():
         abort(404, description=f"Overlay image for '{layer_name}' was not found")
 
-    with metadata_path.open("r", encoding="utf-8") as metadata_file:
-        metadata = json.load(metadata_file)
+    with rasterio.open(tif_path) as dataset:
+        left, bottom, right, top = transform_bounds(
+            dataset.crs,
+            "EPSG:4326",
+            *dataset.bounds,
+        )
 
     return {
         "name": layer_name,
         "type": "image_overlay",
         "image_url": f"/api/layers/{layer_name}/image",
-        "bounds": metadata["bounds"],
+        "bounds": [[bottom, left], [top, right]],
     }
 
 
