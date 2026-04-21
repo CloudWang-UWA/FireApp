@@ -57,7 +57,7 @@ def list_available_layers() -> list[dict]:
     return layers
 
 
-def load_geojson(layer_name: str) -> dict:
+def load_map_layer(layer_name: str) -> dict:
     file_path = LAYER_FILES.get(layer_name)
 
     if file_path is None:

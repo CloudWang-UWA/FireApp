@@ -4,8 +4,7 @@ from services.layer_service import (
     get_raster_overlay_image,
     get_raster_overlay_info,
     list_available_layers,
-    load_map_layer,
-    load_uploaded_sites,
+    load_map_layer
 )
 
 
