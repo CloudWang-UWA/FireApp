@@ -17,9 +17,7 @@ EXCLUDED_SITE_IDS = {
 }
 
 
-# Build potential heritage precaution from hazard cells and overlapping granite zones,
-# then save both the raw cell layer and a dissolved display layer.
-def main() -> None:
+def prepare_inputs():
     hazard_data = load_hazard_overview_data()
     granite_data = load_granite_influence_data()
     sites_data = load_sites_data().copy()
@@ -34,67 +32,88 @@ def main() -> None:
     kept_site_mask = excluded_site_mask == False
     sites_data = sites_data[kept_site_mask].copy()
 
+    return hazard_data, granite_data, sites_data
+
+
+def assign_granite_scores(hazard_data, granite_data):
     hazard_data = hazard_data.reset_index(drop=True)
     hazard_data["hazard_row_id"] = hazard_data.index
+    hazard_sindex = hazard_data.sindex
 
-    # spatial join between hazard cells and granite influence zones
-    joined = gpd.sjoin(
-        hazard_data,
-        granite_data[["granite_score", "zone", "distance_band", "geometry"]],
-        how="left",
-        predicate="intersects",
+    hazard_data["granite_score"] = 0
+
+    granite_features = granite_data.sort_values("granite_score").reset_index(drop=True)
+    # Use the hazard spatial index to limit each granite check to nearby cells
+    # instead of scanning the whole hazard layer every time.
+    for feature_index, granite_row in granite_features.iterrows():
+        zone_geometry = granite_row.geometry
+        granite_score = int(granite_row["granite_score"])
+
+        # First grab nearby hazard cells from the zone bounding box.
+        candidate_ids = list(hazard_sindex.intersection(zone_geometry.bounds))
+        if candidate_ids:
+            # Then keep only the cells that really intersect the zone.
+            zone_mask = hazard_data.iloc[candidate_ids].geometry.intersects(zone_geometry)
+            matched_ids = hazard_data.iloc[candidate_ids].index[zone_mask]
+            if len(matched_ids) > 0:
+                current_scores = hazard_data.loc[matched_ids, "granite_score"]
+                hazard_data.loc[matched_ids, "granite_score"] = current_scores.clip(
+                    lower=granite_score
+                )
+
+        if (feature_index + 1) % 25 == 0 or feature_index + 1 == len(granite_features):
+            print(
+                f"Processed granite features: {feature_index + 1}/{len(granite_features)}"
+            )
+
+    return hazard_data, hazard_sindex
+
+
+def add_precaution_scores(hazard_data):
+    precaution_results = hazard_data.apply(
+        lambda row: calculate_precaution_zone(
+            row["hazard_score"],
+            row["granite_score"],
+        ),
+        axis=1,
+        result_type="expand",
     )
+    hazard_data["precaution_zone_score"] = precaution_results["precaution_zone_score"]
+    hazard_data["precaution_zone_level"] = precaution_results["precaution_zone_level"]
 
-    # group the joined results by hazard cell and take the maximum granite score
-    max_granite_scores = joined.groupby("hazard_row_id")["granite_score"].max()
+    return hazard_data
 
-    granite_scores = []
-    precaution_scores = []
-    precaution_levels = []
 
-    for _, hazard_cell in hazard_data.iterrows():
-        hazard_row_id = hazard_cell["hazard_row_id"]
-        hazard_score = hazard_cell.get("hazard_score")
+def remove_recorded_site_overlap(hazard_data, sites_data, hazard_sindex):
+    recorded_site_mask = pd.Series(False, index=hazard_data.index)
+    site_features = sites_data.reset_index(drop=True)
+    # Checking one site at a time keeps the candidate set much smaller than
+    # building one large union geometry first.
+    for site_index, site_row in site_features.iterrows():
+        site_geometry = site_row.geometry
+        # First grab nearby hazard cells from the site bounding box.
+        candidate_ids = list(hazard_sindex.intersection(site_geometry.bounds))
+        if candidate_ids:
+            # Then keep only the cells that really intersect the site.
+            overlap_mask = hazard_data.iloc[candidate_ids].geometry.intersects(site_geometry)
+            matched_ids = hazard_data.iloc[candidate_ids].index[overlap_mask]
+            if len(matched_ids) > 0:
+                recorded_site_mask.loc[matched_ids] = True
 
-        # get the hazard cell's max granite score from the joined granite zones
-        granite_score = max_granite_scores.get(hazard_row_id)
-        # make sure the value is not None and not missing
-        if granite_score is not None and not pd.isna(granite_score):
-            granite_score = int(granite_score)
-        else:
-            granite_score = 0
+        if (site_index + 1) % 25 == 0 or site_index + 1 == len(site_features):
+            print(f"Processed recorded sites: {site_index + 1}/{len(site_features)}")
 
-        # combine hazard score with granite score
-        precaution_result = calculate_precaution_zone(
-            hazard_score,
-            granite_score,
-        )
-
-        # append the results
-        granite_scores.append(granite_score)
-        precaution_scores.append(
-            precaution_result["precaution_zone_score"]
-        )
-        precaution_levels.append(
-            None
-            if precaution_result["precaution_zone_level"] is None
-            else int(precaution_result["precaution_zone_level"])
-        )
-
-    hazard_data["granite_score"] = granite_scores
-    hazard_data["precaution_zone_score"] = precaution_scores
-    hazard_data["precaution_zone_level"] = precaution_levels
-
-    # remove hazard cells that overlap recorded sites
-    recorded_site_mask = hazard_data.geometry.intersects(sites_data.union_all())
     kept_precaution_mask = recorded_site_mask == False
     precaution_data = hazard_data[kept_precaution_mask].copy()
     precaution_data = precaution_data.drop(columns=["hazard_row_id"])
-    raw_precaution_data = precaution_data.copy()
 
+    return precaution_data
+
+
+def dissolve_precaution_zones(precaution_data):
     # Merge neighbouring precaution cells with the same final level so the
     # output looks more like a zone map than a grid.
-    precaution_data = precaution_data.dissolve(
+    return precaution_data.dissolve(
         by="precaution_zone_level",
         aggfunc={
             "hazard_score": "max",
@@ -104,25 +123,33 @@ def main() -> None:
         },
     ).reset_index()
 
-    # precaution_data = precaution_data.explode(index_parts=False).reset_index(drop=True)
 
+def save_precaution_outputs(precaution_data):
     output_dir = BACKEND_DIR / "data" / "risk_outputs"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    raw_gpkg_output_path = output_dir / "precaution_zone_raw.gpkg"
-    raw_geojson_output_path = output_dir / "precaution_zone_raw.geojson"
     gpkg_output_path = output_dir / "precaution_zone.gpkg"
     geojson_output_path = output_dir / "precaution_zone.geojson"
 
-    raw_precaution_data.to_file(raw_gpkg_output_path, driver="GPKG")
-    raw_precaution_data.to_file(raw_geojson_output_path, driver="GeoJSON")
     precaution_data.to_file(gpkg_output_path, driver="GPKG")
-    precaution_data.to_file(geojson_output_path, driver="GeoJSON")
+    precaution_data.to_crs(4326).to_file(geojson_output_path, driver="GeoJSON")
 
-    print(f"Saved to: {raw_gpkg_output_path}")
-    print(f"Saved to: {raw_geojson_output_path}")
     print(f"Saved to: {gpkg_output_path}")
     print(f"Saved to: {geojson_output_path}")
+
+
+# Build potential heritage precaution from hazard cells and overlapping granite zones.
+def main() -> None:
+    hazard_data, granite_data, sites_data = prepare_inputs()
+    hazard_data, hazard_sindex = assign_granite_scores(hazard_data, granite_data)
+    hazard_data = add_precaution_scores(hazard_data)
+    precaution_data = remove_recorded_site_overlap(
+        hazard_data,
+        sites_data,
+        hazard_sindex,
+    )
+    precaution_data = dissolve_precaution_zones(precaution_data)
+    save_precaution_outputs(precaution_data)
 
 
 if __name__ == "__main__":

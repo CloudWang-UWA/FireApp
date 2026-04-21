@@ -9,6 +9,8 @@ from services.risk.load_processed_data import (
 
 def get_fuel_code(fuel_data, fuel_band, point_x: float, point_y: float):
     row, col = fuel_data.index(point_x, point_y)
+    if row < 0 or col < 0 or row >= fuel_data.height or col >= fuel_data.width:
+        return None
     fuel_code = fuel_band[row, col]
 
     if fuel_data.nodata is not None and fuel_code == fuel_data.nodata:
@@ -19,6 +21,8 @@ def get_fuel_code(fuel_data, fuel_band, point_x: float, point_y: float):
 
 def get_slope_deg(slope_data, slope_band, point_x: float, point_y: float):
     row, col = slope_data.index(point_x, point_y)
+    if row < 0 or col < 0 or row >= slope_data.height or col >= slope_data.width:
+        return None
     slope_deg = slope_band[row, col]
 
     if slope_data.nodata is not None and slope_deg == slope_data.nodata:
@@ -39,7 +43,7 @@ def get_fire_history(fire_history_data, point_x: float, point_y: float):
     latest_fire = matched_fire_history.loc[
         matched_fire_history["fih_year1"].idxmax()
     ]
-    return int(latest_fire["fih_year1"]), latest_fire["fih_fire_t"]
+    return int(latest_fire["fih_year1"]), latest_fire["fih_fire_type"]
 
 
 def get_site_hazard_info(point_x: float, point_y: float) -> dict:

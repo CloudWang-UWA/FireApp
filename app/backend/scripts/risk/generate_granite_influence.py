@@ -39,7 +39,7 @@ def main() -> None:
     geojson_output_path = output_dir / "granite_influence.geojson"
 
     influence_layer.to_file(gpkg_output_path, driver="GPKG")
-    influence_layer.to_file(geojson_output_path, driver="GeoJSON")
+    influence_layer.to_crs(4326).to_file(geojson_output_path, driver="GeoJSON")
 
     print(f"Saved to: {gpkg_output_path}")
     print(f"Saved to: {geojson_output_path}")

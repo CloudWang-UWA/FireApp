@@ -43,3 +43,9 @@ Thumbs.db
 
 # backend
 backend/instance/
+backend/data/risk_outputs/hazard_overview.gpkg
+backend/data/risk_outputs/hazard_overview.geojson
+backend/data/risk_outputs/site_vulnerability.gpkg
+backend/data/risk_outputs/site_vulnerability.geojson
+backend/data/risk_outputs/granite_influence.gpkg
+backend/data/risk_outputs/granite_influence.geojson

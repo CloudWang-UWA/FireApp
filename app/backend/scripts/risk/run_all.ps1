@@ -1,5 +1,5 @@
-py generate_hazard_outputs.py
-py generate_site_vulnerability.py
-py generate_granite_influence.py
-py generate_recorded_site_priority.py
-py generate_precaution_zone.py
+python generate_hazard_outputs.py
+python generate_site_vulnerability.py
+python generate_granite_influence.py
+python generate_recorded_site_priority.py
+python generate_precaution_zone.py
