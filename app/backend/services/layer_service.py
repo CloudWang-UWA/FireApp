@@ -1,7 +1,10 @@
 import json
 from pathlib import Path
+from io import BytesIO
 
 from flask import abort
+import rasterio
+from rasterio.warp import transform_bounds
 
 # All GeoJSON / GeoTIFF data is stored under the backend/data folder
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -10,6 +13,18 @@ DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 LAYER_FILES = {
     "recorded_site_priority": DATA_DIR / "risk_outputs" / "recorded_site_priority.geojson",
     "precaution_zone": DATA_DIR / "risk_outputs" / "precaution_zone.geojson",
+    "granite": DATA_DIR / "granite.geojson",
+    "fire_history": DATA_DIR / "fire_history.geojson",
+}
+
+RASTER_FILES = {
+    "fuel": DATA_DIR / "fuel.tif",
+    "slope": DATA_DIR / "slope.tif",
+}
+
+RASTER_IMAGE_FILES = {
+    "fuel": DATA_DIR / "fuel.png",
+    "slope": DATA_DIR / "slope.png",
 }
 
 
@@ -21,9 +36,20 @@ def list_available_layers() -> list[dict]:
         layers.append(
             {
                 "name": layer_name,
+                "type": "geojson",
                 # Check if the file actually exists locally
                 "available": file_path.exists(),
                 # Only return filename (not full path) for simplicity
+                "path": str(file_path.name),
+            }
+        )
+
+    for layer_name, file_path in RASTER_FILES.items():
+        layers.append(
+            {
+                "name": layer_name,
+                "type": "image_overlay",
+                "available": file_path.exists(),
                 "path": str(file_path.name),
             }
         )
@@ -45,3 +71,47 @@ def load_geojson(layer_name: str) -> dict:
     # Load GeoJSON content and return as dict
     with file_path.open("r", encoding="utf-8") as geojson_file:
         return json.load(geojson_file)
+
+
+def get_raster_overlay_info(layer_name: str) -> dict:
+    # Return frontend overlay metadata, including bounds and the PNG URL.
+    tif_path = RASTER_FILES.get(layer_name)
+    png_path = RASTER_IMAGE_FILES.get(layer_name)
+
+    if tif_path is None or png_path is None:
+        abort(404, description=f"Unknown raster layer '{layer_name}'")
+
+    if not tif_path.exists():
+        abort(404, description=f"Raster file for '{layer_name}' was not found")
+
+    if not png_path.exists():
+        abort(404, description=f"Overlay image for '{layer_name}' was not found")
+
+    with rasterio.open(tif_path) as dataset:
+        left, bottom, right, top = transform_bounds(
+            dataset.crs,
+            "EPSG:4326",
+            *dataset.bounds,
+        )
+
+    return {
+        "name": layer_name,
+        "type": "image_overlay",
+        "image_url": f"/api/layers/{layer_name}/image",
+        "bounds": [[bottom, left], [top, right]],
+    }
+
+
+def get_raster_overlay_image(layer_name: str) -> tuple[BytesIO, str]:
+    # Return the pre-rendered PNG image used by the raster overlay.
+    png_path = RASTER_IMAGE_FILES.get(layer_name)
+
+    if png_path is None:
+        abort(404, description=f"Unknown raster layer '{layer_name}'")
+
+    if not png_path.exists():
+        abort(404, description=f"Overlay image for '{layer_name}' was not found")
+
+    image_bytes = BytesIO(png_path.read_bytes())
+    image_bytes.seek(0)
+    return image_bytes, "image/png"
