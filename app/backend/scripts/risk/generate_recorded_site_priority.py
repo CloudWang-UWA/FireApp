@@ -9,6 +9,7 @@ sys.path.insert(0, str(BACKEND_DIR))
 
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_site_vulnerability_data
+from services.risk.lookups import FUEL_TYPE_LABEL_MAP
 from services.risk.risk_model import calculate_site_priority
 from services.risk.scoring import get_hazard_level
 
@@ -34,14 +35,40 @@ def main() -> None:
     # spatial join between sites and hazard_data
     joined = gpd.sjoin(
         sites_data,
-        hazard_data[["hazard_score", "hazard_level", "geometry"]],
+        hazard_data[
+            [
+                "fuel_code",
+                "slope_deg",
+                "fire_year",
+                "fire_type",
+                "hazard_score",
+                "hazard_level",
+                "geometry",
+            ]
+        ],
         how="left",
         predicate="intersects",
     )
 
-    # group the joined results by site and take the maximum hazard score for each site
-    max_hazard_scores = joined.groupby("site_row_id")["hazard_score"].max()
+    # keep the joined hazard row with the highest hazard score for each site
+    joined_with_hazard = joined.dropna(subset=["hazard_score"]).copy()
+    max_hazard_rows = pd.DataFrame()
+    if not joined_with_hazard.empty:
+        joined_with_hazard = joined_with_hazard.sort_values(
+            by=["site_row_id", "hazard_score"],
+            ascending=[True, False],
+        )
+        joined_with_hazard = joined_with_hazard.drop_duplicates(
+            subset=["site_row_id"],
+            keep="first",
+        )
+        max_hazard_rows = joined_with_hazard.set_index("site_row_id")
 
+    fuel_codes = []
+    fuel_labels = []
+    slope_values = []
+    fire_years = []
+    fire_types = []
     hazard_scores = []
     hazard_levels = []
     site_vulnerability_scores = []
@@ -58,10 +85,42 @@ def main() -> None:
 
         # TODO: use area-weighted overlap instead of max hazard score if we need
         # a better summary for large recorded sites later.
-        # get the site’s max hazard score from the joined hazard cells
-        hazard_score = max_hazard_scores.get(site_row_id)
+        # get the site's highest-scoring hazard row from the joined hazard cells
+        max_hazard_row = max_hazard_rows.loc[site_row_id] if site_row_id in max_hazard_rows.index else None
 
-        # make sure the value is not None and not missing
+        if max_hazard_row is not None:
+            fuel_code = max_hazard_row.get("fuel_code")
+            slope_deg = max_hazard_row.get("slope_deg")
+            fire_year = max_hazard_row.get("fire_year")
+            fire_type = max_hazard_row.get("fire_type")
+            hazard_score = max_hazard_row.get("hazard_score")
+        else:
+            fuel_code = None
+            slope_deg = None
+            fire_year = None
+            fire_type = None
+            hazard_score = None
+
+        if fuel_code is not None and not pd.isna(fuel_code):
+            fuel_code = int(fuel_code)
+            fuel_label = FUEL_TYPE_LABEL_MAP.get(fuel_code)
+        else:
+            fuel_code = None
+            fuel_label = None
+
+        if slope_deg is not None and not pd.isna(slope_deg):
+            slope_deg = float(slope_deg)
+        else:
+            slope_deg = None
+
+        if fire_year is not None and not pd.isna(fire_year):
+            fire_year = int(fire_year)
+        else:
+            fire_year = None
+
+        if fire_type is not None and pd.isna(fire_type):
+            fire_type = None
+
         if hazard_score is not None and not pd.isna(hazard_score):
             hazard_score = float(hazard_score)
         else:
@@ -80,6 +139,11 @@ def main() -> None:
         )
         
         # append the results
+        fuel_codes.append(fuel_code)
+        fuel_labels.append(fuel_label)
+        slope_values.append(slope_deg)
+        fire_years.append(fire_year)
+        fire_types.append(fire_type)
         hazard_scores.append(hazard_score)
         hazard_levels.append(
             None if hazard_level is None else int(hazard_level)
@@ -96,6 +160,11 @@ def main() -> None:
             else int(priority_result["site_priority_level"])
         )
 
+    sites_data["fuel_code"] = fuel_codes
+    sites_data["fuel_type"] = fuel_labels
+    sites_data["slope_deg"] = slope_values
+    sites_data["fire_year"] = fire_years
+    sites_data["fire_type"] = fire_types
     sites_data["hazard_score"] = hazard_scores
     sites_data["hazard_level"] = hazard_levels
     sites_data["site_vulnerability_score"] = site_vulnerability_scores

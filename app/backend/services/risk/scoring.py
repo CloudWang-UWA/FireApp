@@ -11,6 +11,7 @@ from .lookups import GRANITE_DISTANCE_SCORE_BANDS
 from .lookups import INTEGRATED_PRIORITY_BANDS
 from .lookups import SiteVulnerabilityScore
 from datetime import date
+import pandas as pd
 
 
 def get_fuel_score(fuel_code):
@@ -79,7 +80,7 @@ def get_council_place_name_score(raw_place_name):
 
 # Get the cultural heritage sites score based on their place type, eg. Artefacts / Scatter
 def get_site_vulnerability_score(raw_place_type, source=None, raw_place_name=None):
-    if raw_place_type is None:
+    if raw_place_type is None or pd.isna(raw_place_type):
         if str(source).strip().lower() == "council":
             return get_council_place_name_score(raw_place_name)
         return None

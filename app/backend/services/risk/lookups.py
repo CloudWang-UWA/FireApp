@@ -57,6 +57,50 @@ FUEL_SCORE_MAP = {
     960: FuelScore.NO_FUEL,  # Bare ground
 }
 
+
+FUEL_TYPE_LABEL_MAP = {
+    0: "No fuel data",
+    110: "Tall, closed forest",
+    120: "Closed forest",
+    210: "Tall open forest",
+    220: "Open forest",
+    230: "Low open forest",
+    310: "Broadleaf plantation",
+    321: "Radiata pine",
+    322: "Maritime pine",
+    323: "Southern pine",
+    324: "Other conifer",
+    330: "Other plantation",
+    411: "Tall woodland with grassy understory",
+    421: "Woodland with shrubby understory",
+    422: "Woodland with spinifex understory",
+    423: "Woodland with grassy understory",
+    424: "Woodland with sparse understory",
+    431: "Low woodland with shrubby understory",
+    432: "Low woodland with spinifex understory",
+    433: "Low woodland with grassy understory",
+    434: "Low woodland with sparse understory",
+    510: "Tall shrubland",
+    520: "Shrubland",
+    531: "Open shrubland with spinifex understory",
+    532: "Open shrubland with grassy understory",
+    533: "Open shrubland with sparse understory",
+    610: "Sedgeland",
+    620: "Hummock grassland",
+    631: "Grassland",
+    632: "Open grassland",
+    633: "Sparse grassland",
+    640: "Croplands",
+    700: "Horticulture",
+    800: "Wetlands",
+    910: "Water",
+    920: "Wildland urban interface 1",
+    930: "Wildland urban interface 2",
+    940: "Wildland urban interface 3",
+    950: "Built-up",
+    960: "Bare ground",
+}
+
 class SlopeScore(IntEnum):
     LOW = 1
     MEDIUM = 2

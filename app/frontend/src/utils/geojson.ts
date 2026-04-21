@@ -88,11 +88,23 @@ export function buildPopupContent(
   }
 
   if (layerKey === 'recorded_site_priority') {
+    const source = properties.source
+    let siteType: string | undefined
+
+    if (source === 'registered') {
+      siteType = 'ACHIS Registered'
+    } else if (source === 'lodged') {
+      siteType = 'ACHIS Lodged'
+    } else if (source === 'council') {
+      siteType = 'Council'
+    }
+
     const rows: Array<[string, unknown]> = [
-      ['name', properties.name],
+      ['site_name', properties.name ?? properties.place_name],
+      ['site_type', siteType],
       ['ach_identifier', properties.ach_identifier],
-      ['place_status', properties.place_status],
       ['place_type', properties.place_type],
+      ['fuel_type', properties.fuel_type],
       ['hazard_score', properties.hazard_score],
       ['site_vulnerability_score', properties.site_vulnerability_score],
       ['recorded_site_priority_score', properties.recorded_site_priority_score],
