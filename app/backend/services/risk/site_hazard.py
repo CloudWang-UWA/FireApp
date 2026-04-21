@@ -8,10 +8,8 @@ from shapely.geometry import Polygon
 from services.risk.load_processed_data import (
     load_fire_history_data,
     load_fuel_data,
-    load_hazard_overview_data,
     load_slope_data,
 )
-from services.risk.scoring import get_hazard_level
 
 
 def get_fuel_code(fuel_data, fuel_band, point_x: float, point_y: float):
@@ -58,7 +56,6 @@ def get_site_hazard_info(point_x: float, point_y: float) -> dict:
     fuel_data = load_fuel_data()
     slope_data = load_slope_data()
     fire_history_data = load_fire_history_data()
-
     fuel_band = fuel_data.read(1)
     slope_band = slope_data.read(1)
 
@@ -71,37 +68,6 @@ def get_site_hazard_info(point_x: float, point_y: float) -> dict:
         "slope_deg": slope_deg,
         "fire_year": fire_year,
         "fire_type": fire_type,
-    }
-
-
-# get site hazard from polygon overlap
-def get_site_hazard_by_shape(site_shape) -> dict:
-    hazard_data = load_hazard_overview_data()
-    site_data = gpd.GeoDataFrame(
-        [{"site_row_id": 0, "geometry": site_shape}],
-        geometry="geometry",
-        crs=hazard_data.crs,
-    )
-
-    joined = gpd.sjoin(
-        site_data,
-        hazard_data[["hazard_score", "hazard_level", "geometry"]],
-        how="left",
-        predicate="intersects",
-    )
-
-    hazard_score = joined["hazard_score"].max()
-    if hazard_score is None or pd.isna(hazard_score):
-        return {
-            "hazard_score": None,
-            "hazard_level": None,
-        }
-
-    hazard_score = float(hazard_score)
-
-    return {
-        "hazard_score": hazard_score,
-        "hazard_level": get_hazard_level(hazard_score),
     }
 
 # draw the new site as a square. 111,320 is the approximate number of meters in 1 degree of latitude.

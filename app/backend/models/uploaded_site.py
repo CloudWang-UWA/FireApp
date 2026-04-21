@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from models.user import db
+from services.risk.lookups import FUEL_TYPE_LABEL_MAP
 
 # stores uploaded sites
 class UploadedSite(db.Model):
@@ -73,6 +74,7 @@ class UploadedSite(db.Model):
             "updatedAt": self.updated_at.isoformat(),
             "insideStudyArea": self.inside_study_area,
             "fuelCode": self.fuel_code,
+            "fuelType": FUEL_TYPE_LABEL_MAP.get(self.fuel_code),
             "slopeDeg": self.slope_deg,
             "fireYear": self.fire_year,
             "fireType": self.fire_type,

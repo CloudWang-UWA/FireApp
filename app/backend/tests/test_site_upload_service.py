@@ -82,7 +82,7 @@ class SiteUploadServiceTests(unittest.TestCase):
         self.assertTrue(is_inside_study_area(-35.09, 117.90))
 
     def test_outside_study_area(self):
-        self.assertFalse(is_inside_study_area(-34.95, 117.90))
+        self.assertFalse(is_inside_study_area(-34.10, 117.90))
 
     # create a site and make sure its risk is saved
     @patch("services.site_upload.site_upload_service.calculate_uploaded_site_risk")
@@ -141,7 +141,7 @@ class SiteUploadServiceTests(unittest.TestCase):
             {
                 "name": "Outside Site",
                 "placeType": "Artefacts / Scatter",
-                "latitude": -34.90,
+                "latitude": -34.10,
                 "longitude": 117.90,
                 "siteSizeM": 350,
                 "locationSource": "manual",

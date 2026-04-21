@@ -3,10 +3,10 @@ from models.user import db
 from services.site_upload.uploaded_site_risk_cal import calculate_uploaded_site_risk
 
 # current study area
-STUDY_AREA_MIN_LON = 117.815611
-STUDY_AREA_MAX_LON = 118.023861
-STUDY_AREA_MIN_LAT = -35.129972
-STUDY_AREA_MAX_LAT = -35.050944
+STUDY_AREA_MIN_LON = 117.18
+STUDY_AREA_MAX_LON = 118.58
+STUDY_AREA_MIN_LAT = -35.32
+STUDY_AREA_MAX_LAT = -34.22
 
 
 def get_site_upload_status() -> dict:
@@ -108,6 +108,10 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
 
         uploaded_site.hazard_score = site_risk["hazard"]["hazard_score"]
         uploaded_site.hazard_level = site_risk["hazard"]["hazard_level"]
+        uploaded_site.fuel_code = site_risk["hazard"].get("fuel_code")
+        uploaded_site.slope_deg = site_risk["hazard"].get("slope_deg")
+        uploaded_site.fire_year = site_risk["hazard"].get("fire_year")
+        uploaded_site.fire_type = site_risk["hazard"].get("fire_type")
 
         uploaded_site.site_vulnerability_score = site_risk["siteVulnerability"][
             "site_vulnerability_score"

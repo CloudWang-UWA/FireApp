@@ -87,6 +87,52 @@ def load_map_layer(layer_name: str) -> dict:
         return json.load(geojson_file)
 
 
+def load_uploaded_sites() -> dict:
+    uploaded_sites = db.session.execute(
+        db.select(UploadedSite).order_by(UploadedSite.id.asc())
+    ).scalars().all()
+
+    features = []
+
+    for site in uploaded_sites:
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": mapping(
+                    build_square_site(
+                        site.longitude,
+                        site.latitude,
+                        site.site_size_m,
+                    )
+                ),
+                "properties": {
+                    "id": site.id,
+                    "name": site.name,
+                    "place_type": site.place_type,
+                    "notes": site.notes,
+                    "status": site.status,
+                    "inside_study_area": site.inside_study_area,
+                    "fuel_code": site.fuel_code,
+                    "fuel_type": site.to_dict().get("fuelType"),
+                    "slope_deg": site.slope_deg,
+                    "fire_year": site.fire_year,
+                    "fire_type": site.fire_type,
+                    "hazard_score": site.hazard_score,
+                    "hazard_level": site.hazard_level,
+                    "site_vulnerability_score": site.site_vulnerability_score,
+                    "site_priority_score": site.site_priority_score,
+                    "site_priority_level": site.site_priority_level,
+                    "created_by_user_id": site.created_by_user_id,
+                },
+            }
+        )
+
+    return {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+
 def get_raster_overlay_info(layer_name: str) -> dict:
     # Return frontend overlay metadata, including bounds and the PNG URL.
     tif_path = RASTER_FILES.get(layer_name)
@@ -129,44 +175,3 @@ def get_raster_overlay_image(layer_name: str) -> tuple[BytesIO, str]:
     image_bytes = BytesIO(png_path.read_bytes())
     image_bytes.seek(0)
     return image_bytes, "image/png"
-
-
-def load_uploaded_sites() -> dict:
-    uploaded_sites = db.session.execute(
-        db.select(UploadedSite).order_by(UploadedSite.id.asc())
-    ).scalars().all()
-
-    features = []
-
-    for site in uploaded_sites:
-        features.append(
-            {
-                "type": "Feature",
-                "geometry": mapping(
-                    build_square_site(
-                        site.longitude,
-                        site.latitude,
-                        site.site_size_m,
-                    )
-                ),
-                "properties": {
-                    "id": site.id,
-                    "name": site.name,
-                    "place_type": site.place_type,
-                    "notes": site.notes,
-                    "status": site.status,
-                    "inside_study_area": site.inside_study_area,
-                    "hazard_score": site.hazard_score,
-                    "hazard_level": site.hazard_level,
-                    "site_vulnerability_score": site.site_vulnerability_score,
-                    "site_priority_score": site.site_priority_score,
-                    "site_priority_level": site.site_priority_level,
-                    "created_by_user_id": site.created_by_user_id,
-                },
-            }
-        )
-
-    return {
-        "type": "FeatureCollection",
-        "features": features,
-    }
