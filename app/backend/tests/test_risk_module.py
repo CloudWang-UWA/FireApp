@@ -44,7 +44,29 @@ class SiteVulnerabilityTests(unittest.TestCase):
         result = calculate_site_vulnerability("Artefacts / Scatter")
         self.assertEqual(
             result["site_vulnerability_score"],
-            SiteVulnerabilityScore.MEDIUM,
+            SiteVulnerabilityScore.LOW,
+        )
+
+    def test_council_keyword_match(self):
+        result = calculate_site_vulnerability(
+            None,
+            source="council",
+            place_name="Albany Town Hall",
+        )
+        self.assertEqual(
+            result["site_vulnerability_score"],
+            SiteVulnerabilityScore.HIGH,
+        )
+
+    def test_council_default_low(self):
+        result = calculate_site_vulnerability(
+            None,
+            source="council",
+            place_name="Ballymena",
+        )
+        self.assertEqual(
+            result["site_vulnerability_score"],
+            SiteVulnerabilityScore.LOW,
         )
 
 

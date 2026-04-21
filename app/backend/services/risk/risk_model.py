@@ -35,8 +35,12 @@ def calculate_hazard(fuel_code, slope_deg, fire_year, fire_type):
     }
 
 
-def calculate_site_vulnerability(place_type):
-    site_vulnerability_score = get_site_vulnerability_score(place_type)
+def calculate_site_vulnerability(place_type, source=None, place_name=None):
+    site_vulnerability_score = get_site_vulnerability_score(
+        place_type,
+        source=source,
+        raw_place_name=place_name,
+    )
 
     return {
         "site_vulnerability_score": site_vulnerability_score

@@ -12,8 +12,8 @@ def get_risk_status() -> dict:
 def get_hazard_result(fuel_code, slope_deg, fire_year, fire_type):
     return calculate_hazard(fuel_code, slope_deg, fire_year, fire_type)
 
-def get_site_vulnerability_result(place_type):
-    return calculate_site_vulnerability(place_type)
+def get_site_vulnerability_result(place_type, source=None, place_name=None):
+    return calculate_site_vulnerability(place_type, source=source, place_name=place_name)
 
 
 def get_granite_influence_result(on_granite, distance_to_granite):

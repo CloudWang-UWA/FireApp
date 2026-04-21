@@ -3,11 +3,13 @@ from .lookups import SLOPE_SCORE_BANDS
 from .lookups import FireHistoryScore
 from .lookups import FIRE_HISTORY_SCORE_BANDS
 from .lookups import HAZARD_SCORE_BANDS
+from .lookups import COUNCIL_PLACE_NAME_KEYWORDS
 from .lookups import PLACE_TYPE_ALIASES
 from .lookups import PLACE_TYPE_SCORE_MAP
 from .lookups import GraniteScore
 from .lookups import GRANITE_DISTANCE_SCORE_BANDS
 from .lookups import INTEGRATED_PRIORITY_BANDS
+from .lookups import SiteVulnerabilityScore
 from datetime import date
 
 
@@ -60,9 +62,26 @@ def get_fire_history_score(fire_year, fire_type):
     return FireHistoryScore.NO_RECENT_FIRE
 
 
+def get_council_place_name_score(raw_place_name):
+    if raw_place_name is None:
+        return SiteVulnerabilityScore.LOW
+
+    place_name = str(raw_place_name).strip().lower()
+    if not place_name:
+        return SiteVulnerabilityScore.LOW
+
+    for place_type, keywords in COUNCIL_PLACE_NAME_KEYWORDS.items():
+        if any(keyword in place_name for keyword in keywords):
+            return PLACE_TYPE_SCORE_MAP.get(place_type, SiteVulnerabilityScore.LOW)
+
+    return SiteVulnerabilityScore.LOW
+
+
 # Get the cultural heritage sites score based on their place type, eg. Artefacts / Scatter
-def get_site_vulnerability_score(raw_place_type):
-    if (raw_place_type is None):
+def get_site_vulnerability_score(raw_place_type, source=None, raw_place_name=None):
+    if raw_place_type is None:
+        if str(source).strip().lower() == "council":
+            return get_council_place_name_score(raw_place_name)
         return None
     
     place_types = []
