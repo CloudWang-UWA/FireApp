@@ -93,9 +93,8 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
         created_by_user_id=user_id,
     )
 
-    site_risk = None
     is_risk_available = False
-    out_of_area_warning = None
+    warning_message = None
     uploaded_site.inside_study_area = inside_study_area
 
     if inside_study_area:
@@ -106,27 +105,37 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
             validated_data["site_size_m"],
         )
 
-        uploaded_site.hazard_score = site_risk["hazard"]["hazard_score"]
-        uploaded_site.hazard_level = site_risk["hazard"]["hazard_level"]
-        uploaded_site.fuel_code = site_risk["hazard"].get("fuel_code")
-        uploaded_site.slope_deg = site_risk["hazard"].get("slope_deg")
-        uploaded_site.fire_year = site_risk["hazard"].get("fire_year")
-        uploaded_site.fire_type = site_risk["hazard"].get("fire_type")
+        hazard_result = site_risk["hazard"]
+        priority_result = site_risk["sitePriority"]
+        has_calculated_risk = (
+            hazard_result["hazard_score"] is not None
+            and hazard_result["hazard_level"] is not None
+            and priority_result["site_priority_score"] is not None
+            and priority_result["site_priority_level"] is not None
+        )
 
-        uploaded_site.site_vulnerability_score = site_risk["siteVulnerability"][
-            "site_vulnerability_score"
-        ]
+        if has_calculated_risk:
+            uploaded_site.hazard_score = hazard_result["hazard_score"]
+            uploaded_site.hazard_level = hazard_result["hazard_level"]
+            uploaded_site.fuel_code = hazard_result.get("fuel_code")
+            uploaded_site.slope_deg = hazard_result.get("slope_deg")
+            uploaded_site.fire_year = hazard_result.get("fire_year")
+            uploaded_site.fire_type = hazard_result.get("fire_type")
 
-        uploaded_site.site_priority_score = site_risk["sitePriority"][
-            "site_priority_score"
-        ]
-        uploaded_site.site_priority_level = site_risk["sitePriority"][
-            "site_priority_level"
-        ]
+            uploaded_site.site_vulnerability_score = site_risk["siteVulnerability"][
+                "site_vulnerability_score"
+            ]
 
-        is_risk_available = True
+            uploaded_site.site_priority_score = priority_result["site_priority_score"]
+            uploaded_site.site_priority_level = priority_result["site_priority_level"]
+            is_risk_available = True
+        else:
+            warning_message = (
+                "Risk could not be calculated for this site location because "
+                "no valid environmental data was available."
+            )
     else:
-        out_of_area_warning = (
+        warning_message = (
             "This site is outside the current study area, so risk was not calculated."
         )
 
@@ -137,5 +146,5 @@ def create_uploaded_site(site_data: dict, user_id: int) -> dict:
         "site": uploaded_site.to_dict(),
         "insideStudyArea": inside_study_area,
         "riskAvailable": is_risk_available,
-        "outOfAreaWarning": out_of_area_warning,
+        "outOfAreaWarning": warning_message,
     }

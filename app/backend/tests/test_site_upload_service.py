@@ -162,6 +162,62 @@ class SiteUploadServiceTests(unittest.TestCase):
         self.assertIsNone(saved_site.hazard_score)
         self.assertIsNone(saved_site.site_priority_score)
 
+    # inside the study area, a site can still save even when no hazard is calculable
+    @patch("services.site_upload.site_upload_service.calculate_uploaded_site_risk")
+    def test_inside_area_without_calculable_risk(self, mock_calculate_uploaded_site_risk):
+        mock_calculate_uploaded_site_risk.return_value = {
+            "hazard": {
+                "hazard_score": None,
+                "hazard_level": None,
+                "fuel_code": None,
+                "fuel_type": None,
+                "slope_deg": None,
+                "fire_year": None,
+                "fire_type": None,
+            },
+            "siteVulnerability": {
+                "site_vulnerability_score": 2,
+            },
+            "sitePriority": {
+                "site_priority_score": None,
+                "site_priority_level": None,
+            },
+        }
+
+        result = create_uploaded_site(
+            {
+                "name": "No Data Site",
+                "placeType": "Artefacts / Scatter",
+                "latitude": -35.09,
+                "longitude": 117.90,
+                "siteSizeM": 350,
+                "locationSource": "manual",
+            },
+            self.user.id,
+        )
+
+        self.assertTrue(result["insideStudyArea"])
+        self.assertFalse(result["riskAvailable"])
+        self.assertEqual(
+            result["outOfAreaWarning"],
+            "Risk could not be calculated for this site location because no valid environmental data was available.",
+        )
+
+        saved_site = db.session.execute(
+            db.select(UploadedSite).where(UploadedSite.id == result["site"]["id"])
+        ).scalar_one()
+
+        self.assertTrue(saved_site.inside_study_area)
+        self.assertIsNone(saved_site.fuel_code)
+        self.assertIsNone(saved_site.slope_deg)
+        self.assertIsNone(saved_site.fire_year)
+        self.assertIsNone(saved_site.fire_type)
+        self.assertIsNone(saved_site.hazard_score)
+        self.assertIsNone(saved_site.hazard_level)
+        self.assertIsNone(saved_site.site_vulnerability_score)
+        self.assertIsNone(saved_site.site_priority_score)
+        self.assertIsNone(saved_site.site_priority_level)
+
 
 if __name__ == "__main__":
     unittest.main()
