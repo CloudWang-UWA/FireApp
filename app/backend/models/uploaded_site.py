@@ -20,6 +20,11 @@ class UploadedSite(db.Model):
 
     location_source = db.Column(db.String(50), nullable=False, default="manual")
     status = db.Column(db.String(50), nullable=False, default="submitted")
+    # Keep both values: the stored path is the backend file location, while the
+    # original filename is still handy to show back to users in the UI.
+    photo_path = db.Column(db.String(512), nullable=True)
+    photo_filename = db.Column(db.String(255), nullable=True)
+    photo_content_type = db.Column(db.String(100), nullable=True)
 
     # below is risk information
     inside_study_area = db.Column(db.Boolean, nullable=False, default=False)
@@ -69,6 +74,9 @@ class UploadedSite(db.Model):
             "siteSizeM": self.site_size_m,
             "locationSource": self.location_source,
             "status": self.status,
+            "photoPath": self.photo_path,
+            "photoFilename": self.photo_filename,
+            "photoContentType": self.photo_content_type,
             "createdByUserId": self.created_by_user_id,
             "createdAt": self.created_at.isoformat(),
             "updatedAt": self.updated_at.isoformat(),

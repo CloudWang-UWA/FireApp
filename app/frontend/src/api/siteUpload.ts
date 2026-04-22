@@ -21,6 +21,9 @@ export type UploadedSiteRecord = {
   siteSizeM: number
   locationSource: 'manual' | 'device_gps'
   status: string
+  photoPath: string | null
+  photoFilename: string | null
+  photoContentType: string | null
   createdByUserId: number
   createdAt: string
   updatedAt: string
@@ -69,4 +72,32 @@ export async function createSiteUpload(
   })
 
   return parseResponse(response)
+}
+
+export async function uploadSitePhoto(
+  token: string,
+  siteId: number,
+  photo: File,
+): Promise<UploadedSiteRecord> {
+  const formData = new FormData()
+  formData.append('photo', photo)
+
+  const response = await fetch(`${API_BASE_URL}/api/site-upload/sites/${siteId}/photo`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+
+  const result = (await response.json()) as {
+    error?: string
+    site?: UploadedSiteRecord
+  }
+
+  if (!response.ok || !result.site) {
+    throw new Error(result.error ?? 'Photo upload failed')
+  }
+
+  return result.site
 }

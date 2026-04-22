@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   createSiteUpload,
   type SiteUploadResponse,
+  uploadSitePhoto,
 } from '../../api/siteUpload'
 import { PLACE_TYPE_OPTIONS } from '../../config/placeTypes'
 
@@ -46,6 +47,7 @@ export function SiteUpload({
   const [locationMessage, setLocationMessage] = useState('')
   const [outOfAreaWarning, setOutOfAreaWarning] = useState('')
   const [uploadSummary, setUploadSummary] = useState<SiteUploadResponse | null>(null)
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
   const hasManualLocationEdit = useRef(false)
 
   function fillCurrentLocation() {
@@ -117,6 +119,15 @@ export function SiteUpload({
         locationSource: siteForm.locationSource,
       })
 
+      if (selectedPhoto) {
+        const updatedSite = await uploadSitePhoto(
+          authToken,
+          uploadResult.site.id,
+          selectedPhoto,
+        )
+        uploadResult.site = updatedSite
+      }
+
       setSuccessMessage('Site uploaded successfully')
       setUploadSummary(uploadResult)
       setOutOfAreaWarning(uploadResult.outOfAreaWarning ?? '')
@@ -127,6 +138,7 @@ export function SiteUpload({
         longitude: current.longitude,
         locationSource: current.locationSource,
       }))
+      setSelectedPhoto(null)
     } catch (submitError) {
       setSubmitError(
         submitError instanceof Error ? submitError.message : 'Upload failed',
@@ -195,6 +207,20 @@ export function SiteUpload({
               }
               rows={4}
             />
+          </label>
+
+          <label className="auth-field">
+            <span>Reference photo (optional)</span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(event) => {
+                setSelectedPhoto(event.target.files?.[0] ?? null)
+              }}
+            />
+            <small className="auth-help">
+              Upload one JPG, PNG, or WEBP image up to 5 MB
+            </small>
           </label>
 
           <label className="auth-field">
@@ -299,6 +325,9 @@ export function SiteUpload({
               Site <strong>{uploadSummary.site.name}</strong> was saved at{' '}
               {uploadSummary.site.latitude}, {uploadSummary.site.longitude}.
             </p>
+            {uploadSummary.site.photoFilename ? (
+              <p>Photo attached: {uploadSummary.site.photoFilename}</p>
+            ) : null}
           </section>
         ) : null}
       </section>

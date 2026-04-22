@@ -1,6 +1,10 @@
 import sys
+import shutil
+import tempfile
 import unittest
+from io import BytesIO
 from pathlib import Path
+from uuid import uuid4
 from unittest.mock import patch
 
 from flask import Flask
@@ -15,7 +19,9 @@ from models.user import User
 from models.user import db
 from services.site_upload.site_upload_service import create_uploaded_site
 from services.site_upload.site_upload_service import is_inside_study_area
+from services.site_upload.site_upload_service import save_uploaded_site_photo
 from services.site_upload.site_upload_service import validate_uploaded_site_data
+from werkzeug.datastructures import FileStorage
 
 
 class SiteUploadServiceTests(unittest.TestCase):
@@ -37,11 +43,16 @@ class SiteUploadServiceTests(unittest.TestCase):
         )
         db.session.add(self.user)
         db.session.commit()
+        # Track temp folders created by tests so we can remove them afterwards.
+        self.temp_dirs_to_clean: list[Path] = []
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
+        # Clean up any temp upload folders created during a test run.
+        for temp_dir in self.temp_dirs_to_clean:
+            shutil.rmtree(temp_dir, ignore_errors=True)
     
     # raw form input should be cleaned before saving
     def test_normalize_input(self):
@@ -217,6 +228,122 @@ class SiteUploadServiceTests(unittest.TestCase):
         self.assertIsNone(saved_site.site_vulnerability_score)
         self.assertIsNone(saved_site.site_priority_score)
         self.assertIsNone(saved_site.site_priority_level)
+
+    def test_save_site_photo(self):
+        temp_path = Path(tempfile.gettempdir()) / f"fire_app_site_upload_test_{uuid4().hex}"
+        temp_path.mkdir(parents=True, exist_ok=True)
+        self.temp_dirs_to_clean.append(temp_path)
+
+        with patch(
+            "services.site_upload.site_upload_service.PHOTO_UPLOAD_DIR",
+            new=temp_path,
+        ):
+            created_site = create_uploaded_site(
+                {
+                    "name": "Photo Site",
+                    "placeType": "Artefacts / Scatter",
+                    "latitude": -34.10,
+                    "longitude": 117.90,
+                    "siteSizeM": 350,
+                    "locationSource": "manual",
+                },
+                self.user.id,
+            )
+
+            photo = FileStorage(
+                stream=BytesIO(b"fake image bytes"),
+                filename="site-photo.jpg",
+                content_type="image/jpeg",
+            )
+
+            result = save_uploaded_site_photo(created_site["site"]["id"], self.user.id, photo)
+
+            saved_site = db.session.execute(
+                db.select(UploadedSite).where(UploadedSite.id == result["site"]["id"])
+            ).scalar_one()
+
+            self.assertEqual(saved_site.photo_filename, "site-photo.jpg")
+            self.assertEqual(saved_site.photo_content_type, "image/jpeg")
+            self.assertTrue(saved_site.photo_path.endswith(".jpg"))
+            self.assertTrue(any(temp_path.iterdir()))
+            photo.close()
+
+    def test_replace_site_photo(self):
+        temp_path = Path(tempfile.gettempdir()) / f"fire_app_site_upload_test_{uuid4().hex}"
+        temp_path.mkdir(parents=True, exist_ok=True)
+        self.temp_dirs_to_clean.append(temp_path)
+
+        with patch(
+            "services.site_upload.site_upload_service.PHOTO_UPLOAD_DIR",
+            new=temp_path,
+        ):
+            created_site = create_uploaded_site(
+                {
+                    "name": "Photo Replace Site",
+                    "placeType": "Artefacts / Scatter",
+                    "latitude": -34.10,
+                    "longitude": 117.90,
+                    "siteSizeM": 350,
+                    "locationSource": "manual",
+                },
+                self.user.id,
+            )
+
+            first_photo = FileStorage(
+                stream=BytesIO(b"first image bytes"),
+                filename="first.jpg",
+                content_type="image/jpeg",
+            )
+            first_result = save_uploaded_site_photo(
+                created_site["site"]["id"],
+                self.user.id,
+                first_photo,
+            )
+            first_path = Path(first_result["site"]["photoPath"])
+            if not first_path.is_absolute():
+                first_path = BACKEND_DIR / first_path
+
+            second_photo = FileStorage(
+                stream=BytesIO(b"second image bytes"),
+                filename="second.jpg",
+                content_type="image/jpeg",
+            )
+            second_result = save_uploaded_site_photo(
+                created_site["site"]["id"],
+                self.user.id,
+                second_photo,
+            )
+            second_path = Path(second_result["site"]["photoPath"])
+            if not second_path.is_absolute():
+                second_path = BACKEND_DIR / second_path
+
+            self.assertFalse(first_path.exists())
+            self.assertTrue(second_path.exists())
+            self.assertEqual(second_result["site"]["photoFilename"], "second.jpg")
+
+    def test_invalid_photo_extension(self):
+        created_site = create_uploaded_site(
+            {
+                "name": "Bad Photo Site",
+                "placeType": "Artefacts / Scatter",
+                "latitude": -34.10,
+                "longitude": 117.90,
+                "siteSizeM": 350,
+                "locationSource": "manual",
+            },
+            self.user.id,
+        )
+
+        photo = FileStorage(
+            stream=BytesIO(b"not an image"),
+            filename="notes.txt",
+            content_type="text/plain",
+        )
+
+        with self.assertRaises(ValueError) as error:
+            save_uploaded_site_photo(created_site["site"]["id"], self.user.id, photo)
+
+        self.assertEqual(str(error.exception), "Photo must be a JPG, PNG, or WEBP image")
 
 
 if __name__ == "__main__":
