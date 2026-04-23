@@ -1,0 +1,137 @@
+{
+  "study_area_id": "albany_mount_barker_regional_envelope_v1",
+  "study_area_bbox_7844": [
+    117.18,
+    -35.32,
+    118.58,
+    -34.22
+  ],
+  "analysis_crs": "EPSG:7850",
+  "analysis_bbox_7850": [
+    516361.1052215066,
+    6090324.1768099405,
+    645539.1807571414,
+    6213435.775347568
+  ],
+  "generated_at": "2026-04-23T23:25:31.209966+00:00",
+  "files": {
+    "sites": {
+      "gpkg": "analysis_ready/sites.gpkg",
+      "geojson": "analysis_ready/sites.geojson",
+      "feature_count": 296,
+      "gpkg_crs": "EPSG:7850",
+      "geojson_crs": "EPSG:4326",
+      "source_counts": {
+        "council": 104,
+        "lodged": 118,
+        "registered": 74
+      }
+    },
+    "granite": {
+      "gpkg": "analysis_ready/granite.gpkg",
+      "geojson": "analysis_ready/granite.geojson",
+      "feature_count": 295,
+      "gpkg_crs": "EPSG:7850",
+      "geojson_crs": "EPSG:4326",
+      "code_counts": {
+        "Agp": 8,
+        "Agv": 2,
+        "P_gh": 1,
+        "P_gm": 6,
+        "P_gp": 184,
+        "P_ng": 45,
+        "P_ns": 49
+      }
+    },
+    "fire_history": {
+      "gpkg": "analysis_ready/fire_history.gpkg",
+      "geojson": "analysis_ready/fire_history.geojson",
+      "feature_count": 1209,
+      "gpkg_crs": "EPSG:7850",
+      "geojson_crs": "EPSG:4326"
+    },
+    "fuel": {
+      "tif": "analysis_ready/fuel.tif",
+      "png": "analysis_ready/fuel.png",
+      "json": "analysis_ready/fuel.json",
+      "crs": "EPSG:7850",
+      "nodata": 0,
+      "bounds": [
+        516361.1052215066,
+        6090324.1768099405,
+        645539.1807571414,
+        6213435.775347568
+      ],
+      "resolution": [
+        89.95687711395183,
+        89.99385858013714
+      ],
+      "width": 1436,
+      "height": 1368,
+      "source_dataset": "csiro_fuel_classification"
+    },
+    "slope": {
+      "tif": "analysis_ready/slope.tif",
+      "png": "analysis_ready/slope.png",
+      "json": "analysis_ready/slope.json",
+      "crs": "EPSG:7850",
+      "nodata": -9999.0,
+      "bounds": [
+        516349.48190359306,
+        6090310.1895170435,
+        645548.9093130426,
+        6213452.695316569
+      ],
+      "resolution": [
+        25.46303259941853,
+        30.75487157830303
+      ],
+      "width": 5074,
+      "height": 4004,
+      "source_dataset": "ga_dem_s_1_second_smoothed_1300343"
+    }
+  },
+  "raw_sources": {
+    "dplh_register": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/Aboriginal_Cultural_Heritage_Register_DPLH_099_WA_GDA2020_Public_Secure_Geopackage.zip",
+      "sha256": "7731bb2466d3a30ddf540d44f4809284d14ebaeae0e2d9d138d25d70f3d22f01"
+    },
+    "dplh_lodged": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/Aboriginal_Cultural_Heritage_Lodged_DPLH_100_WA_GDA2020_Public_Secure_Geopackage.zip",
+      "sha256": "83bfbc632e0987fd5ec1835f7d2b94ae1fe544bf244a71750cf5b013d6d80d19"
+    },
+    "dplh_survey_areas": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/Aboriginal_Cultural_Heritage_Survey_Areas_DPLH_080_WA_GDA2020_Public_Secure_Geopackage.zip",
+      "sha256": "d0613caeb871582453b1f30cccba48e0a8b17e880fa441a4c2449d2e8c550869"
+    },
+    "dplh_historic": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/Aboriginal_Cultural_Heritage_Historic_DPLH_098_WA_GDA2020_Public_Secure_Geopackage.zip",
+      "sha256": "8a99459248da80ac9e3fb3a44f620330c943ee554d5ced169a2bfb10a33609c0"
+    },
+    "dplh_heritage_council_state_register": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/Heritage_Council_State_Register_DPLH_006_WA_GDA2020_Public_Secure_Geopackage.zip",
+      "sha256": "fe038bf442c0bfb92e4704fa2b009fe0849ea35d3d9671edecf0463936675f25"
+    },
+    "gswa_geology_250k_mount_barker_albany": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/new/MAPSHEET_250k_MountBarker_Albany_SI5011_SI5015_GDA2020_SHP.zip",
+      "sha256": "3730a0a2f4950e8efea93a52d132251c938a542cbf94319415f6d9ecfa57efea"
+    },
+    "ga_dem_s_1_second_smoothed_1300343": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/new/1_Second_DEM_Smoothed_1300343.zip",
+      "sha256": "f42a9186d984c4466e0de16d14aefb83b0f450b0c12b5597ea89e309c26872ad"
+    },
+    "csiro_fuel_classification": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/Bushfire_Fuel_Classification_fuel_types_map/Bushfire fuel classification fuel types map release 2.tif",
+      "sha256": "11e9d621be26b0939be0d975a859f3a550c7fa1838605a95920c8a94c1f03b45"
+    },
+    "dbca_fire_history": {
+      "path": "/home/god/Fire-Vulnerability-App/app/data/raw/DBCA_Fire_History/DBCA_Fire_History_DBCA_060_WA_GDA2020_Public_Geopackage.zip",
+      "sha256": "674ca33abda17d29cbeb26ff269bef06275da9fe1f654227c87bb4f337840b7e"
+    }
+  },
+  "notes": {
+    "reference_standard": "QGIS outputs from data_change.zip are regression oracles only; the canonical runtime sources remain the raw vendor datasets.",
+    "fuel_semantics": "analysis_ready/fuel.tif contains only the authoritative CSIRO primary fuel surface. Raster nodata is 0; cell summaries use null when no valid fuel pixels are present.",
+    "slope_rule": "Slope is calculated across the full canonical DEM and clipped afterwards to the study area."
+  }
+}
