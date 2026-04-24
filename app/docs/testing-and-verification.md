@@ -7,7 +7,7 @@ This branch verifies the data processing module only. Backend, frontend, and ris
 Run:
 
 ```bash
-cd /home/god/Fire-Vulnerability-App
+cd <repo-root>
 PYTHONPATH=app/etl .venv/bin/pytest app/etl/tests -q
 ```
 

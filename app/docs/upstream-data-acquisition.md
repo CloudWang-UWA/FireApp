@@ -5,7 +5,7 @@ The repository includes an optional acquisition CLI for discovering and download
 Run:
 
 ```bash
-cd /home/god/Fire-Vulnerability-App
+cd <repo-root>
 PYTHONPATH=app/etl .venv/bin/python -m fire_vulnerability_etl.upstream
 ```
 

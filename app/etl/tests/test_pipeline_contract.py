@@ -19,6 +19,7 @@ from fire_vulnerability_etl.config import (
     DATA_ZIP_PATH,
     DEFAULT_VECTOR_CRS,
     RAW_DATA_DIR,
+    REPO_ROOT,
     STUDY_AREA_DESCRIPTION,
     STUDY_AREA_ID,
     study_area_bbox,
@@ -88,6 +89,11 @@ def _skip_if_canonical_raw_sources_are_unavailable() -> None:
         pytest.skip(f"Canonical raw sources are not available in this checkout: {exc}")
 
 
+def _resolve_manifest_path(path_value: str) -> Path:
+    path = Path(path_value)
+    return path if path.is_absolute() else REPO_ROOT / path
+
+
 @pytest.fixture(scope="session")
 def reference_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     if not REFERENCE_ARCHIVE_PATH.exists():
@@ -134,6 +140,7 @@ def test_pipeline_contract(pipeline_outputs) -> None:
     assert manifest["outputs"]["risk_input_grid"] == "risk_input_grid.gpkg"
     assert set(manifest["excluded_scoring_fields"]) == EXCLUDED_SCORING_FIELDS
     assert not EXCLUDED_SCORING_FIELDS & set(risk_input_grid.columns)
+    assert not Path(manifest["raw_data_dir"]).is_absolute()
 
     assert risk_input_grid.crs.to_epsg() == 7850
     assert len(risk_input_grid) == manifest["grid_summary"]["total_cells"]
@@ -168,12 +175,18 @@ def test_pipeline_contract(pipeline_outputs) -> None:
         "csiro_fuel_classification",
         "dbca_fire_history",
     }
-    assert Path(manifest["raw_sources"][CANONICAL_DEM_DATASET_ID]["path"]).resolve() == CANONICAL_DEM_SOURCE.resolve()
     assert (
-        Path(manifest["raw_sources"][CANONICAL_GEOLOGY_DATASET_ID]["path"]).resolve()
+        _resolve_manifest_path(manifest["raw_sources"][CANONICAL_DEM_DATASET_ID]["path"]).resolve()
+        == CANONICAL_DEM_SOURCE.resolve()
+    )
+    assert (
+        _resolve_manifest_path(manifest["raw_sources"][CANONICAL_GEOLOGY_DATASET_ID]["path"]).resolve()
         == CANONICAL_GEOLOGY_SOURCE.resolve()
     )
-    assert Path(manifest["raw_sources"]["csiro_fuel_classification"]["path"]).resolve() == CANONICAL_FUEL_SOURCE.resolve()
+    assert (
+        _resolve_manifest_path(manifest["raw_sources"]["csiro_fuel_classification"]["path"]).resolve()
+        == CANONICAL_FUEL_SOURCE.resolve()
+    )
 
     assert manifest["outputs"]["analysis_ready"] == {
         "directory": "analysis_ready",
@@ -208,9 +221,20 @@ def test_pipeline_contract(pipeline_outputs) -> None:
     assert set(analysis_manifest["files"]) == {"sites", "granite", "fire_history", "fuel", "slope"}
 
     raw_sources = analysis_manifest["raw_sources"]
-    assert Path(raw_sources[CANONICAL_DEM_DATASET_ID]["path"]).resolve() == CANONICAL_DEM_SOURCE.resolve()
-    assert Path(raw_sources[CANONICAL_GEOLOGY_DATASET_ID]["path"]).resolve() == CANONICAL_GEOLOGY_SOURCE.resolve()
-    assert Path(raw_sources["csiro_fuel_classification"]["path"]).resolve() == CANONICAL_FUEL_SOURCE.resolve()
+    assert all(not Path(source["path"]).is_absolute() for source in manifest["raw_sources"].values())
+    assert all(not Path(source["path"]).is_absolute() for source in raw_sources.values())
+    assert (
+        _resolve_manifest_path(raw_sources[CANONICAL_DEM_DATASET_ID]["path"]).resolve()
+        == CANONICAL_DEM_SOURCE.resolve()
+    )
+    assert (
+        _resolve_manifest_path(raw_sources[CANONICAL_GEOLOGY_DATASET_ID]["path"]).resolve()
+        == CANONICAL_GEOLOGY_SOURCE.resolve()
+    )
+    assert (
+        _resolve_manifest_path(raw_sources["csiro_fuel_classification"]["path"]).resolve()
+        == CANONICAL_FUEL_SOURCE.resolve()
+    )
 
     assert not (analysis_dir / "site.gpkg").exists()
     assert not (analysis_dir / "fuel_primary.tif").exists()

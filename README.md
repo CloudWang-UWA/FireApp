@@ -19,7 +19,7 @@ This branch adds the data processing module for the Albany/Mount Barker study ar
 Create a Python environment and install the ETL package:
 
 ```bash
-cd /home/god/Fire-Vulnerability-App
+cd <repo-root>
 python3 -m venv .venv
 .venv/bin/pip install --upgrade pip
 .venv/bin/pip install -e app/etl
@@ -42,7 +42,7 @@ The raw source files are not committed because they are vendor source packages a
 ## Run The Data Processing Pipeline
 
 ```bash
-cd /home/god/Fire-Vulnerability-App
+cd <repo-root>
 PYTHONPATH=app/etl .venv/bin/python -m fire_vulnerability_etl.cli
 ```
 
@@ -86,7 +86,7 @@ Fuel is authoritative CSIRO-only in the default processing path. Raster missing 
 Run the ETL tests:
 
 ```bash
-cd /home/god/Fire-Vulnerability-App
+cd <repo-root>
 PYTHONPATH=app/etl .venv/bin/pytest app/etl/tests -q
 ```
 
