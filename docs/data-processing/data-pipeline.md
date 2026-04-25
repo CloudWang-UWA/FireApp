@@ -143,7 +143,7 @@ Grid-level slope attributes include:
 Canonical raw mode writes:
 
 - `manifest.json`
-- `risk_input_grid.gpkg`
+- `grid_output.gpkg`
 - `analysis_ready/interface_manifest.json`
 - `analysis_ready/sites.gpkg`
 - `analysis_ready/sites.geojson`
@@ -158,7 +158,7 @@ Canonical raw mode writes:
 - `analysis_ready/slope.png`
 - `analysis_ready/slope.json`
 
-`risk_input_grid.gpkg` is the handoff dataset for the risk module. It intentionally excludes score and classification fields such as `risk_score`, `risk_level`, `hazard_score`, `fuel_band`, `slope_band`, and `scoring_status`.
+`grid_output.gpkg` is a processed grid-level output for QA and downstream reference. It intentionally excludes score and classification fields such as `risk_score`, `risk_level`, `hazard_score`, `fuel_band`, `slope_band`, and `scoring_status`.
 
 ## Overlay JSON Contract
 

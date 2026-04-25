@@ -120,13 +120,14 @@ def test_pipeline_contract(pipeline_outputs) -> None:
 
     manifest = json.loads(outputs.manifest_path.read_text(encoding="utf-8"))
     analysis_manifest = json.loads(outputs.analysis_ready_manifest_path.read_text(encoding="utf-8"))
-    risk_input_grid = gpd.read_file(outputs.risk_input_grid_path)
+    grid_output = gpd.read_file(outputs.grid_output_path)
     analysis_dir = outputs.analysis_ready_dir
     assert analysis_dir is not None
 
     output_dir = outputs.manifest_path.parent
-    assert outputs.risk_input_grid_path.name == "risk_input_grid.gpkg"
+    assert outputs.grid_output_path.name == "grid_output.gpkg"
     assert not (output_dir / "metadata.json").exists()
+    assert not (output_dir / "risk_input_grid.gpkg").exists()
     assert not (output_dir / "risk_grid.geojson").exists()
     assert not (output_dir / "risk_grid_internal.geojson").exists()
     assert not (output_dir / "risk_grid_export.csv").exists()
@@ -137,13 +138,13 @@ def test_pipeline_contract(pipeline_outputs) -> None:
     assert manifest["study_area"]["bbox_7844"] == list(study_area_bbox(DEFAULT_VECTOR_CRS))
     assert manifest["study_area"]["bbox_7850"] == list(BBOX_7850)
     assert manifest["grid_summary"]["total_cells"] == 16120
-    assert manifest["outputs"]["risk_input_grid"] == "risk_input_grid.gpkg"
+    assert manifest["outputs"]["grid_output"] == "grid_output.gpkg"
     assert set(manifest["excluded_scoring_fields"]) == EXCLUDED_SCORING_FIELDS
-    assert not EXCLUDED_SCORING_FIELDS & set(risk_input_grid.columns)
+    assert not EXCLUDED_SCORING_FIELDS & set(grid_output.columns)
     assert not Path(manifest["raw_data_dir"]).is_absolute()
 
-    assert risk_input_grid.crs.to_epsg() == 7850
-    assert len(risk_input_grid) == manifest["grid_summary"]["total_cells"]
+    assert grid_output.crs.to_epsg() == 7850
+    assert len(grid_output) == manifest["grid_summary"]["total_cells"]
     assert {
         "cell_id",
         "dataset_version",
@@ -162,7 +163,7 @@ def test_pipeline_contract(pipeline_outputs) -> None:
         "centroid_lon",
         "centroid_lat",
         "qa_flags",
-    } <= set(risk_input_grid.columns)
+    } <= set(grid_output.columns)
 
     assert set(manifest["raw_sources"]) >= {
         "dplh_register",
@@ -287,11 +288,11 @@ def test_pipeline_contract(pipeline_outputs) -> None:
         [[-35.330317033715794, 117.17750088833363], [-34.20980283202787, 118.60121385164413]],
     )
 
-    assert "dea_landcover_fallback" not in set(risk_input_grid["fuel_source_dataset"].dropna())
-    assert "fallback_landcover_support" not in set(risk_input_grid["fuel_support_status"].dropna())
-    assert set(risk_input_grid["fuel_source_dataset"].dropna()) <= {"csiro_primary", "none"}
-    assert set(risk_input_grid["fuel_support_status"].dropna()) <= {"supported", "missing_fuel_data"}
-    missing_fuel = risk_input_grid[risk_input_grid["fuel_source_dataset"] == "none"]
+    assert "dea_landcover_fallback" not in set(grid_output["fuel_source_dataset"].dropna())
+    assert "fallback_landcover_support" not in set(grid_output["fuel_support_status"].dropna())
+    assert set(grid_output["fuel_source_dataset"].dropna()) <= {"csiro_primary", "none"}
+    assert set(grid_output["fuel_support_status"].dropna()) <= {"supported", "missing_fuel_data"}
+    missing_fuel = grid_output[grid_output["fuel_source_dataset"] == "none"]
     assert not missing_fuel.empty
     assert missing_fuel["fuel_mode_code"].isna().all()
     assert set(missing_fuel["fuel_support_status"]) == {"missing_fuel_data"}

@@ -42,7 +42,7 @@ Required source packages:
 - Aboriginal Cultural Heritage Historic, DPLH-098
 - Heritage Council State Register, DPLH-006
 
-The public `sites` output includes registered, lodged, and council records only. Survey and historic records are retained as internal context for the pre-risk grid.
+The public `sites` output includes registered, lodged, and council records only. Survey and historic records are retained as internal context for the processed grid output.
 
 ### Geology
 
@@ -91,7 +91,7 @@ app/data/derived
 The default processing outputs are:
 
 - `manifest.json`
-- `risk_input_grid.gpkg`
+- `grid_output.gpkg`
 - `analysis_ready/*`
 
 Risk-scored outputs, frontend map outputs, and backend API artifacts are outside the scope of this module.

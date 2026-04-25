@@ -9,7 +9,7 @@ The data processing module prepares spatial inputs for a separate risk module. I
 - selecting the canonical raw sources
 - clipping and cleaning vector layers
 - preparing analysis-ready vector and raster outputs
-- summarising raster and vector inputs into a pre-risk grid
+- summarising raster and vector inputs into a processed grid output
 - recording source provenance and output contracts
 
 It is not responsible for risk scoring, risk level classification, backend APIs, or frontend map rendering.
@@ -39,7 +39,7 @@ Required packages:
 - `Aboriginal_Cultural_Heritage_Historic_DPLH_098_WA_GDA2020_Public_Secure_Geopackage.zip`
 - `Heritage_Council_State_Register_DPLH_006_WA_GDA2020_Public_Secure_Geopackage.zip`
 
-Public sites output includes registered, lodged, and council records only. Survey and historic records are retained as internal processing context for the pre-risk grid.
+Public sites output includes registered, lodged, and council records only. Survey and historic records are retained as internal processing context for the processed grid output.
 
 Expected public site counts:
 
@@ -125,7 +125,7 @@ It is not a canonical raw source. The default runtime must reproduce the referen
 The processing module writes:
 
 - `app/data/derived/manifest.json`
-- `app/data/derived/risk_input_grid.gpkg`
+- `app/data/derived/grid_output.gpkg`
 - `app/data/derived/analysis_ready/interface_manifest.json`
 - `app/data/derived/analysis_ready/sites.gpkg`
 - `app/data/derived/analysis_ready/sites.geojson`
@@ -147,15 +147,15 @@ The module does not write:
 - `risk_grid_internal.geojson`
 - `risk_grid_export.csv`
 
-## Risk Module Handoff
+## Grid Output
 
-The handoff file is:
+The grid-level processing output is:
 
 ```text
-app/data/derived/risk_input_grid.gpkg
+app/data/derived/grid_output.gpkg
 ```
 
-It contains processed input attributes for the risk module, including:
+It contains processed attributes for QA and downstream reference, including:
 
 - grid cell id and geometry
 - heritage context flags and counts
@@ -184,7 +184,7 @@ Expected validation targets:
 - sites: `296`
 - granite: `295`
 - fire history: `1209`
-- risk input grid cells: `16120`
+- grid output cells: `16120`
 - fuel raster CRS: `EPSG:7850`
 - fuel raster nodata: `0`
 - slope raster CRS: `EPSG:7850`

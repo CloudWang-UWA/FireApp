@@ -53,6 +53,6 @@ The acquisition CLI is separate from default processing:
 - default processing reads `app/data/raw`
 - acquisition writes `.cache/upstream`
 - analysis-ready outputs are written to `app/data/derived/analysis_ready`
-- pre-risk handoff data is written to `app/data/derived/risk_input_grid.gpkg`
+- processed grid output data is written to `app/data/derived/grid_output.gpkg`
 
 DEA landcover-derived support fuel is not consumed by the default processing path. The authoritative default fuel source is the CSIRO bushfire fuel classification raster.

@@ -1,7 +1,7 @@
 {
   "model_version": "albany-grid-v3",
   "study_area_id": "albany_mount_barker_regional_envelope_v1",
-  "generated_at": "2026-04-24T00:00:00+00:00",
+  "generated_at": "2026-04-25T00:00:00+00:00",
   "study_area": {
     "id": "albany_mount_barker_regional_envelope_v1",
     "description": "Albany Mount Barker regional analysis envelope",
@@ -34,7 +34,7 @@
     "recent_fire_cells": 602
   },
   "outputs": {
-    "risk_input_grid": "risk_input_grid.gpkg",
+    "grid_output": "grid_output.gpkg",
     "analysis_ready": {
       "directory": "analysis_ready",
       "interface_manifest": "analysis_ready/interface_manifest.json",
@@ -68,7 +68,7 @@
     "fuel_rule": "Fuel summaries use the dominant authoritative CSIRO bushfire fuel code only. DEA-derived fallback fuel is not consumed by the default raw pipeline. If a cell has no valid CSIRO fuel pixels, fuel_mode_code is null and fuel_source_dataset is none.",
     "slope_rule": "Slope is derived from the full canonical smoothed 1-second DEM-S before clipping to the study area, then aggregated by per-cell mean and p90 slope. Support status records empty, sparse, and sanitized-edge cells.",
     "fire_history_rule": "DBCA fire history is clipped to the study area in the source CRS before geometry cleaning. Recent disturbance is detected using a 5-year lookback.",
-    "handoff_rule": "risk_input_grid.gpkg is the pre-risk handoff dataset. It contains processed heritage, geology, fuel, slope, and fire-history attributes only; risk scoring fields are intentionally out of scope."
+    "grid_output_rule": "grid_output.gpkg is a processed grid-level data output for QA and downstream reference. It contains processed heritage, geology, fuel, slope, and fire-history attributes only; risk scoring fields are intentionally out of scope."
   },
   "excluded_scoring_fields": [
     "risk_score",

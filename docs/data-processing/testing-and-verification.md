@@ -18,7 +18,7 @@ The ETL test suite covers:
 - analysis-ready sites, granite, and fire history outputs
 - analysis-ready fuel and slope rasters
 - strict fuel missing-data semantics
-- pre-risk grid handoff schema
+- processed grid output schema
 - source archive validation for the legacy adapter path
 - optional regression comparisons against `data_change.zip`
 
@@ -29,7 +29,7 @@ Raw integration tests skip clearly when the required local raw source files are 
 After running the ETL, confirm that `app/data/derived` contains:
 
 - `manifest.json`
-- `risk_input_grid.gpkg`
+- `grid_output.gpkg`
 - `analysis_ready/interface_manifest.json`
 - `analysis_ready/sites.gpkg`
 - `analysis_ready/sites.geojson`
@@ -56,7 +56,7 @@ Confirm the expected counts:
 - sites: `296`
 - granite: `295`
 - fire history: `1209`
-- risk input grid cells: `16120`
+- grid output cells: `16120`
 
 Confirm fuel semantics:
 
@@ -65,9 +65,9 @@ Confirm fuel semantics:
 - `fuel_source_dataset` is only `csiro_primary` or `none`
 - no `dea_landcover_fallback` value is present
 
-Confirm the risk handoff boundary:
+Confirm the scoring boundary:
 
-- `risk_input_grid.gpkg` contains processed input attributes for the risk module
+- `grid_output.gpkg` contains processed grid-level attributes for QA and downstream reference
 - it does not contain risk scores, risk levels, hazard scores, or scoring status fields
 
 ## Known Data Risks
