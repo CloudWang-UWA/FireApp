@@ -6,6 +6,8 @@ The site upload module supports recording newly identified heritage sites throug
 
 If the site falls inside the current study area and valid environmental data is available, the module also calculates risk information for that uploaded site.
 
+Key implementation files for this module are listed in Appendix A.
+
 ## Inputs and Outputs
 
 The new site upload module receives form input from the frontend. Main user inputs are:
@@ -138,6 +140,8 @@ Current output logic:
 - serves the uploaded sites layer through `/api/layers/uploaded-sites`
 
 This allows uploaded sites to appear on the same map as the main risk outputs.
+
+Related API endpoints are listed in Appendix B.
 
 ## Testing
 
