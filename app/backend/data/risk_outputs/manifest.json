@@ -1,0 +1,119 @@
+{
+  "config": {
+    "excluded_site_ids": [
+      "ACH-00032790"
+    ],
+    "fire_type_codes": {
+      "999": 3,
+      "PB": 1,
+      "WF": 2
+    },
+    "granite_distance_score_bands": [
+      [
+        100,
+        2
+      ],
+      [
+        250,
+        1
+      ]
+    ],
+    "hazard_progress_step": 50000,
+    "integrated_priority_bands": [
+      [
+        0.0,
+        0.34,
+        1
+      ],
+      [
+        0.34,
+        0.67,
+        2
+      ],
+      [
+        0.67,
+        null,
+        3
+      ]
+    ],
+    "recorded_site_hazard_aggregation": "max"
+  },
+  "model_name": "current_demo_model",
+  "outputs": {
+    "granite_influence": {
+      "generated_at": "2026-04-25T02:50:47.475378+00:00",
+      "generated_files": [
+        "data\\risk_outputs\\granite_influence.gpkg",
+        "data\\risk_outputs\\granite_influence.geojson"
+      ],
+      "notes": [
+        "Granite influence shows how close a place is to granite, which may indicate nearby heritage areas: on granite = high, within 100 m = medium, and 100-250 m = low."
+      ],
+      "source_files": [
+        "data\\granite.gpkg"
+      ],
+      "stage": "granite_influence"
+    },
+    "hazard_overview": {
+      "generated_at": "2026-04-25T02:50:42.194845+00:00",
+      "generated_files": [
+        "data\\risk_outputs\\hazard_overview.gpkg"
+      ],
+      "notes": [
+        "Hazard overview is generated from fuel, slope, and fire history inputs."
+      ],
+      "source_files": [
+        "data\\fuel.tif",
+        "data\\slope.tif",
+        "data\\fire_history.gpkg"
+      ],
+      "stage": "hazard"
+    },
+    "precaution_zone": {
+      "generated_at": "2026-04-25T03:09:56.495306+00:00",
+      "generated_files": [
+        "data\\risk_outputs\\precaution_zone.gpkg",
+        "data\\risk_outputs\\precaution_zone.geojson"
+      ],
+      "notes": [
+        "Precaution zones show areas that may need extra care because local hazard overlaps with granite influence, which may indicate nearby unrecorded heritage areas."
+      ],
+      "source_files": [
+        "data\\risk_outputs\\hazard_overview.gpkg",
+        "data\\risk_outputs\\granite_influence.gpkg",
+        "data\\sites.gpkg"
+      ],
+      "stage": "precaution_zone"
+    },
+    "recorded_site_priority": {
+      "generated_at": "2026-04-25T02:51:03.622840+00:00",
+      "generated_files": [
+        "data\\risk_outputs\\recorded_site_priority.gpkg",
+        "data\\risk_outputs\\recorded_site_priority.geojson"
+      ],
+      "notes": [
+        "Recorded-site priority shows the relative priority of recorded heritage sites by combining site vulnerability with local hazard."
+      ],
+      "source_files": [
+        "data\\risk_outputs\\site_vulnerability.gpkg",
+        "data\\risk_outputs\\hazard_overview.gpkg"
+      ],
+      "stage": "recorded_site_priority"
+    },
+    "site_vulnerability": {
+      "generated_at": "2026-04-25T02:50:44.926687+00:00",
+      "generated_files": [
+        "data\\risk_outputs\\site_vulnerability.gpkg",
+        "data\\risk_outputs\\site_vulnerability.geojson"
+      ],
+      "notes": [
+        "Site vulnerability shows how vulnerable a recorded heritage place may be, based mainly on its place type."
+      ],
+      "source_files": [
+        "data\\sites.gpkg"
+      ],
+      "stage": "site_vulnerability"
+    }
+  },
+  "updated_at": "2026-04-25T03:09:56.495306+00:00"
+}

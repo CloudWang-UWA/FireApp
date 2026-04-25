@@ -7,10 +7,12 @@ BACKEND_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BACKEND_DIR))
 
 from services.risk.load_processed_data import load_granite_data
+from services.risk.metadata import require_files
 from services.risk.metadata import update_risk_manifest
 
 
 def main() -> None:
+    require_files([BACKEND_DIR / "data" / "granite.gpkg"])
     granite_data = load_granite_data()
 
     # Need to convert to metres to calculate distance.

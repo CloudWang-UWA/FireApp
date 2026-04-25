@@ -11,11 +11,19 @@ from services.risk.load_processed_data import load_granite_influence_data
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_sites_data
 from services.risk.config import EXCLUDED_SITE_IDS
+from services.risk.metadata import require_files
 from services.risk.metadata import update_risk_manifest
 from services.risk.risk_model import calculate_precaution_zone
 
 
 def prepare_inputs():
+    require_files(
+        [
+            BACKEND_DIR / "data" / "risk_outputs" / "hazard_overview.gpkg",
+            BACKEND_DIR / "data" / "risk_outputs" / "granite_influence.gpkg",
+            BACKEND_DIR / "data" / "sites.gpkg",
+        ]
+    )
     hazard_data = load_hazard_overview_data()
     granite_data = load_granite_influence_data()
     sites_data = load_sites_data().copy()

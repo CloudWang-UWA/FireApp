@@ -14,6 +14,7 @@ from services.risk.load_processed_data import load_slope_data
 from services.risk.load_processed_data import load_fire_history_data
 from services.risk.config import FIRE_TYPE_CODES
 from services.risk.config import HAZARD_PROGRESS_STEP
+from services.risk.metadata import require_files
 from services.risk.metadata import update_risk_manifest
 from services.risk.risk_service import get_hazard_result
 from services.risk.site_hazard import get_fuel_code
@@ -72,6 +73,13 @@ def build_fire_history_grids(fuel_data, fire_history_data):
 
 
 def main() -> None:
+    require_files(
+        [
+            BACKEND_DIR / "data" / "fuel.tif",
+            BACKEND_DIR / "data" / "slope.tif",
+            BACKEND_DIR / "data" / "fire_history.gpkg",
+        ]
+    )
     fuel_data = load_fuel_data()
     slope_data = load_slope_data()
     fire_history_data = load_fire_history_data()

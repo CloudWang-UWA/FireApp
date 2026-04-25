@@ -80,3 +80,12 @@ def update_risk_manifest(
         json.dumps(manifest, indent=2, sort_keys=True),
         encoding="utf-8",
     )
+
+
+def require_files(paths: list[Path]) -> None:
+    missing_paths = [path for path in paths if not path.exists()]
+    if not missing_paths:
+        return
+
+    missing_list = ", ".join(_to_relative_path(path) for path in missing_paths)
+    raise FileNotFoundError(f"Required input files are missing: {missing_list}")
