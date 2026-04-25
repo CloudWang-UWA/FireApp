@@ -16,6 +16,8 @@ To answer these, the module produces two outputs:
 
 This separation is intentional because known sites and potential heritage areas represent different kinds of evidence.
 
+The main risk outputs are precomputed in the backend rather than calculated dynamically on each request. This is because they are derived from relatively static spatial datasets and involve large study area processing, so precomputing improves performance and keeps map responses fast. The processing workflow is summarized in Appendix A.
+
 ## Inputs and Outputs
 
 The risk assessment module reads source data from `app/backend/data/`, copied from the data processing module's `app/data/derived/analysis_ready/`.
@@ -81,6 +83,8 @@ The precaution zone score also ranges from 0 to 1 and uses the same level thresh
 Cells with the same final precaution level are then merged into larger zones, resulting in three precaution zone levels on the map.
 
 The final precaution zone output includes the precaution score and level for each merged zone.
+
+Key implementation files for this workflow are listed in Appendix B.
 
 ## Configuration
 
