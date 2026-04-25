@@ -64,6 +64,10 @@ Recorded Site Priority is calculated for known heritage sites by combining local
 
 Hazard values are linked to each site using spatial joins. Recorded site hazard currently uses the configured aggregation method, which is currently set to `max` (highest overlapping hazard value). The final priority score is derived from normalized hazard and vulnerability scores.
 
+The recorded site priority score ranges from 0 to 1. Priority levels are classified as Low (0.00 to <0.34), Medium (0.34 to <0.67), and High (>= 0.67).
+
+The final recorded site output includes site identity, place type, source, the final priority score and level, and supporting environmental attributes such as fuel type, slope, and fire history where available.
+
 ---
 
 ### 5. Precaution Zone
@@ -71,6 +75,12 @@ Hazard values are linked to each site using spatial joins. Recorded site hazard 
 Precaution Zone is calculated for areas that may contain unrecorded heritage by combining local hazard and granite influence.
 
 Granite influence values are linked to hazard cells based on overlap with granite proximity zones. Hazard cells that overlap recorded sites are then removed from the output. The final precaution score is derived from normalized hazard and granite influence scores.
+
+The precaution zone score also ranges from 0 to 1 and uses the same level thresholds as recorded site priority: Low (0.00 to <0.34), Medium (0.34 to <0.67), and High (>= 0.67).
+
+Cells with the same final precaution level are then merged into larger zones, resulting in three precaution zone levels on the map.
+
+The final precaution zone output includes the precaution score and level for each merged zone.
 
 ## Configuration
 
