@@ -10,9 +10,35 @@ sys.path.insert(0, str(BACKEND_DIR))
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_site_vulnerability_data
 from services.risk.config import EXCLUDED_SITE_IDS
+from services.risk.config import RECORDED_SITE_HAZARD_AGGREGATION
 from services.risk.lookups import FUEL_TYPE_LABEL_MAP
 from services.risk.risk_model import calculate_site_priority
 from services.risk.scoring import get_hazard_level
+
+
+def build_site_hazard_lookup(joined: gpd.GeoDataFrame) -> pd.DataFrame:
+    if RECORDED_SITE_HAZARD_AGGREGATION != "max":
+        raise ValueError(
+            "Unsupported recorded-site hazard aggregation method: "
+            f"{RECORDED_SITE_HAZARD_AGGREGATION}"
+        )
+
+    # Future option: add area-weighted mean so large sites can use overlap area
+    # instead of only the maximum intersecting hazard cell.
+    joined_with_hazard = joined.dropna(subset=["hazard_score"]).copy()
+    if joined_with_hazard.empty:
+        return pd.DataFrame()
+
+    joined_with_hazard = joined_with_hazard.sort_values(
+        by=["site_row_id", "hazard_score"],
+        ascending=[True, False],
+    )
+    joined_with_hazard = joined_with_hazard.drop_duplicates(
+        subset=["site_row_id"],
+        keep="first",
+    )
+    return joined_with_hazard.set_index("site_row_id")
+
 
 # Build recorded site priority by matching each recorded site with hazard cells,
 # keeping the highest hazard score, and combining it with site vulnerability.
@@ -47,19 +73,7 @@ def main() -> None:
         predicate="intersects",
     )
 
-    # keep the joined hazard row with the highest hazard score for each site
-    joined_with_hazard = joined.dropna(subset=["hazard_score"]).copy()
-    max_hazard_rows = pd.DataFrame()
-    if not joined_with_hazard.empty:
-        joined_with_hazard = joined_with_hazard.sort_values(
-            by=["site_row_id", "hazard_score"],
-            ascending=[True, False],
-        )
-        joined_with_hazard = joined_with_hazard.drop_duplicates(
-            subset=["site_row_id"],
-            keep="first",
-        )
-        max_hazard_rows = joined_with_hazard.set_index("site_row_id")
+    site_hazard_rows = build_site_hazard_lookup(joined)
 
     fuel_codes = []
     fuel_labels = []
@@ -80,17 +94,20 @@ def main() -> None:
         else:
             site_vulnerability_score = None
 
-        # TODO: use area-weighted overlap instead of max hazard score if we need
-        # a better summary for large recorded sites later.
-        # get the site's highest-scoring hazard row from the joined hazard cells
-        max_hazard_row = max_hazard_rows.loc[site_row_id] if site_row_id in max_hazard_rows.index else None
+        # Current config uses the highest-scoring intersecting hazard cell.
+        # Future work may support area-weighted mean for large recorded sites.
+        site_hazard_row = (
+            site_hazard_rows.loc[site_row_id]
+            if site_row_id in site_hazard_rows.index
+            else None
+        )
 
-        if max_hazard_row is not None:
-            fuel_code = max_hazard_row.get("fuel_code")
-            slope_deg = max_hazard_row.get("slope_deg")
-            fire_year = max_hazard_row.get("fire_year")
-            fire_type = max_hazard_row.get("fire_type")
-            hazard_score = max_hazard_row.get("hazard_score")
+        if site_hazard_row is not None:
+            fuel_code = site_hazard_row.get("fuel_code")
+            slope_deg = site_hazard_row.get("slope_deg")
+            fire_year = site_hazard_row.get("fire_year")
+            fire_type = site_hazard_row.get("fire_type")
+            hazard_score = site_hazard_row.get("hazard_score")
         else:
             fuel_code = None
             slope_deg = None
