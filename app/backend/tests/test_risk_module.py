@@ -15,14 +15,14 @@ from services.risk.lookups import IntegratedPriorityLevel
 from services.risk.lookups import SiteVulnerabilityScore
 from services.risk.risk_model import calculate_hazard
 from services.risk.risk_model import calculate_precaution_zone
-from services.risk.risk_model import calculate_recorded_site_priority
+from services.risk.risk_model import calculate_site_priority
 from services.risk.risk_model import calculate_site_vulnerability
 from services.risk.scoring import get_fire_history_score
 from services.risk.scoring import get_granite_score
 from services.risk.scoring import get_hazard_level
 from services.risk.scoring import get_integrated_priority_level
 from services.risk.scoring import get_precaution_zone_score
-from services.risk.scoring import get_recorded_site_priority_score
+from services.risk.scoring import get_site_priority_score
 from services.risk.scoring import get_site_vulnerability_score
 from services.risk.scoring import normalize_granite_score
 from services.risk.scoring import normalize_hazard_score
@@ -116,8 +116,8 @@ class NormalizationTests(unittest.TestCase):
 
 
 class IntegratedScoreTests(unittest.TestCase):
-    def test_recorded_site_priority_score_uses_equal_weights(self):
-        score = get_recorded_site_priority_score(6, 3)
+    def test_site_priority_score_uses_equal_weights(self):
+        score = get_site_priority_score(6, 3)
         self.assertAlmostEqual(score, 1.0)
 
     def test_precaution_zone_score_weights_hazard_more_than_granite(self):
@@ -135,11 +135,11 @@ class IntegratedScoreTests(unittest.TestCase):
             IntegratedPriorityLevel.HIGH,
         )
 
-    def test_recorded_site_priority_model_returns_score_and_level(self):
-        result = calculate_recorded_site_priority(5, 3)
-        self.assertAlmostEqual(result["recorded_site_priority_score"], 11.0 / 12.0)
+    def test_site_priority_model_returns_score_and_level(self):
+        result = calculate_site_priority(5, 3)
+        self.assertAlmostEqual(result["site_priority_score"], 11.0 / 12.0)
         self.assertEqual(
-            result["recorded_site_priority_level"],
+            result["site_priority_level"],
             IntegratedPriorityLevel.HIGH,
         )
 
