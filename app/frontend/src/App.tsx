@@ -13,12 +13,12 @@ import { Risk } from './components/risk/Risk'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
 import {
-  getCurrentUser,
+  bootstrapSession,
+  clearStoredAuth,
   getStoredToken,
   login,
   logout,
   register,
-  storeToken,
 } from './api/auth'
 import { fetchLayer } from './api/layers'
 import type { AuthFormState, AuthMode, AuthUser } from './types/auth'
@@ -29,6 +29,8 @@ const EMPTY_AUTH_FORM: AuthFormState = {
   displayName: '',
   email: '',
   password: '',
+  username: '',
+  bio: '',
 }
 
 function App() {
@@ -57,8 +59,12 @@ function App() {
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
 
-  // Load all configured GIS layers when the app starts
+  // Load all configured GIS layers after the user is authenticated
   useEffect(() => {
+    if (!currentUser) {
+      return
+    }
+
     let isCancelled = false
 
     async function loadLayer(layerKey: LayerKey) {
@@ -85,7 +91,6 @@ function App() {
       }
     }
 
-    // Keep the sidebar counts and the map in sync from the same layer state.
     for (const { key } of LAYER_CONFIG) {
       void loadLayer(key)
     }
@@ -93,7 +98,7 @@ function App() {
     return () => {
       isCancelled = true
     }
-  }, [])
+  }, [currentUser])
 
   // Restore the saved user session from the stored token
   useEffect(() => {
@@ -109,15 +114,21 @@ function App() {
       setAuthError('')
 
       try {
-        const payload = await getCurrentUser(authToken)
+        const user = await bootstrapSession()
+
         if (!isCancelled) {
-          setCurrentUser(payload.user ?? null)
+          setCurrentUser(user)
+
+          if (!user) {
+            setAuthToken('')
+            setAuthError('Session expired')
+          }
         }
       } catch (error) {
         if (!isCancelled) {
+          clearStoredAuth()
           setCurrentUser(null)
           setAuthToken('')
-          storeToken('')
           setAuthError(error instanceof Error ? error.message : 'Session expired')
         }
       } finally {
@@ -127,7 +138,6 @@ function App() {
       }
     }
 
-    // Try to restore the saved session before showing the map.
     void loadCurrentUser()
 
     return () => {
@@ -145,10 +155,10 @@ function App() {
     try {
       const result =
         authMode === 'login' ? await login(authForm) : await register(authForm)
+
       const token = result.token ?? ''
 
       setAuthToken(token)
-      storeToken(token)
       setCurrentUser(result.user ?? null)
       setAuthMessage(result.message ?? 'Success')
       setAuthForm(EMPTY_AUTH_FORM)
@@ -169,11 +179,12 @@ function App() {
     try {
       if (authToken) {
         await logout(authToken)
+      } else {
+        clearStoredAuth()
       }
     } finally {
       setCurrentUser(null)
       setAuthToken('')
-      storeToken('')
       setAuthMessage('Logged out')
       setIsAuthLoading(false)
       navigate('/login', { replace: true })
@@ -197,7 +208,6 @@ function App() {
     )
   }
 
-  // Build the login page before passing it into the route config
   const loginPage = (
     <main className="auth-shell">
       <section className="auth-gate-card">
@@ -250,7 +260,6 @@ function App() {
     </header>
   ) : null
 
-  // Main authenticated map page
   const mapPage = currentUser ? (
     <main className="map-shell">
       {topbar}
@@ -288,12 +297,35 @@ function App() {
     </main>
   ) : null
 
+  const adminPage =
+    currentUser?.role === 'admin' ? (
+      <main className="map-shell">
+        {topbar}
+        <section className="map-body map-body--profile">
+          <section className="status-card">
+            <h2>Admin Panel</h2>
+            <p>Welcome, {currentUser.displayName}.</p>
+            <p>This page is only available to users with the admin role.</p>
+
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => navigate('/app')}
+            >
+              Back to Map
+            </button>
+          </section>
+        </section>
+      </main>
+    ) : null
+
   return (
     <AppRoutes
-      currentUser={Boolean(currentUser)}
+      currentUser={currentUser}
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}
+      adminPage={adminPage}
     />
   )
 }
