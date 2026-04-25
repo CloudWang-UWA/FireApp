@@ -9,13 +9,10 @@ sys.path.insert(0, str(BACKEND_DIR))
 
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_site_vulnerability_data
+from services.risk.config import EXCLUDED_SITE_IDS
 from services.risk.lookups import FUEL_TYPE_LABEL_MAP
 from services.risk.risk_model import calculate_site_priority
 from services.risk.scoring import get_hazard_level
-
-EXCLUDED_SITE_IDS = {
-    "ACH-00032790", # This site is a complex polygon that includes several smaller sites.
-}
 
 # Build recorded site priority by matching each recorded site with hazard cells,
 # keeping the highest hazard score, and combining it with site vulnerability.

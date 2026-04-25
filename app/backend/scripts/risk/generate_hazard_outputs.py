@@ -12,6 +12,8 @@ sys.path.insert(0, str(BACKEND_DIR))
 from services.risk.load_processed_data import load_fuel_data
 from services.risk.load_processed_data import load_slope_data
 from services.risk.load_processed_data import load_fire_history_data
+from services.risk.config import FIRE_TYPE_CODES
+from services.risk.config import HAZARD_PROGRESS_STEP
 from services.risk.risk_service import get_hazard_result
 from services.risk.site_hazard import get_fuel_code
 from services.risk.site_hazard import get_slope_deg
@@ -28,12 +30,6 @@ def build_fire_history_grids(fuel_data, fire_history_data):
 
     # Keep a compact code in the grid, then convert back to the original
     # fire type label when the hazard result is assembled.
-    fire_type_codes = {
-        "PB": 1, # prescribed burn
-        "WF": 2, # wildfire
-        "999": 3,
-    }
-
     # Sort by year so later fires replace earlier ones in overlapping cells.
     sorted_fire_history = fire_history_data.sort_values("fih_year1")
 
@@ -49,7 +45,7 @@ def build_fire_history_grids(fuel_data, fire_history_data):
             continue
 
         year_value = int(fire_year)
-        type_value = fire_type_codes.get(str(fire_type))
+        type_value = FIRE_TYPE_CODES.get(str(fire_type))
 
         if type_value is None:
             continue
@@ -70,7 +66,7 @@ def build_fire_history_grids(fuel_data, fire_history_data):
         fire_year_grid[matched_cells] = year_value
         fire_type_grid[matched_cells] = type_value
 
-    fire_type_lookup = {value: key for key, value in fire_type_codes.items()}
+    fire_type_lookup = {value: key for key, value in FIRE_TYPE_CODES.items()}
     return fire_year_grid, fire_type_grid, fire_type_lookup
 
 
@@ -89,7 +85,7 @@ def main() -> None:
     features = []
     total_cells = fuel_data.height * fuel_data.width
     processed_cells = 0
-    progress_step = 50000
+    progress_step = HAZARD_PROGRESS_STEP
 
     for fuel_row in range(fuel_data.height):
         for fuel_col in range(fuel_data.width):

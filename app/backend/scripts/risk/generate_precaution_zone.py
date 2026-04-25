@@ -10,11 +10,8 @@ sys.path.insert(0, str(BACKEND_DIR))
 from services.risk.load_processed_data import load_granite_influence_data
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_sites_data
+from services.risk.config import EXCLUDED_SITE_IDS
 from services.risk.risk_model import calculate_precaution_zone
-
-EXCLUDED_SITE_IDS = {
-    "ACH-00032790", # This site is a complex polygon that includes several smaller sites.
-}
 
 
 def prepare_inputs():
