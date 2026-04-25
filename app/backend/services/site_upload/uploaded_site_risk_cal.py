@@ -31,13 +31,17 @@ def get_sampled_raster_value(dataset, point_x: float, point_y: float):
     return value
 
 
+# Uploaded sites do not use the precomputed recorded site layer.
+# Instead, we sample the source hazard inputs directly around the uploaded site
+# so a new site can be scored immediately after submission.
 def get_uploaded_site_hazard(site_shape) -> dict:
     # use the source data directly for upload risk
     fuel_data = load_fuel_data()
     slope_data = load_slope_data()
     fire_history_data = load_fire_history_data()
 
-    # move the uploaded site square into the raster CRS
+    # Convert the uploaded site square from WGS84 into the raster CRS so the
+    # raster window and point sampling line up with the source hazard data.
     site_data = gpd.GeoDataFrame(
         [{"site_row_id": 0, "geometry": site_shape}],
         geometry="geometry",
@@ -67,7 +71,8 @@ def get_uploaded_site_hazard(site_shape) -> dict:
     if height <= 0 or width <= 0:
         return empty_result
 
-    # only check the small raster window around the site
+    # Restrict raster reads to the site's local bounds instead of scanning the
+    # full hazard rasters for each uploaded site.
     window = rasterio.windows.Window(col_off, row_off, width, height)
     fuel_band = fuel_data.read(1, window=window)
 
@@ -78,7 +83,8 @@ def get_uploaded_site_hazard(site_shape) -> dict:
     best_hazard = None
     best_result = None
 
-    # find the highest hazard within the site area
+    # Keep the highest hazard found inside the uploaded site so this workflow
+    # stays aligned with the risk module's hazard calculation method.
     for local_row in range(height):
         for local_col in range(width):
             fuel_code = fuel_band[local_row, local_col]
@@ -131,6 +137,8 @@ def get_uploaded_site_hazard(site_shape) -> dict:
     return best_result
 
 
+# Combine uploaded-site hazard with place-type vulnerability using the same
+# generic site priority calculation method used in the risk module.
 def calculate_uploaded_site_risk(
     place_type: str, latitude: float, longitude: float, site_size_m: float
 ) -> dict:
