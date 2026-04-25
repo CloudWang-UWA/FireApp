@@ -7,6 +7,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BACKEND_DIR))
 
 from services.risk.load_processed_data import load_granite_data
+from services.risk.metadata import update_risk_manifest
 
 
 def main() -> None:
@@ -40,6 +41,15 @@ def main() -> None:
 
     influence_layer.to_file(gpkg_output_path, driver="GPKG")
     influence_layer.to_crs(4326).to_file(geojson_output_path, driver="GeoJSON")
+    update_risk_manifest(
+        output_name="granite_influence",
+        stage="granite_influence",
+        generated_files=[gpkg_output_path, geojson_output_path],
+        source_files=[BACKEND_DIR / "data" / "granite.gpkg"],
+        notes=[
+            "Granite influence shows how close a place is to granite, which may indicate nearby heritage areas: on granite = high, within 100 m = medium, and 100-250 m = low."
+        ],
+    )
 
     print(f"Saved to: {gpkg_output_path}")
     print(f"Saved to: {geojson_output_path}")

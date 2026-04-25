@@ -11,6 +11,7 @@ from services.risk.load_processed_data import load_granite_influence_data
 from services.risk.load_processed_data import load_hazard_overview_data
 from services.risk.load_processed_data import load_sites_data
 from services.risk.config import EXCLUDED_SITE_IDS
+from services.risk.metadata import update_risk_manifest
 from services.risk.risk_model import calculate_precaution_zone
 
 
@@ -130,6 +131,19 @@ def save_precaution_outputs(precaution_data):
 
     precaution_data.to_file(gpkg_output_path, driver="GPKG")
     precaution_data.to_crs(4326).to_file(geojson_output_path, driver="GeoJSON")
+    update_risk_manifest(
+        output_name="precaution_zone",
+        stage="precaution_zone",
+        generated_files=[gpkg_output_path, geojson_output_path],
+        source_files=[
+            BACKEND_DIR / "data" / "risk_outputs" / "hazard_overview.gpkg",
+            BACKEND_DIR / "data" / "risk_outputs" / "granite_influence.gpkg",
+            BACKEND_DIR / "data" / "sites.gpkg",
+        ],
+        notes=[
+            "Precaution zones show areas that may need extra care because local hazard overlaps with granite influence, which may indicate nearby unrecorded heritage areas."
+        ],
+    )
 
     print(f"Saved to: {gpkg_output_path}")
     print(f"Saved to: {geojson_output_path}")

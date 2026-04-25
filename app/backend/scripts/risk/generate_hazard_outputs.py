@@ -14,6 +14,7 @@ from services.risk.load_processed_data import load_slope_data
 from services.risk.load_processed_data import load_fire_history_data
 from services.risk.config import FIRE_TYPE_CODES
 from services.risk.config import HAZARD_PROGRESS_STEP
+from services.risk.metadata import update_risk_manifest
 from services.risk.risk_service import get_hazard_result
 from services.risk.site_hazard import get_fuel_code
 from services.risk.site_hazard import get_slope_deg
@@ -141,6 +142,19 @@ def main() -> None:
     gpkg_output_path = output_dir / "hazard_overview.gpkg"
 
     hazard_layer.to_file(gpkg_output_path, driver="GPKG")
+    update_risk_manifest(
+        output_name="hazard_overview",
+        stage="hazard",
+        generated_files=[gpkg_output_path],
+        source_files=[
+            BACKEND_DIR / "data" / "fuel.tif",
+            BACKEND_DIR / "data" / "slope.tif",
+            BACKEND_DIR / "data" / "fire_history.gpkg",
+        ],
+        notes=[
+            "Hazard overview is generated from fuel, slope, and fire history inputs."
+        ],
+    )
 
     print(f"Saved to: {gpkg_output_path}")
 

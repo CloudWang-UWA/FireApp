@@ -12,6 +12,7 @@ from services.risk.load_processed_data import load_site_vulnerability_data
 from services.risk.config import EXCLUDED_SITE_IDS
 from services.risk.config import RECORDED_SITE_HAZARD_AGGREGATION
 from services.risk.lookups import FUEL_TYPE_LABEL_MAP
+from services.risk.metadata import update_risk_manifest
 from services.risk.risk_model import calculate_site_priority
 from services.risk.scoring import get_hazard_level
 
@@ -195,6 +196,18 @@ def main() -> None:
 
     sites_data.to_file(gpkg_output_path, driver="GPKG")
     sites_data.to_crs(4326).to_file(geojson_output_path, driver="GeoJSON")
+    update_risk_manifest(
+        output_name="recorded_site_priority",
+        stage="recorded_site_priority",
+        generated_files=[gpkg_output_path, geojson_output_path],
+        source_files=[
+            BACKEND_DIR / "data" / "risk_outputs" / "site_vulnerability.gpkg",
+            BACKEND_DIR / "data" / "risk_outputs" / "hazard_overview.gpkg",
+        ],
+        notes=[
+            "Recorded-site priority shows the relative priority of recorded heritage sites by combining site vulnerability with local hazard.",
+        ],
+    )
 
     print(f"Saved to: {gpkg_output_path}")
     print(f"Saved to: {geojson_output_path}")
