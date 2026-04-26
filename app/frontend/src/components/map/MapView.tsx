@@ -1,18 +1,33 @@
 import { useEffect } from 'react'
-import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet'
+import { GeoJSON, MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
-import type { LatLng, Layer as LeafletLayer } from 'leaflet'
+import type { LatLng, Layer as LeafletLayer, Map as LeafletMap } from 'leaflet'
 
+import type { ExportBounds } from '../../api/export'
 import { BASEMAP_CONFIG, INITIAL_CENTER, LAYER_CONFIG } from '../../config/map'
 import type { BasemapKey, LayerKey, LayerStateMap } from '../../types/map'
 import { buildPopupContent, getCombinedLayerBounds } from '../../utils/geojson'
 
+function toExportBounds(map: LeafletMap): ExportBounds {
+  const bounds = map.getBounds()
+
+  return {
+    north: bounds.getNorth(),
+    south: bounds.getSouth(),
+    east: bounds.getEast(),
+    west: bounds.getWest(),
+  }
+}
+
 // Keep the map view focused on the loaded project layers
-function MapViewController({ layers }: { layers: LayerStateMap }) {
+function MapViewController({
+  layers,
+}: {
+  layers: LayerStateMap
+}) {
   const map = useMap()
 
   useEffect(() => {
-    // Start with a view that covers the loaded project layers.
     const bounds = getCombinedLayerBounds(layers)
 
     if (bounds.isValid()) {
@@ -23,15 +38,45 @@ function MapViewController({ layers }: { layers: LayerStateMap }) {
   return null
 }
 
+// Report the current visible map bounds back to the parent
+function MapBoundsTracker({
+  onBoundsChange,
+}: {
+  onBoundsChange?: (bounds: ExportBounds) => void
+}) {
+  const map = useMapEvents({
+  moveend() {
+    if (onBoundsChange) {
+      onBoundsChange(toExportBounds(map))
+    }
+  },
+  zoomend() {
+    if (onBoundsChange) {
+      onBoundsChange(toExportBounds(map))
+    }
+  },
+})
+
+  useEffect(() => {
+  if (onBoundsChange) {
+    onBoundsChange(toExportBounds(map))
+  }
+}, [map, onBoundsChange])
+
+  return null
+}
+
 // Render visible GeoJSON layers on top of the selected basemap
 export function MapView({
   basemap,
   layers,
   visibleLayers,
+  onBoundsChange,
 }: {
   basemap: BasemapKey
   layers: LayerStateMap
   visibleLayers: Record<LayerKey, boolean>
+  onBoundsChange: (bounds: ExportBounds) => void
 }) {
   return (
     <section className="map-panel">
@@ -48,11 +93,10 @@ export function MapView({
           subdomains={BASEMAP_CONFIG[basemap].subdomains}
           url={BASEMAP_CONFIG[basemap].url}
         />
-        
-        {/* Fit the map to loaded layer bounds */}
+
         <MapViewController layers={layers} />
-        
-        {/* Render configured layers that are visible and already loaded */}
+        <MapBoundsTracker onBoundsChange={onBoundsChange} />
+
         {LAYER_CONFIG.map(({ key, color }) => {
           const data = layers[key].data
           if (!visibleLayers[key] || !data) {

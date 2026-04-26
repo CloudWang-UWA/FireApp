@@ -4,14 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import { useNavigate } from 'react-router-dom'
 import './App.css'
 
-import { Auth } from './components/auth/Auth'
-import { Profile } from './components/auth/Profile'
-import { Basemap } from './components/map/Basemap'
-import { Layers } from './components/map/Layers'
-import { MapView } from './components/map/MapView'
-import { Risk } from './components/risk/Risk'
-import { LAYER_CONFIG } from './config/map'
-import { AppRoutes } from './routes/AppRoutes'
+import type { ExportBounds } from './api/export'
 import {
   bootstrapSession,
   clearStoredAuth,
@@ -21,6 +14,15 @@ import {
   register,
 } from './api/auth'
 import { fetchLayer } from './api/layers'
+import { Auth } from './components/auth/Auth'
+import { Profile } from './components/auth/Profile'
+import { Export } from './components/export/Export'
+import { Basemap } from './components/map/Basemap'
+import { Layers } from './components/map/Layers'
+import { MapView } from './components/map/MapView'
+import { Risk } from './components/risk/Risk'
+import { LAYER_CONFIG } from './config/map'
+import { AppRoutes } from './routes/AppRoutes'
 import type { AuthFormState, AuthMode, AuthUser } from './types/auth'
 import type { BasemapKey, LayerKey, LayerState, LayerStateMap } from './types/map'
 import { prepareLayerData } from './utils/geojson'
@@ -51,6 +53,7 @@ function App() {
     slope: false,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
+  const [mapBounds, setMapBounds] = useState<ExportBounds | null>(null)
   const [authMode, setAuthMode] = useState<AuthMode>('login')
   const [authToken, setAuthToken] = useState<string>(() => getStoredToken())
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
@@ -273,11 +276,17 @@ function App() {
             />
             <Basemap basemap={basemap} setBasemap={setBasemap} />
             <Risk />
+            <Export mapBounds={mapBounds} />
           </div>
         </aside>
 
         <section className="map-stage">
-          <MapView basemap={basemap} layers={layers} visibleLayers={visibleLayers} />
+          <MapView
+            basemap={basemap}
+            layers={layers}
+            visibleLayers={visibleLayers}
+            onBoundsChange={setMapBounds}
+          />
         </section>
       </section>
     </main>
