@@ -20,7 +20,7 @@ The main risk outputs are precomputed in the backend rather than calculated dyna
 
 ## Inputs and Outputs
 
-The risk assessment module reads source data from `app/backend/data/`, copied from the data processing module's `app/data/derived/analysis_ready/`.
+The risk assessment module reads prepared source data from app/backend/data/. These datasets are produced during the data processing stage and used by the backend risk workflow.
 
 Main inputs are `sites.gpkg`, `granite.gpkg`, `fire_history.gpkg`, `fuel.tif`, and `slope.tif`. The analysis CRS is `EPSG:7850`.
 
