@@ -20,15 +20,9 @@ The main risk outputs are precomputed in the backend rather than calculated dyna
 
 ## Inputs and Outputs
 
-The risk assessment module reads prepared source data from app/backend/data/. These datasets are produced during the data processing stage and used by the backend risk workflow.
+The risk assessment module reads source data from `app/backend/data/`, copied from the data processing module's `app/data/derived/analysis_ready/`. Main inputs are `sites.gpkg`, `granite.gpkg`, `fire_history.gpkg`, `fuel.tif`, and `slope.tif`. The analysis CRS is `EPSG:7850`.
 
-Main inputs are `sites.gpkg`, `granite.gpkg`, `fire_history.gpkg`, `fuel.tif`, and `slope.tif`. The analysis CRS is `EPSG:7850`.
-
-These source inputs are produced by the data processing module and copied into `app/backend/data/`.
-
-Main outputs are `recorded_site_priority.geojson`, `recorded_site_priority.gpkg`, `precaution_zone.geojson`, and `precaution_zone.gpkg`. The GeoJSON files are used for frontend map display in `EPSG:4326`.
-
-The risk module generates its own outputs in `app/backend/data/risk_outputs/`.
+The risk module generates its own outputs in `app/backend/data/risk_outputs/`. Main outputs are `recorded_site_priority.geojson`, `recorded_site_priority.gpkg`, `precaution_zone.geojson`, and `precaution_zone.gpkg`. The GeoJSON files are used for frontend map display in `EPSG:4326`.
 
 ## Core Model Logic
 
