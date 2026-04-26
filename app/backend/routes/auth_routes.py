@@ -74,14 +74,11 @@ def login():
     email = normalize_email(payload.get("email", ""))
     password = payload.get("password", "")
 
-    print("LOGIN ATTEMPT:", email)
 
     if not email or not password:
         abort(400, description="Email and password are required")
 
     user = authenticate_user(email, password)
-
-    print("USER FOUND:", user)
 
     if user is None:
         abort(401, description="Invalid email or password")
