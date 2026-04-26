@@ -41,7 +41,7 @@
   "model_name": "current_demo_model",
   "outputs": {
     "granite_influence": {
-      "generated_at": "2026-04-25T02:50:47.475378+00:00",
+      "generated_at": "2026-04-26T06:17:24.428322+00:00",
       "generated_files": [
         "data\\risk_outputs\\granite_influence.gpkg",
         "data\\risk_outputs\\granite_influence.geojson"
@@ -55,7 +55,7 @@
       "stage": "granite_influence"
     },
     "hazard_overview": {
-      "generated_at": "2026-04-25T02:50:42.194845+00:00",
+      "generated_at": "2026-04-26T06:17:20.720993+00:00",
       "generated_files": [
         "data\\risk_outputs\\hazard_overview.gpkg"
       ],
@@ -70,7 +70,7 @@
       "stage": "hazard"
     },
     "precaution_zone": {
-      "generated_at": "2026-04-25T03:09:56.495306+00:00",
+      "generated_at": "2026-04-26T06:28:28.363423+00:00",
       "generated_files": [
         "data\\risk_outputs\\precaution_zone.gpkg",
         "data\\risk_outputs\\precaution_zone.geojson"
@@ -86,7 +86,7 @@
       "stage": "precaution_zone"
     },
     "recorded_site_priority": {
-      "generated_at": "2026-04-25T02:51:03.622840+00:00",
+      "generated_at": "2026-04-26T06:17:35.789859+00:00",
       "generated_files": [
         "data\\risk_outputs\\recorded_site_priority.gpkg",
         "data\\risk_outputs\\recorded_site_priority.geojson"
@@ -101,7 +101,7 @@
       "stage": "recorded_site_priority"
     },
     "site_vulnerability": {
-      "generated_at": "2026-04-25T02:50:44.926687+00:00",
+      "generated_at": "2026-04-26T06:17:22.688229+00:00",
       "generated_files": [
         "data\\risk_outputs\\site_vulnerability.gpkg",
         "data\\risk_outputs\\site_vulnerability.geojson"
@@ -115,5 +115,5 @@
       "stage": "site_vulnerability"
     }
   },
-  "updated_at": "2026-04-25T03:09:56.495306+00:00"
+  "updated_at": "2026-04-26T06:28:28.363423+00:00"
 }
