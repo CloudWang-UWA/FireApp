@@ -20,7 +20,7 @@ The new site upload module receives form input from the frontend. Main user inpu
 - location source
 - optional photo
 
-The module also depends on backend source data used for risk calculation, including `fuel.tif`, `slope.tif`, and `fire_history.gpkg`, read from `app/backend/data/`.
+The module also depends on backend source data used for risk calculation, including `fuel.tif`, `slope.tif`, and `fire_history.gpkg`, stored in `app/backend/data/` and prepared by the data processing module.
 
 Main outputs are:
 
