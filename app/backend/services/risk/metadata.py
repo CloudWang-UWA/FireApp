@@ -15,6 +15,13 @@ DATA_DIR = BACKEND_DIR / "data"
 RISK_OUTPUT_DIR = DATA_DIR / "risk_outputs"
 MANIFEST_PATH = RISK_OUTPUT_DIR / "manifest.json"
 MODEL_NAME = "current_demo_model"
+SOURCE_INPUT_FILES = [
+    DATA_DIR / "sites.gpkg",
+    DATA_DIR / "granite.gpkg",
+    DATA_DIR / "fire_history.gpkg",
+    DATA_DIR / "fuel.tif",
+    DATA_DIR / "slope.tif",
+]
 
 
 def _to_relative_path(path: Path) -> str:
@@ -61,6 +68,14 @@ def update_risk_manifest(
             "model_name": MODEL_NAME,
             "updated_at": None,
             "config": get_config_snapshot(),
+            "source_inputs": {
+                "produced_by": "data_processing_module",
+                "files": [_to_relative_path(path) for path in SOURCE_INPUT_FILES],
+            },
+            "generated_outputs": {
+                "produced_by": "risk_module",
+                "files": [],
+            },
             "outputs": {},
         }
 
@@ -68,12 +83,27 @@ def update_risk_manifest(
     manifest["model_name"] = MODEL_NAME
     manifest["updated_at"] = generated_at
     manifest["config"] = get_config_snapshot()
+    manifest["source_inputs"] = {
+        "produced_by": "data_processing_module",
+        "files": [_to_relative_path(path) for path in SOURCE_INPUT_FILES],
+    }
     manifest["outputs"][output_name] = {
         "stage": stage or output_name,
         "generated_at": generated_at,
         "generated_files": [_to_relative_path(path) for path in generated_files],
         "source_files": [_to_relative_path(path) for path in source_files],
         "notes": notes or [],
+    }
+    generated_output_files = sorted(
+        {
+            generated_file
+            for output in manifest["outputs"].values()
+            for generated_file in output.get("generated_files", [])
+        }
+    )
+    manifest["generated_outputs"] = {
+        "produced_by": "risk_module",
+        "files": generated_output_files,
     }
 
     MANIFEST_PATH.write_text(

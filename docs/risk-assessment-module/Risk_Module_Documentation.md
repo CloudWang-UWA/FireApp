@@ -24,7 +24,11 @@ The risk assessment module reads source data from `app/backend/data/`, copied fr
 
 Main inputs are `sites.gpkg`, `granite.gpkg`, `fire_history.gpkg`, `fuel.tif`, and `slope.tif`. The analysis CRS is `EPSG:7850`.
 
+These source inputs are produced by the data processing module and copied into `app/backend/data/`.
+
 Main outputs are `recorded_site_priority.geojson`, `recorded_site_priority.gpkg`, `precaution_zone.geojson`, and `precaution_zone.gpkg`. The GeoJSON files are used for frontend map display in `EPSG:4326`.
+
+The risk module generates its own outputs in `app/backend/data/risk_outputs/`.
 
 ## Core Model Logic
 

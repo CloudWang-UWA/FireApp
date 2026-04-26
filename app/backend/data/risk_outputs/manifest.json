@@ -38,6 +38,20 @@
     ],
     "recorded_site_hazard_aggregation": "max"
   },
+  "generated_outputs": {
+    "files": [
+      "data\\risk_outputs\\granite_influence.geojson",
+      "data\\risk_outputs\\granite_influence.gpkg",
+      "data\\risk_outputs\\hazard_overview.gpkg",
+      "data\\risk_outputs\\precaution_zone.geojson",
+      "data\\risk_outputs\\precaution_zone.gpkg",
+      "data\\risk_outputs\\recorded_site_priority.geojson",
+      "data\\risk_outputs\\recorded_site_priority.gpkg",
+      "data\\risk_outputs\\site_vulnerability.geojson",
+      "data\\risk_outputs\\site_vulnerability.gpkg"
+    ],
+    "produced_by": "risk_module"
+  },
   "model_name": "current_demo_model",
   "outputs": {
     "granite_influence": {
@@ -114,6 +128,16 @@
       ],
       "stage": "site_vulnerability"
     }
+  },
+  "source_inputs": {
+    "files": [
+      "data\\sites.gpkg",
+      "data\\granite.gpkg",
+      "data\\fire_history.gpkg",
+      "data\\fuel.tif",
+      "data\\slope.tif"
+    ],
+    "produced_by": "data_processing_module"
   },
   "updated_at": "2026-04-26T06:28:28.363423+00:00"
 }
