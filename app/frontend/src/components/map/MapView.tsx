@@ -1,9 +1,5 @@
 import { useEffect } from 'react'
-<<<<<<< DataExport-Sainath
-import { GeoJSON, MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-=======
 import { GeoJSON, MapContainer, Pane, TileLayer, useMap } from 'react-leaflet'
->>>>>>> main
 import L from 'leaflet'
 import type { LatLng, Layer as LeafletLayer, Map as LeafletMap } from 'leaflet'
 
@@ -48,26 +44,28 @@ function MapBoundsTracker({
 }: {
   onBoundsChange?: (bounds: ExportBounds) => void
 }) {
-  const map = useMapEvents({
-  moveend() {
-    if (onBoundsChange) {
-      onBoundsChange(toExportBounds(map))
-    }
-  },
-  zoomend() {
-    if (onBoundsChange) {
-      onBoundsChange(toExportBounds(map))
-    }
-  },
-})
+  const map = useMap()
 
   useEffect(() => {
-  if (onBoundsChange) {
-    onBoundsChange(toExportBounds(map))
-  }
-}, [map, onBoundsChange])
+    if (!onBoundsChange) {
+      return
+    }
+
+    const reportBounds = () => onBoundsChange(toExportBounds(map))
+
+    reportBounds()
+    map.on('moveend', reportBounds)
+    map.on('zoomend', reportBounds)
+
+    return () => {
+      map.off('moveend', reportBounds)
+      map.off('zoomend', reportBounds)
+    }
+  }, [map, onBoundsChange])
 
   return null
+}
+
 function getPriorityColor(level: unknown) {
   if (level === 3) return '#d73027'
   if (level === 2) return '#fdb863'
@@ -114,25 +112,14 @@ export function MapView({
           url={BASEMAP_CONFIG[basemap].url}
         />
 
+        <Pane name="precautionPane" style={{ zIndex: 410 }} />
+        <Pane name="recordedSitePane" style={{ zIndex: 420 }} />
+        <Pane name="uploadedSitePane" style={{ zIndex: 430 }} />
+
         <MapViewController layers={layers} />
         <MapBoundsTracker onBoundsChange={onBoundsChange} />
 
         {LAYER_CONFIG.map(({ key, color }) => {
-        <Pane name="precautionPane" style={{ zIndex: 410 }} />
-        <Pane name="recordedSitePane" style={{ zIndex: 420 }} />
-        <Pane name="uploadedSitePane" style={{ zIndex: 430 }} />
-        
-        {/* Fit the map to loaded layer bounds */}
-        <MapViewController layers={layers} />
-        
-        {/* Render configured layers that are visible and already loaded */}
-        {renderOrder.map((key) => {
-          const layerConfig = LAYER_CONFIG.find((layer) => layer.key === key)
-          if (!layerConfig) {
-            return null
-          }
-
-          const { color } = layerConfig
           const data = layers[key].data
           if (!visibleLayers[key] || !data) {
             return null

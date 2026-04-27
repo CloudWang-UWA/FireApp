@@ -8,24 +8,16 @@ export function AppRoutes({
   loginPage,
   mapPage,
   profilePage,
-<<<<<<< DataExport-Sainath
   adminPage,
-}: {
-  currentUser: AuthUser | null
-  loginPage: ReactNode
-  mapPage: ReactNode
-  profilePage: ReactNode
-  adminPage?: ReactNode
-=======
   siteUploadPage,
 }: {
-  currentUser: boolean
+  currentUser: AuthUser | null
   isAuthLoading: boolean
   loginPage: ReactNode
   mapPage: ReactNode
   profilePage: ReactNode
+  adminPage?: ReactNode
   siteUploadPage: ReactNode
->>>>>>> main
 }) {
   if (isAuthLoading) {
     return null

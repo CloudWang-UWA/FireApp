@@ -50,12 +50,6 @@ CORS(
 # =========================
 db.init_app(app)
 
-<<<<<<< DataExport-Sainath
-# =========================
-# BEFORE REQUEST
-# =========================
-=======
-
 def ensure_uploaded_site_schema() -> None:
     # Backfill missing photo columns for older databases.
     inspector = inspect(db.engine)
@@ -77,8 +71,9 @@ def ensure_uploaded_site_schema() -> None:
 
     db.session.commit()
 
-
->>>>>>> main
+# =========================
+# BEFORE REQUEST
+# =========================
 @app.before_request
 def before_request_handler():
     g.current_user = get_current_user()
