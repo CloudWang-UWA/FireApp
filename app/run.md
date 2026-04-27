@@ -1,3 +1,17 @@
-Run backend: `python backend/app.py`
+## Run locally
 
-Run frontend: cd frontend, `npm run dev`
+### Backend
+From the project root, run:
+
+`python app/backend/app.py`
+
+### Frontend
+From the project root, run:
+
+`cd app/frontend`
+
+`npm run dev`
+
+The frontend development server runs at:
+
+`http://localhost:5173`

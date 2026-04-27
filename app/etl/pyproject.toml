@@ -1,0 +1,22 @@
+[project]
+name = "fire-vulnerability-etl"
+version = "0.1.0"
+description = "Offline ETL for the Albany cultural heritage fire vulnerability MVP."
+requires-python = ">=3.12"
+dependencies = [
+  "geopandas>=1.1.3",
+  "numpy>=2.4.4",
+  "pandas>=3.0.2",
+  "pyogrio>=0.12.1",
+  "pyproj>=3.7.2",
+  "rasterio>=1.5.0",
+  "shapely>=2.1.2",
+]
+
+[project.scripts]
+fire-vulnerability-etl = "fire_vulnerability_etl.cli:main"
+fire-vulnerability-acquire-upstream = "fire_vulnerability_etl.upstream:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

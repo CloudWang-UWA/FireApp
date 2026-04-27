@@ -64,6 +64,11 @@ function MapBoundsTracker({
 }, [map, onBoundsChange])
 
   return null
+function getPriorityColor(level: unknown) {
+  if (level === 3) return '#d73027'
+  if (level === 2) return '#fdb863'
+  if (level === 1) return '#fddbc7'
+  return '#d9d9d9'
 }
 
 // Render visible GeoJSON layers on top of the selected basemap
@@ -107,12 +112,21 @@ export function MapView({
             <GeoJSON
               key={key}
               data={data}
-              style={() => ({
-                color,
-                weight: 2,
-                fillColor: color,
-                fillOpacity: 0.28,
-              })}
+              style={(feature) => {
+                const priorityLevel =
+                  key === 'recorded_site_priority'
+                    ? feature?.properties?.recorded_site_priority_level
+                    : feature?.properties?.precaution_zone_level
+                const fillColor = getPriorityColor(priorityLevel)
+
+                return {
+                  color: key === 'recorded_site_priority' ? fillColor : 'transparent',
+                  weight: key === 'recorded_site_priority' ? 2 : 0,
+                  fillColor,
+                  fillOpacity:
+                    key === 'recorded_site_priority' ? 0.55 : 0.24,
+                }
+              }}
               pointToLayer={(_feature, latlng: LatLng) =>
                 L.circleMarker(latlng, {
                   radius: 6,
@@ -123,7 +137,7 @@ export function MapView({
                 })
               }
               onEachFeature={(feature: GeoJSON.Feature, layer: LeafletLayer) => {
-                layer.bindPopup(buildPopupContent(feature.properties))
+                layer.bindPopup(buildPopupContent(key, feature.properties))
               }}
             />
           )

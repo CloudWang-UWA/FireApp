@@ -44,7 +44,10 @@ function geometryArea(geometry: GeoJSON.Geometry | null | undefined): number {
 }
 
 export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJsonData {
-  if (layerKey !== 'site') {
+  if (
+    layerKey !== 'recorded_site_priority' &&
+    layerKey !== 'precaution_zone'
+  ) {
     return data
   }
 
@@ -77,10 +80,68 @@ export function getCombinedLayerBounds(layers: LayerStateMap) {
 }
 
 export function buildPopupContent(
+  layerKey: LayerKey,
   properties: GeoJSON.GeoJsonProperties | null | undefined,
 ) {
   if (!properties || Object.keys(properties).length === 0) {
     return '<strong>No properties</strong>'
+  }
+
+  if (layerKey === 'recorded_site_priority') {
+    const source = properties.source
+    let siteType: string | undefined
+
+    if (source === 'registered') {
+      siteType = 'ACHIS Registered'
+    } else if (source === 'lodged') {
+      siteType = 'ACHIS Lodged'
+    } else if (source === 'council') {
+      siteType = 'Council'
+    }
+
+    const rows: Array<[string, unknown]> = [
+      ['site_name', properties.name ?? properties.place_name],
+      ['site_type', siteType],
+      ['ach_identifier', properties.ach_identifier],
+      ['place_type', properties.place_type],
+      ['fuel_type', properties.fuel_type],
+      ['hazard_score', properties.hazard_score],
+      ['site_vulnerability_score', properties.site_vulnerability_score],
+      ['recorded_site_priority_score', properties.recorded_site_priority_score],
+      ['recorded_site_priority_level', properties.recorded_site_priority_level],
+    ]
+
+    return rows
+      .filter(([, value]) => value !== null && value !== undefined && value !== '')
+      .map(
+        ([key, value]) =>
+          `<div><strong>${key}:</strong> ${String(value)}</div>`,
+      )
+      .join('')
+  }
+
+  if (layerKey === 'precaution_zone') {
+    const rows: Array<[string, unknown]> = [
+      ['hazard_score', properties.hazard_score],
+      ['hazard_level', properties.hazard_level],
+      ['granite_score', properties.granite_score],
+      [
+        'precaution_zone_score',
+        properties.precaution_zone_score,
+      ],
+      [
+        'precaution_zone_level',
+        properties.precaution_zone_level,
+      ],
+    ]
+
+    return rows
+      .filter(([, value]) => value !== null && value !== undefined && value !== '')
+      .map(
+        ([key, value]) =>
+          `<div><strong>${key}:</strong> ${String(value)}</div>`,
+      )
+      .join('')
   }
 
   // Keep popups short enough that they do not take over the map.

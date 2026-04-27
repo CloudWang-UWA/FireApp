@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from services.risk_service import get_risk_status
+from services.risk.risk_service import get_risk_status
 
 
 risk_bp = Blueprint("risk", __name__, url_prefix="/api/risk")
