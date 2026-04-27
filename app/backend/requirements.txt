@@ -2,6 +2,8 @@ flask
 flask-cors
 flask-sqlalchemy
 psycopg[binary]
+pytest
+openpyxl
 geopandas
 rasterio
 shapely

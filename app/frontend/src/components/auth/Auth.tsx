@@ -1,9 +1,8 @@
 import type { FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import type { AuthFormState, AuthMode, AuthUser } from '../../types/auth'
 
-// Auth UI component for login and registration
-// Handles form input and displays current user state
 export function Auth({
   authMode,
   setAuthMode,
@@ -27,21 +26,51 @@ export function Auth({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
   onLogout: () => void
 }) {
+  const navigate = useNavigate()
+
   return (
     <div className="status-card">
       <h2>Account</h2>
-      {/* If user is logged in, show profile info */}
+
       {currentUser ? (
         <div className="auth-stack">
           <p className="auth-user-name">{currentUser.displayName}</p>
           <p className="auth-user-email">{currentUser.email}</p>
-          <button className="primary-button danger-button" onClick={onLogout}>
+          <p className="auth-user-username">@{currentUser.username}</p>
+          <p className="auth-user-bio">{currentUser.bio || 'No bio added yet'}</p>
+
+          <p className="auth-user-role">
+            Role: <strong>{currentUser.role}</strong>
+          </p>
+
+          <button
+            className="primary-button"
+            type="button"
+            onClick={() => navigate('/profile')}
+          >
+            View Profile
+          </button>
+
+          {currentUser.role === 'admin' && (
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => navigate('/admin')}
+            >
+              Go to Admin Panel 👑
+            </button>
+          )}
+
+          <button
+            className="primary-button danger-button"
+            type="button"
+            onClick={onLogout}
+          >
             {isAuthLoading ? 'Working...' : 'Log out'}
           </button>
         </div>
       ) : (
         <>
-          {/* Toggle between login and register modes */}
           <div className="segmented-control">
             <button
               className={
@@ -54,6 +83,7 @@ export function Auth({
             >
               Login
             </button>
+
             <button
               className={
                 authMode === 'register'
@@ -66,11 +96,9 @@ export function Auth({
               Register
             </button>
           </div>
-          
-          {/* Auth form for login or registration */}
+
           <form className="auth-form" onSubmit={onSubmit}>
-            {/* Only show display name field in register mode */}
-            {authMode === 'register' ? (
+            {authMode === 'register' && (
               <label className="field">
                 <span>Display name</span>
                 <input
@@ -81,11 +109,44 @@ export function Auth({
                       displayName: event.target.value,
                     }))
                   }
-                  placeholder="Albany demo user"
+                  placeholder="Your name"
                   required
                 />
               </label>
-            ) : null}
+            )}
+
+            {authMode === 'register' && (
+              <label className="field">
+                <span>Username</span>
+                <input
+                  value={authForm.username || ''}
+                  onChange={(event) =>
+                    setAuthForm((current) => ({
+                      ...current,
+                      username: event.target.value,
+                    }))
+                  }
+                  placeholder="unique username"
+                  required
+                />
+              </label>
+            )}
+
+            {authMode === 'register' && (
+              <label className="field">
+                <span>Bio</span>
+                <input
+                  value={authForm.bio || ''}
+                  onChange={(event) =>
+                    setAuthForm((current) => ({
+                      ...current,
+                      bio: event.target.value,
+                    }))
+                  }
+                  placeholder="short bio"
+                />
+              </label>
+            )}
 
             <label className="field">
               <span>Email</span>
@@ -118,6 +179,7 @@ export function Auth({
                 required
               />
             </label>
+
             <button
               className={
                 authMode === 'login'
@@ -130,16 +192,15 @@ export function Auth({
               {isAuthLoading
                 ? 'Working...'
                 : authMode === 'login'
-                  ? 'Log in'
-                  : 'Create account'}
+                ? 'Log in'
+                : 'Create account'}
             </button>
           </form>
         </>
       )}
-      
-      {/* Feedback messages */}
-      {authMessage ? <p className="feedback success">{authMessage}</p> : null}
-      {authError ? <p className="feedback error">{authError}</p> : null}
+
+      {authMessage && <p className="feedback success">{authMessage}</p>}
+      {authError && <p className="feedback error">{authError}</p>}
     </div>
   )
 }

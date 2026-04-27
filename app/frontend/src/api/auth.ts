@@ -1,7 +1,8 @@
 import { API_BASE_URL, TOKEN_STORAGE_KEY } from '../config/map'
 import type { AuthFormState, AuthUser } from '../types/auth'
 
-// Structure of authentication API response
+const USER_STORAGE_KEY = 'auth_user'
+
 type AuthPayload = {
   error?: string
   message?: string
@@ -9,18 +10,20 @@ type AuthPayload = {
   user?: AuthUser
 }
 
-// Parse server response and handle common errors
 async function parseResponse(response: Response) {
-  const payload = (await response.json()) as AuthPayload
+  const payload = (await response.json().catch(() => ({}))) as AuthPayload
 
   if (!response.ok) {
-    throw new Error(payload.error ?? 'Request failed')
+    if (response.status === 401) {
+      clearStoredAuth()
+    }
+
+    throw new Error(payload.error ?? payload.message ?? 'Request failed')
   }
 
   return payload
 }
 
-// Get token from localStorage (empty string if not found)
 export function getStoredToken() {
   return window.localStorage.getItem(TOKEN_STORAGE_KEY) ?? ''
 }
@@ -33,7 +36,42 @@ export function storeToken(token: string) {
   }
 }
 
-// Send registration request to backend
+export function storeUser(user: AuthUser | null) {
+  if (user) {
+    window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
+  } else {
+    window.localStorage.removeItem(USER_STORAGE_KEY)
+  }
+}
+
+export function getStoredUser(): AuthUser | null {
+  const data = window.localStorage.getItem(USER_STORAGE_KEY)
+
+  if (!data) {
+    return null
+  }
+
+  try {
+    return JSON.parse(data) as AuthUser
+  } catch {
+    window.localStorage.removeItem(USER_STORAGE_KEY)
+    return null
+  }
+}
+
+export function clearStoredAuth() {
+  storeToken('')
+  storeUser(null)
+}
+
+export function isAdmin(user: AuthUser | null) {
+  return user?.role === 'admin'
+}
+
+export function hasRole(user: AuthUser | null, roles: string[]) {
+  return !!user && roles.includes(user.role)
+}
+
 export async function register(form: AuthFormState) {
   const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
     method: 'POST',
@@ -44,13 +82,21 @@ export async function register(form: AuthFormState) {
       email: form.email,
       password: form.password,
       displayName: form.displayName,
+      username: form.username,
+      bio: form.bio,
     }),
   })
 
-  return parseResponse(response)
+  const payload = await parseResponse(response)
+
+  if (payload.token && payload.user) {
+    storeToken(payload.token)
+    storeUser(payload.user)
+  }
+
+  return payload
 }
 
-// Login user and return token + user info
 export async function login(form: AuthFormState) {
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: 'POST',
@@ -63,10 +109,16 @@ export async function login(form: AuthFormState) {
     }),
   })
 
-  return parseResponse(response)
+  const payload = await parseResponse(response)
+
+  if (payload.token && payload.user) {
+    storeToken(payload.token)
+    storeUser(payload.user)
+  }
+
+  return payload
 }
 
-// Fetch current user info using token
 export async function getCurrentUser(token: string) {
   const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
     headers: {
@@ -74,17 +126,43 @@ export async function getCurrentUser(token: string) {
     },
   })
 
-  return parseResponse(response)
+  const payload = await parseResponse(response)
+
+  if (payload.user) {
+    storeUser(payload.user)
+  }
+
+  return payload
 }
 
-// Logout user (invalidate token on server)
-export async function logout(token: string) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+export async function bootstrapSession() {
+  const token = getStoredToken()
 
-  return parseResponse(response)
+  if (!token) {
+    clearStoredAuth()
+    return null
+  }
+
+  try {
+    const payload = await getCurrentUser(token)
+    return payload.user ?? null
+  } catch {
+    clearStoredAuth()
+    return null
+  }
+}
+
+export async function logout(token: string) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    return await parseResponse(response)
+  } finally {
+    clearStoredAuth()
+  }
 }

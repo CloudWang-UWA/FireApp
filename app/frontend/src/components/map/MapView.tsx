@@ -1,18 +1,37 @@
 import { useEffect } from 'react'
+<<<<<<< DataExport-Sainath
+import { GeoJSON, MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+=======
 import { GeoJSON, MapContainer, Pane, TileLayer, useMap } from 'react-leaflet'
+>>>>>>> main
 import L from 'leaflet'
-import type { LatLng, Layer as LeafletLayer } from 'leaflet'
+import type { LatLng, Layer as LeafletLayer, Map as LeafletMap } from 'leaflet'
 
+import type { ExportBounds } from '../../api/export'
 import { BASEMAP_CONFIG, INITIAL_CENTER, LAYER_CONFIG } from '../../config/map'
 import type { BasemapKey, LayerKey, LayerStateMap } from '../../types/map'
 import { buildPopupContent, getCombinedLayerBounds } from '../../utils/geojson'
 
+function toExportBounds(map: LeafletMap): ExportBounds {
+  const bounds = map.getBounds()
+
+  return {
+    north: bounds.getNorth(),
+    south: bounds.getSouth(),
+    east: bounds.getEast(),
+    west: bounds.getWest(),
+  }
+}
+
 // Keep the map view focused on the loaded project layers
-function MapViewController({ layers }: { layers: LayerStateMap }) {
+function MapViewController({
+  layers,
+}: {
+  layers: LayerStateMap
+}) {
   const map = useMap()
 
   useEffect(() => {
-    // Start with a view that covers the loaded project layers.
     const bounds = getCombinedLayerBounds(layers)
 
     if (bounds.isValid()) {
@@ -23,6 +42,32 @@ function MapViewController({ layers }: { layers: LayerStateMap }) {
   return null
 }
 
+// Report the current visible map bounds back to the parent
+function MapBoundsTracker({
+  onBoundsChange,
+}: {
+  onBoundsChange?: (bounds: ExportBounds) => void
+}) {
+  const map = useMapEvents({
+  moveend() {
+    if (onBoundsChange) {
+      onBoundsChange(toExportBounds(map))
+    }
+  },
+  zoomend() {
+    if (onBoundsChange) {
+      onBoundsChange(toExportBounds(map))
+    }
+  },
+})
+
+  useEffect(() => {
+  if (onBoundsChange) {
+    onBoundsChange(toExportBounds(map))
+  }
+}, [map, onBoundsChange])
+
+  return null
 function getPriorityColor(level: unknown) {
   if (level === 3) return '#d73027'
   if (level === 2) return '#fdb863'
@@ -35,10 +80,12 @@ export function MapView({
   basemap,
   layers,
   visibleLayers,
+  onBoundsChange,
 }: {
   basemap: BasemapKey
   layers: LayerStateMap
   visibleLayers: Record<LayerKey, boolean>
+  onBoundsChange: (bounds: ExportBounds) => void
 }) {
   const renderOrder: LayerKey[] = [
     'precaution_zone',
@@ -66,6 +113,11 @@ export function MapView({
           subdomains={BASEMAP_CONFIG[basemap].subdomains}
           url={BASEMAP_CONFIG[basemap].url}
         />
+
+        <MapViewController layers={layers} />
+        <MapBoundsTracker onBoundsChange={onBoundsChange} />
+
+        {LAYER_CONFIG.map(({ key, color }) => {
         <Pane name="precautionPane" style={{ zIndex: 410 }} />
         <Pane name="recordedSitePane" style={{ zIndex: 420 }} />
         <Pane name="uploadedSitePane" style={{ zIndex: 430 }} />

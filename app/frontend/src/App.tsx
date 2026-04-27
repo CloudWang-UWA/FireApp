@@ -4,8 +4,19 @@ import 'leaflet/dist/leaflet.css'
 import { useNavigate } from 'react-router-dom'
 import './App.css'
 
+import type { ExportBounds } from './api/export'
+import {
+  bootstrapSession,
+  clearStoredAuth,
+  getStoredToken,
+  login,
+  logout,
+  register,
+} from './api/auth'
+import { fetchLayer } from './api/layers'
 import { Auth } from './components/auth/Auth'
 import { Profile } from './components/auth/Profile'
+import { Export } from './components/export/Export'
 import { Basemap } from './components/map/Basemap'
 import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
@@ -13,15 +24,6 @@ import { Risk } from './components/risk/Risk'
 import { SiteUpload } from './components/site-upload/SiteUpload'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
-import {
-  getCurrentUser,
-  getStoredToken,
-  login,
-  logout,
-  register,
-  storeToken,
-} from './api/auth'
-import { fetchLayer } from './api/layers'
 import type { AuthFormState, AuthMode, AuthUser } from './types/auth'
 import type { BasemapKey, LayerKey, LayerState, LayerStateMap } from './types/map'
 import { prepareLayerData } from './utils/geojson'
@@ -30,6 +32,8 @@ const EMPTY_AUTH_FORM: AuthFormState = {
   displayName: '',
   email: '',
   password: '',
+  username: '',
+  bio: '',
 }
 
 function App() {
@@ -68,6 +72,7 @@ function App() {
     uploaded_site_priority: true,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
+  const [mapBounds, setMapBounds] = useState<ExportBounds | null>(null)
   const [authMode, setAuthMode] = useState<AuthMode>('login')
   const [authToken, setAuthToken] = useState<string>(storedToken)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
@@ -76,8 +81,12 @@ function App() {
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
 
-  // Load all configured GIS layers when the app starts
+  // Load all configured GIS layers after the user is authenticated
   useEffect(() => {
+    if (!currentUser) {
+      return
+    }
+
     let isCancelled = false
 
     async function loadLayerOnce(layerKey: LayerKey) {
@@ -104,7 +113,6 @@ function App() {
       }
     }
 
-    // Keep the sidebar counts and the map in sync from the same layer state.
     for (const { key } of LAYER_CONFIG) {
       void loadLayerOnce(key)
     }
@@ -112,7 +120,7 @@ function App() {
     return () => {
       isCancelled = true
     }
-  }, [])
+  }, [currentUser])
 
   // Restore the saved user session from the stored token
   useEffect(() => {
@@ -128,15 +136,21 @@ function App() {
       setAuthError('')
 
       try {
-        const payload = await getCurrentUser(authToken)
+        const user = await bootstrapSession()
+
         if (!isCancelled) {
-          setCurrentUser(payload.user ?? null)
+          setCurrentUser(user)
+
+          if (!user) {
+            setAuthToken('')
+            setAuthError('Session expired')
+          }
         }
       } catch (error) {
         if (!isCancelled) {
+          clearStoredAuth()
           setCurrentUser(null)
           setAuthToken('')
-          storeToken('')
           setAuthError(error instanceof Error ? error.message : 'Session expired')
         }
       } finally {
@@ -146,7 +160,6 @@ function App() {
       }
     }
 
-    // Try to restore the saved session before showing the map.
     void loadCurrentUser()
 
     return () => {
@@ -164,10 +177,10 @@ function App() {
     try {
       const result =
         authMode === 'login' ? await login(authForm) : await register(authForm)
+
       const token = result.token ?? ''
 
       setAuthToken(token)
-      storeToken(token)
       setCurrentUser(result.user ?? null)
       setAuthMessage(result.message ?? 'Success')
       setAuthForm(EMPTY_AUTH_FORM)
@@ -188,11 +201,12 @@ function App() {
     try {
       if (authToken) {
         await logout(authToken)
+      } else {
+        clearStoredAuth()
       }
     } finally {
       setCurrentUser(null)
       setAuthToken('')
-      storeToken('')
       setAuthMessage('Logged out')
       setIsAuthLoading(false)
       navigate('/login', { replace: true })
@@ -216,7 +230,6 @@ function App() {
     )
   }
 
-  // Build the login page before passing it into the route config
   const loginPage = (
     <main className="auth-shell">
       <section className="auth-gate-card">
@@ -283,7 +296,6 @@ function App() {
     </header>
   ) : null
 
-  // Main authenticated map page
   const mapPage = currentUser ? (
     <main className="map-shell">
       {topbar}
@@ -297,11 +309,17 @@ function App() {
             />
             <Basemap basemap={basemap} setBasemap={setBasemap} />
             <Risk />
+            <Export mapBounds={mapBounds} />
           </div>
         </aside>
 
         <section className="map-stage">
-          <MapView basemap={basemap} layers={layers} visibleLayers={visibleLayers} />
+          <MapView
+            basemap={basemap}
+            layers={layers}
+            visibleLayers={visibleLayers}
+            onBoundsChange={setMapBounds}
+          />
         </section>
       </section>
     </main>
@@ -321,6 +339,37 @@ function App() {
     </main>
   ) : null
 
+<<<<<<< DataExport-Sainath
+  const adminPage =
+    currentUser?.role === 'admin' ? (
+      <main className="map-shell">
+        {topbar}
+        <section className="map-body map-body--profile">
+          <section className="status-card">
+            <h2>Admin Panel</h2>
+            <p>Welcome, {currentUser.displayName}.</p>
+            <p>This page is only available to users with the admin role.</p>
+
+            <button
+              className="primary-button"
+              type="button"
+              onClick={() => navigate('/app')}
+            >
+              Back to Map
+            </button>
+          </section>
+        </section>
+      </main>
+    ) : null
+
+  return (
+    <AppRoutes
+      currentUser={currentUser}
+      loginPage={loginPage}
+      mapPage={mapPage}
+      profilePage={profilePage}
+      adminPage={adminPage}
+=======
   const siteUploadPage = currentUser ? (
     <SiteUpload
       authToken={authToken}
@@ -337,6 +386,7 @@ function App() {
       mapPage={mapPage}
       profilePage={profilePage}
       siteUploadPage={siteUploadPage}
+>>>>>>> main
     />
   )
 }
