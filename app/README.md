@@ -61,6 +61,7 @@ app/
 │   ├── routes/            backend API routes
 │   ├── scripts/           backend scripts such as risk generation
 │   ├── services/          backend business logic
+│   ├── tests/             backend unit tests
 │   └── utils/             backend helper functions
 ├── frontend/              React frontend application
 │   ├── src/
