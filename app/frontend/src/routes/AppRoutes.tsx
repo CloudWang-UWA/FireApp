@@ -3,15 +3,23 @@ import type { ReactNode } from 'react'
 
 export function AppRoutes({
   currentUser,
+  isAuthLoading,
   loginPage,
   mapPage,
   profilePage,
+  siteUploadPage,
 }: {
   currentUser: boolean
+  isAuthLoading: boolean
   loginPage: ReactNode
   mapPage: ReactNode
   profilePage: ReactNode
+  siteUploadPage: ReactNode
 }) {
+  if (isAuthLoading) {
+    return null
+  }
+
   return (
     <Routes>
       <Route
@@ -25,6 +33,10 @@ export function AppRoutes({
       <Route
         path="/profile"
         element={currentUser ? profilePage : <Navigate replace to="/login" />}
+      />
+      <Route
+        path="/site-upload"
+        element={currentUser ? siteUploadPage : <Navigate replace to="/login" />}
       />
       <Route
         path="*"

@@ -2,7 +2,12 @@ import json
 from pathlib import Path
 from io import BytesIO
 
+from models.uploaded_site import UploadedSite
+from models.user import db
+
 from flask import abort
+from shapely.geometry import mapping
+from services.risk.site_hazard import build_square_site
 
 # All GeoJSON / GeoTIFF data is stored under the backend/data folder
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -57,6 +62,15 @@ def list_available_layers() -> list[dict]:
             }
         )
 
+    layers.append(
+        {
+            "name": "uploaded-sites",
+            "type": "geojson",
+            "available": True,
+            "path": "database",
+        }
+    )
+
     return layers
 
 
@@ -74,6 +88,55 @@ def load_map_layer(layer_name: str) -> dict:
     # Load GeoJSON content and return as dict
     with file_path.open("r", encoding="utf-8") as geojson_file:
         return json.load(geojson_file)
+
+
+def load_uploaded_sites() -> dict:
+    uploaded_sites = db.session.execute(
+        db.select(UploadedSite).order_by(UploadedSite.id.asc())
+    ).scalars().all()
+
+    features = []
+
+    for site in uploaded_sites:
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": mapping(
+                    build_square_site(
+                        site.longitude,
+                        site.latitude,
+                        site.site_size_m,
+                    )
+                ),
+                "properties": {
+                    "id": site.id,
+                    "name": site.name,
+                    "place_type": site.place_type,
+                    "notes": site.notes,
+                    "status": site.status,
+                    "photo_path": site.photo_path,
+                    "photo_filename": site.photo_filename,
+                    "photo_content_type": site.photo_content_type,
+                    "inside_study_area": site.inside_study_area,
+                    "fuel_code": site.fuel_code,
+                    "fuel_type": site.to_dict().get("fuelType"),
+                    "slope_deg": site.slope_deg,
+                    "fire_year": site.fire_year,
+                    "fire_type": site.fire_type,
+                    "hazard_score": site.hazard_score,
+                    "hazard_level": site.hazard_level,
+                    "site_vulnerability_score": site.site_vulnerability_score,
+                    "site_priority_score": site.site_priority_score,
+                    "site_priority_level": site.site_priority_level,
+                    "created_by_user_id": site.created_by_user_id,
+                },
+            }
+        )
+
+    return {
+        "type": "FeatureCollection",
+        "features": features,
+    }
 
 
 def get_raster_overlay_info(layer_name: str) -> dict:

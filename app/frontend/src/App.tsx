@@ -10,6 +10,7 @@ import { Basemap } from './components/map/Basemap'
 import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
 import { Risk } from './components/risk/Risk'
+import { SiteUpload } from './components/site-upload/SiteUpload'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
 import {
@@ -33,6 +34,26 @@ const EMPTY_AUTH_FORM: AuthFormState = {
 
 function App() {
   const navigate = useNavigate()
+  const storedToken = getStoredToken()
+  async function loadLayer(layerKey: LayerKey) {
+    try {
+      const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
+      setLayers((current) => ({
+        ...current,
+        [layerKey]: { data, isLoading: false, error: null },
+      }))
+    } catch (error) {
+      setLayers((current) => ({
+        ...current,
+        [layerKey]: {
+          data: null,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Unable to load layer',
+        },
+      }))
+    }
+  }
+
   const [layers, setLayers] = useState<LayerStateMap>(() =>
     Object.fromEntries(
       LAYER_CONFIG.map(({ key }) => [
@@ -44,12 +65,13 @@ function App() {
   const [visibleLayers, setVisibleLayers] = useState<Record<LayerKey, boolean>>({
     recorded_site_priority: true,
     precaution_zone: true,
+    uploaded_site_priority: true,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
   const [authMode, setAuthMode] = useState<AuthMode>('login')
-  const [authToken, setAuthToken] = useState<string>(() => getStoredToken())
+  const [authToken, setAuthToken] = useState<string>(storedToken)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
-  const [isAuthLoading, setIsAuthLoading] = useState(false)
+  const [isAuthLoading, setIsAuthLoading] = useState(Boolean(storedToken))
   const [authError, setAuthError] = useState('')
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
@@ -58,7 +80,7 @@ function App() {
   useEffect(() => {
     let isCancelled = false
 
-    async function loadLayer(layerKey: LayerKey) {
+    async function loadLayerOnce(layerKey: LayerKey) {
       try {
         const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
         if (!isCancelled) {
@@ -84,7 +106,7 @@ function App() {
 
     // Keep the sidebar counts and the map in sync from the same layer state.
     for (const { key } of LAYER_CONFIG) {
-      void loadLayer(key)
+      void loadLayerOnce(key)
     }
 
     return () => {
@@ -229,9 +251,23 @@ function App() {
 
   const topbar = currentUser ? (
     <header className="topbar">
-      <button className="topbar-brand" onClick={() => navigate('/app')} type="button">
-        Heritage Fire Watch
-      </button>
+      <div className="topbar-left">
+        <button
+          className="topbar-brand"
+          onClick={() => navigate('/app')}
+          type="button"
+        >
+          Heritage Fire Watch
+        </button>
+
+        <button
+          className="topbar-nav"
+          onClick={() => navigate('/site-upload')}
+          type="button"
+        >
+          Site Upload
+        </button>
+      </div>
 
       <button
         className="topbar-user"
@@ -285,12 +321,22 @@ function App() {
     </main>
   ) : null
 
+  const siteUploadPage = currentUser ? (
+    <SiteUpload
+      authToken={authToken}
+      onBack={() => navigate('/app')}
+      onUploadSuccess={() => loadLayer('uploaded_site_priority')}
+    />
+  ) : null
+
   return (
     <AppRoutes
       currentUser={Boolean(currentUser)}
+      isAuthLoading={isAuthLoading}
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}
+      siteUploadPage={siteUploadPage}
     />
   )
 }

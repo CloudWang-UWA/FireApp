@@ -1,4 +1,9 @@
+import math
+
+import geopandas as gpd
+import pandas as pd
 from shapely.geometry import Point
+from shapely.geometry import Polygon
 
 from services.risk.load_processed_data import (
     load_fire_history_data,
@@ -46,11 +51,11 @@ def get_fire_history(fire_history_data, point_x: float, point_y: float):
     return int(latest_fire["fih_year1"]), latest_fire["fih_fire_type"]
 
 
+# get site hazard from a point
 def get_site_hazard_info(point_x: float, point_y: float) -> dict:
     fuel_data = load_fuel_data()
     slope_data = load_slope_data()
     fire_history_data = load_fire_history_data()
-
     fuel_band = fuel_data.read(1)
     slope_band = slope_data.read(1)
 
@@ -64,3 +69,22 @@ def get_site_hazard_info(point_x: float, point_y: float) -> dict:
         "fire_year": fire_year,
         "fire_type": fire_type,
     }
+
+# draw the new site as a square. 111,320 is the approximate number of meters in 1 degree of latitude.
+def build_square_site(
+    longitude: float, latitude: float, site_size_m: float
+) -> Polygon:
+    half_side_m = site_size_m / 2.0
+
+    lat_offset = half_side_m / 111320.0
+    lon_offset = half_side_m / (111320.0 * math.cos(math.radians(latitude)))
+
+    return Polygon(
+        [
+            (longitude - lon_offset, latitude - lat_offset),
+            (longitude + lon_offset, latitude - lat_offset),
+            (longitude + lon_offset, latitude + lat_offset),
+            (longitude - lon_offset, latitude + lat_offset),
+            (longitude - lon_offset, latitude - lat_offset),
+        ]
+    )

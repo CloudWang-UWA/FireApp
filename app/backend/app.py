@@ -3,12 +3,14 @@ import os
 from flask import Flask, g, jsonify
 from flask_cors import CORS
 from models.user import db
+from models.uploaded_site import UploadedSite
+from sqlalchemy import inspect, text
 from routes.auth_routes import auth_bp
 from routes.export_routes import export_bp
 from routes.layer_routes import layer_bp
 from routes.permission_routes import permission_bp
 from routes.risk_routes import risk_bp
-from routes.upload_routes import upload_bp
+from routes.site_upload_routes import site_upload_bp
 from services.auth_service import get_current_user
 from services.layer_service import LAYER_FILES
 
@@ -37,6 +39,28 @@ CORS(
 db.init_app(app)
 
 
+def ensure_uploaded_site_schema() -> None:
+    # Backfill missing photo columns for older databases.
+    inspector = inspect(db.engine)
+    if "uploaded_sites" not in inspector.get_table_names():
+        return
+
+    existing_columns = {
+        column["name"] for column in inspector.get_columns("uploaded_sites")
+    }
+    missing_columns = {
+        "photo_path": "ALTER TABLE uploaded_sites ADD COLUMN photo_path VARCHAR(512)",
+        "photo_filename": "ALTER TABLE uploaded_sites ADD COLUMN photo_filename VARCHAR(255)",
+        "photo_content_type": "ALTER TABLE uploaded_sites ADD COLUMN photo_content_type VARCHAR(100)",
+    }
+
+    for column_name, ddl in missing_columns.items():
+        if column_name not in existing_columns:
+            db.session.execute(text(ddl))
+
+    db.session.commit()
+
+
 @app.before_request
 def load_current_user() -> None:
      # Load the logged-in user once per request so routes can access it through g.
@@ -45,6 +69,7 @@ def load_current_user() -> None:
 
 @app.errorhandler(400)
 @app.errorhandler(401)
+@app.errorhandler(403)
 @app.errorhandler(404)
 def handle_known_errors(error):
     return jsonify({"error": error.description}), error.code
@@ -66,10 +91,11 @@ app.register_blueprint(layer_bp)
 app.register_blueprint(risk_bp)
 app.register_blueprint(permission_bp)
 app.register_blueprint(export_bp)
-app.register_blueprint(upload_bp)
+app.register_blueprint(site_upload_bp)
 
 with app.app_context():
     db.create_all()
+    ensure_uploaded_site_schema()
 
 
 if __name__ == "__main__":

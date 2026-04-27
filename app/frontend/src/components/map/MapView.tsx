@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet'
+import { GeoJSON, MapContainer, Pane, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import type { LatLng, Layer as LeafletLayer } from 'leaflet'
 
@@ -40,6 +40,17 @@ export function MapView({
   layers: LayerStateMap
   visibleLayers: Record<LayerKey, boolean>
 }) {
+  const renderOrder: LayerKey[] = [
+    'precaution_zone',
+    'recorded_site_priority',
+    'uploaded_site_priority',
+  ]
+  const layerPaneMap: Record<LayerKey, string> = {
+    precaution_zone: 'precautionPane',
+    recorded_site_priority: 'recordedSitePane',
+    uploaded_site_priority: 'uploadedSitePane',
+  }
+
   return (
     <section className="map-panel">
       <MapContainer
@@ -55,12 +66,21 @@ export function MapView({
           subdomains={BASEMAP_CONFIG[basemap].subdomains}
           url={BASEMAP_CONFIG[basemap].url}
         />
+        <Pane name="precautionPane" style={{ zIndex: 410 }} />
+        <Pane name="recordedSitePane" style={{ zIndex: 420 }} />
+        <Pane name="uploadedSitePane" style={{ zIndex: 430 }} />
         
         {/* Fit the map to loaded layer bounds */}
         <MapViewController layers={layers} />
         
         {/* Render configured layers that are visible and already loaded */}
-        {LAYER_CONFIG.map(({ key, color }) => {
+        {renderOrder.map((key) => {
+          const layerConfig = LAYER_CONFIG.find((layer) => layer.key === key)
+          if (!layerConfig) {
+            return null
+          }
+
+          const { color } = layerConfig
           const data = layers[key].data
           if (!visibleLayers[key] || !data) {
             return null
@@ -70,26 +90,41 @@ export function MapView({
             <GeoJSON
               key={key}
               data={data}
+              pane={layerPaneMap[key]}
               style={(feature) => {
-                const priorityLevel =
-                  key === 'recorded_site_priority'
-                    ? feature?.properties?.recorded_site_priority_level
-                    : feature?.properties?.precaution_zone_level
+                let priorityLevel
+                const isPriorityLayer =
+                  key === 'recorded_site_priority' ||
+                  key === 'uploaded_site_priority'
+
+                if (key === 'recorded_site_priority') {
+                  priorityLevel = feature?.properties?.recorded_site_priority_level
+                } else if (key === 'uploaded_site_priority') {
+                  priorityLevel = feature?.properties?.site_priority_level
+                } else {
+                  priorityLevel = feature?.properties?.precaution_zone_level
+                }
+
                 const fillColor = getPriorityColor(priorityLevel)
 
                 return {
-                  color: key === 'recorded_site_priority' ? fillColor : 'transparent',
-                  weight: key === 'recorded_site_priority' ? 2 : 0,
+                  color: isPriorityLayer ? fillColor : 'transparent',
+                  weight: isPriorityLayer ? 2 : 0,
                   fillColor,
-                  fillOpacity:
-                    key === 'recorded_site_priority' ? 0.55 : 0.24,
+                  fillOpacity: isPriorityLayer ? 0.55 : 0.24,
                 }
               }}
               pointToLayer={(_feature, latlng: LatLng) =>
                 L.circleMarker(latlng, {
+                  pane: layerPaneMap[key],
                   radius: 6,
-                  color,
-                  fillColor: color,
+                  color: key === 'uploaded_site_priority' ? '#8c510a' : color,
+                  fillColor:
+                    key === 'uploaded_site_priority'
+                      ? getPriorityColor(
+                          _feature?.properties?.site_priority_level,
+                        )
+                      : color,
                   fillOpacity: 0.8,
                   weight: 1,
                 })
