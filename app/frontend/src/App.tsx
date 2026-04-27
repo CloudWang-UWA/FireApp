@@ -339,7 +339,6 @@ function App() {
     </main>
   ) : null
 
-<<<<<<< DataExport-Sainath
   const adminPage =
     currentUser?.role === 'admin' ? (
       <main className="map-shell">
@@ -362,14 +361,6 @@ function App() {
       </main>
     ) : null
 
-  return (
-    <AppRoutes
-      currentUser={currentUser}
-      loginPage={loginPage}
-      mapPage={mapPage}
-      profilePage={profilePage}
-      adminPage={adminPage}
-=======
   const siteUploadPage = currentUser ? (
     <SiteUpload
       authToken={authToken}
@@ -380,13 +371,13 @@ function App() {
 
   return (
     <AppRoutes
-      currentUser={Boolean(currentUser)}
+      currentUser={currentUser}
       isAuthLoading={isAuthLoading}
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}
+      adminPage={adminPage}
       siteUploadPage={siteUploadPage}
->>>>>>> main
     />
   )
 }
