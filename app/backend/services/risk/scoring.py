@@ -14,6 +14,7 @@ from datetime import date
 import pandas as pd
 
 
+
 def get_fuel_score(fuel_code):
     if (fuel_code is None):
         return None

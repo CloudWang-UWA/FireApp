@@ -26,6 +26,11 @@ export const LAYER_CONFIG: Array<{
     label: 'Precaution Areas',
     color: '#ef8a62',
   },
+  {
+    key: 'uploaded_site_priority',
+    label: 'Uploaded Site Priority',
+    color: '#2b8cbe',
+  }
 ]
 
 // Configuration for available basemaps

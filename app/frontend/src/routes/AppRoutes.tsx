@@ -4,9 +4,11 @@ import type { AuthUser } from '../types/auth'
 
 export function AppRoutes({
   currentUser,
+  isAuthLoading,
   loginPage,
   mapPage,
   profilePage,
+<<<<<<< DataExport-Sainath
   adminPage,
 }: {
   currentUser: AuthUser | null
@@ -14,7 +16,21 @@ export function AppRoutes({
   mapPage: ReactNode
   profilePage: ReactNode
   adminPage?: ReactNode
+=======
+  siteUploadPage,
+}: {
+  currentUser: boolean
+  isAuthLoading: boolean
+  loginPage: ReactNode
+  mapPage: ReactNode
+  profilePage: ReactNode
+  siteUploadPage: ReactNode
+>>>>>>> main
 }) {
+  if (isAuthLoading) {
+    return null
+  }
+
   return (
     <Routes>
       <Route
@@ -41,6 +57,10 @@ export function AppRoutes({
         }
       />
 
+      <Route
+        path="/site-upload"
+        element={currentUser ? siteUploadPage : <Navigate replace to="/login" />}
+      />
       <Route
         path="*"
         element={<Navigate replace to={currentUser ? '/app' : '/login'} />}

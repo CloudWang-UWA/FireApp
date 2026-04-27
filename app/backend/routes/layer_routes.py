@@ -4,9 +4,9 @@ from services.layer_service import (
     get_raster_overlay_image,
     get_raster_overlay_info,
     list_available_layers,
-    load_map_layer
+    load_map_layer,
+    load_uploaded_sites,
 )
-
 
 layer_bp = Blueprint("layers", __name__, url_prefix="/api/layers")
 
@@ -14,6 +14,11 @@ layer_bp = Blueprint("layers", __name__, url_prefix="/api/layers")
 @layer_bp.get("")
 def list_layers():
     return jsonify({"layers": list_available_layers()})
+
+
+@layer_bp.get("/uploaded-sites")
+def uploaded_sites_layer():
+    return jsonify(load_uploaded_sites())
 
 
 @layer_bp.get("/<layer_name>")

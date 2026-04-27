@@ -13,12 +13,25 @@ export function Layers({
     updater: (current: Record<LayerKey, boolean>) => Record<LayerKey, boolean>,
   ) => void
 }) {
+  function getLayerMeta(key: LayerKey) {
+    if (layers[key].isLoading) {
+      return 'Loading...'
+    }
+
+    if (key === 'precaution_zone') {
+      return ''
+    }
+
+    const count = layers[key].data?.features.length ?? 0
+    return `${count} sites`
+  }
+
   return (
     <div className="status-card">
       <h2>Layers</h2>
       <div className="layer-list">
         {/* Render available layers from configuration */}
-        {LAYER_CONFIG.map(({ key, label, color }) => (
+        {LAYER_CONFIG.map(({ key, label }) => (
           <label className="layer-item" key={key}>
             <span className="layer-toggle">
               <input
@@ -31,14 +44,11 @@ export function Layers({
                   }))
                 }
               />
-              <span className="swatch" style={{ backgroundColor: color }} />
               <span>{label}</span>
             </span>
-            <span className="layer-meta">
-              {layers[key].isLoading
-                ? 'Loading...'
-                : `${layers[key].data?.features.length ?? 0} features`}
-            </span>
+            {getLayerMeta(key) ? (
+              <span className="layer-meta">{getLayerMeta(key)}</span>
+            ) : null}
           </label>
         ))}
       </div>
