@@ -40,15 +40,6 @@ def list_available_layers() -> list[dict]:
     # Return basic info for each layer so frontend can decide what to show
     layers = []
 
-    layers.append(
-        {
-            "name": "uploaded-sites",
-            "type": "geojson",
-            "available": True,
-            "path": "uploaded-sites",
-        }
-    )
-
     for layer_name, file_path in LAYER_FILES.items():
         layers.append(
             {
