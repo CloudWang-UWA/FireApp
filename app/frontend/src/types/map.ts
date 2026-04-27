@@ -1,4 +1,6 @@
-export type LayerKey = 'site' | 'granite' | 'fuel' | 'vegetation' | 'slope'
+export type LayerKey =
+  | 'recorded_site_priority'
+  | 'precaution_zone'
 export type BasemapKey = 'osm' | 'googleSat'
 
 export type GeoJsonData = GeoJSON.FeatureCollection
