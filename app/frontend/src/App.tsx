@@ -351,7 +351,6 @@ function App() {
       <section className="map-body">
         <aside className="sidebar">
           <div className="sidebar-scroll">
-            <RiskIndicators />
             <Layers
               layers={layers}
               visibleLayers={visibleLayers}
