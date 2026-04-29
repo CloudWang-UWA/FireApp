@@ -306,7 +306,8 @@ function App() {
             Site Insights
           </button>
 
-          <button
+          {/* Reports and About are hidden until their page routes are fully implemented. */}
+          {/* <button
             className={isActive('/reports') ? 'topbar-nav is-active' : 'topbar-nav'}
             onClick={() => navigate('/reports')}
             type="button"
@@ -320,7 +321,7 @@ function App() {
             type="button"
           >
             About
-          </button>
+          </button> */}
 
           <button
             className={isActive('/site-upload') ? 'topbar-nav is-active' : 'topbar-nav'}
