@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
-import { GeoJSON, MapContainer, Pane, TileLayer, useMap } from 'react-leaflet'
+import { GeoJSON, ImageOverlay, MapContainer, Pane, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import type { LatLng, Layer as LeafletLayer, Map as LeafletMap } from 'leaflet'
 
 import type { ExportBounds } from '../../api/export'
-import { BASEMAP_CONFIG, INITIAL_CENTER, LAYER_CONFIG } from '../../config/map'
+import { API_BASE_URL, BASEMAP_CONFIG, INITIAL_CENTER, LAYER_CONFIG } from '../../config/map'
+
 import type { BasemapKey, LayerKey, LayerStateMap } from '../../types/map'
 import { buildPopupContent, getCombinedLayerBounds } from '../../utils/geojson'
 
@@ -86,14 +87,34 @@ export function MapView({
   onBoundsChange: (bounds: ExportBounds) => void
 }) {
   const renderOrder: LayerKey[] = [
+    'fuel',
+    'slope',
     'precaution_zone',
+    'granite',
+    'fire_history',
     'recorded_site_priority',
     'uploaded_site_priority',
   ]
   const layerPaneMap: Record<LayerKey, string> = {
+    fuel: 'rasterOverlayPane',
+    slope: 'rasterOverlayPane',
     precaution_zone: 'precautionPane',
+    granite: 'contextPane',
+    fire_history: 'contextPane',
     recorded_site_priority: 'recordedSitePane',
     uploaded_site_priority: 'uploadedSitePane',
+  }
+
+  function resolveImageUrl(imageUrl: string) {
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl
+    }
+
+    if (!API_BASE_URL) {
+      return imageUrl
+    }
+
+    return `${API_BASE_URL}${imageUrl}`
   }
 
   return (
@@ -111,17 +132,41 @@ export function MapView({
           subdomains={BASEMAP_CONFIG[basemap].subdomains}
           url={BASEMAP_CONFIG[basemap].url}
         />
-
-        <Pane name="precautionPane" style={{ zIndex: 410 }} />
+        <Pane name="rasterOverlayPane" style={{ zIndex: 405 }} />
+        <Pane name="contextPane" style={{ zIndex: 410 }} />
+        <Pane name="precautionPane" style={{ zIndex: 415 }} />
         <Pane name="recordedSitePane" style={{ zIndex: 420 }} />
         <Pane name="uploadedSitePane" style={{ zIndex: 430 }} />
 
         <MapViewController layers={layers} />
         <MapBoundsTracker onBoundsChange={onBoundsChange} />
 
-        {LAYER_CONFIG.map(({ key, color }) => {
-          const data = layers[key].data
-          if (!visibleLayers[key] || !data) {
+        {renderOrder.map((key) => {
+          const layerConfig = LAYER_CONFIG.find((layer) => layer.key === key)
+          if (!layerConfig || !visibleLayers[key]) {
+            return null
+          }
+
+          const state = layers[key]
+
+          if (state.kind === 'image_overlay') {
+            const overlay = state.overlay
+            if (!overlay) return null
+
+            return (
+              <ImageOverlay
+                key={key}
+                url={resolveImageUrl(overlay.image_url)}
+                bounds={overlay.bounds}
+                opacity={0.65}
+                pane={layerPaneMap[key]}
+              />
+            )
+          }
+
+          const { color } = layerConfig
+          const data = state.geojson
+          if (!data) {
             return null
           }
 
@@ -131,39 +176,62 @@ export function MapView({
               data={data}
               pane={layerPaneMap[key]}
               style={(feature) => {
-                let priorityLevel
-                const isPriorityLayer =
-                  key === 'recorded_site_priority' ||
-                  key === 'uploaded_site_priority'
+                if (key === 'precaution_zone') {
+                  const level = feature?.properties?.precaution_zone_level
+                  const fillColor = getPriorityColor(level)
 
-                if (key === 'recorded_site_priority') {
-                  priorityLevel = feature?.properties?.recorded_site_priority_level
-                } else if (key === 'uploaded_site_priority') {
-                  priorityLevel = feature?.properties?.site_priority_level
-                } else {
-                  priorityLevel = feature?.properties?.precaution_zone_level
+                  return {
+                    color: 'transparent',
+                    weight: 0,
+                    fillColor,
+                    fillOpacity: 0.24,
+                  }
                 }
 
-                const fillColor = getPriorityColor(priorityLevel)
+                if (key === 'recorded_site_priority') {
+                  const level = feature?.properties?.recorded_site_priority_level
+                  const fillColor = getPriorityColor(level)
+
+                  return {
+                    color: fillColor,
+                    weight: 2,
+                    fillColor,
+                    fillOpacity: 0.55,
+                  }
+                }
+
+                if (key === 'uploaded_site_priority') {
+                  const level = feature?.properties?.site_priority_level
+                  const fillColor = getPriorityColor(level)
+
+                  return {
+                    color: fillColor,
+                    weight: 2,
+                    fillColor,
+                    fillOpacity: 0.55,
+                  }
+                }
+
+                const baseColor = color ?? '#6b7280'
 
                 return {
-                  color: isPriorityLayer ? fillColor : 'transparent',
-                  weight: isPriorityLayer ? 2 : 0,
-                  fillColor,
-                  fillOpacity: isPriorityLayer ? 0.55 : 0.24,
+                  color: baseColor,
+                  weight: 1,
+                  fillColor: baseColor,
+                  fillOpacity: 0.12,
                 }
               }}
               pointToLayer={(_feature, latlng: LatLng) =>
                 L.circleMarker(latlng, {
                   pane: layerPaneMap[key],
                   radius: 6,
-                  color: key === 'uploaded_site_priority' ? '#8c510a' : color,
+                  color: key === 'uploaded_site_priority' ? '#8c510a' : (color ?? '#6b7280'),
                   fillColor:
                     key === 'uploaded_site_priority'
                       ? getPriorityColor(
                           _feature?.properties?.site_priority_level,
                         )
-                      : color,
+                      : (color ?? '#6b7280'),
                   fillOpacity: 0.8,
                   weight: 1,
                 })

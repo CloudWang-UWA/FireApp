@@ -18,11 +18,21 @@ export function Layers({
       return 'Loading...'
     }
 
-    if (key === 'precaution_zone') {
+    const state = layers[key]
+
+    if (state.error) {
+      return 'Failed to load'
+    }
+
+    if (state.kind === 'image_overlay') {
+      return state.overlay ? 'Overlay ready' : ''
+    }
+
+    if (key === 'precaution_zone' || key === 'granite' || key === 'fire_history') {
       return ''
     }
 
-    const count = layers[key].data?.features.length ?? 0
+    const count = state.geojson?.features.length ?? 0
     return `${count} sites`
   }
 
