@@ -47,22 +47,63 @@ export function AboutPage() {
       <section className="about-section">
         <h2>ICIP / IDaS / Conditions of use</h2>
         <p className="about-muted">
-          Placeholder statement about ICIP and IDaS, who the website/app belongs to,
-          who can use it, and conditions of use. Logos will be provided later.
+          ICIP / IDaS and conditions of use information is provided in the project
+          documentation. Collaboration logos are shown above.
         </p>
-        <div className="logo-row" aria-label="Collaboration logos (placeholder)">
-          <div className="logo placeholder">Wagyl Kaip logo</div>
-          <div className="logo placeholder">UWA logo</div>
+        <div className="logo-row" aria-label="Collaboration logos">
+          <div className="logo">
+            <img
+              src="/logos/WKSNLogo.webp"
+              alt="Wagyl Kaip logo"
+              loading="lazy"
+            />
+          </div>
+          <div className="logo">
+            <img
+              src="/logos/uwa-university-perth-seeklogo.png"
+              alt="UWA logo"
+              loading="lazy"
+            />
+          </div>
         </div>
       </section>
 
       <section className="about-section">
-        <h2>Heritage thumbnails</h2>
-        <p className="about-muted">Placeholders until images are provided.</p>
-        <div className="thumbnail-grid" aria-label="Heritage type thumbnails (placeholder)">
-          <div className="thumbnail placeholder" />
-          <div className="thumbnail placeholder" />
-          <div className="thumbnail placeholder" />
+        <h2>Heritage Sites</h2>
+        <div
+          className="thumbnail-grid"
+          aria-label="Heritage sites thumbnails"
+        >
+          <div className="thumbnail-tile" aria-label="Tamungup heritage site thumbnail">
+            <div className="thumbnail">
+              <img
+                src="/images/heritage-thumbnails/Heritage_Tamungup__Kalgan_Rivermouth.jpg"
+                alt="Tamungup heritage site thumbnail"
+                loading="lazy"
+              />
+            </div>
+            <div className="thumbnail-caption">Tamungup</div>
+          </div>
+          <div className="thumbnail-tile" aria-label="Kep Mardjit heritage site thumbnail">
+            <div className="thumbnail">
+              <img
+                src="/images/heritage-thumbnails/Heritage_Kep_Mardjit__Vancouver_Spring.jpg"
+                alt="Kep Mardjit heritage site thumbnail"
+                loading="lazy"
+              />
+            </div>
+            <div className="thumbnail-caption">Kep Mardjit</div>
+          </div>
+          <div className="thumbnail-tile" aria-label="Manitchpurting heritage site thumbnail">
+            <div className="thumbnail">
+              <img
+                src="/images/heritage-thumbnails/Heritage_Manitchpurting__rocky_outcrop_NW_of_Mt_Melville_summit__jpg.png"
+                alt="Manitchpurting heritage site thumbnail"
+                loading="lazy"
+              />
+            </div>
+            <div className="thumbnail-caption">Manitchpurting</div>
+          </div>
         </div>
       </section>
     </article>
