@@ -15,15 +15,12 @@ import {
 } from './api/auth'
 import { fetchLayer } from './api/layers'
 import { Auth } from './components/auth/Auth'
-import { AboutPage } from './components/about/AboutPage'
 import { Profile } from './components/auth/Profile'
-import { SidebarIntro } from './components/landing/SidebarIntro'
 import { Export } from './components/export/Export'
 import { Basemap } from './components/map/Basemap'
 import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
 import { Risk } from './components/risk/Risk'
-import { RiskIndicators } from './components/risk/RiskIndicators'
 import { SiteUpload } from './components/site-upload/SiteUpload'
 import { HeritageSiteInsights } from './components/resources/HeritageSiteInsights'
 import { LAYER_CONFIG } from './config/map'
@@ -354,7 +351,6 @@ function App() {
       <section className="map-body">
         <aside className="sidebar">
           <div className="sidebar-scroll">
-            <SidebarIntro />
             <RiskIndicators />
             <Layers
               layers={layers}
@@ -434,23 +430,7 @@ const heritageSiteInsightsPage = currentUser ? (
   </main>
 ) : null
 
-const aboutPage = currentUser ? (
-  <main className="map-shell">
-    {topbar}
-    <section className="map-body map-body--profile">
-      <section className="profile-view">
-        <div className="profile-card">
-          <AboutPage />
-          <div className="profile-actions">
-            <button className="secondary-button" onClick={() => navigate('/app')} type="button">
-              Back to map
-            </button>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-) : null
+  const aboutPage = null
 
 return (
   <AppRoutes
