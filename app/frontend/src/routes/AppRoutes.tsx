@@ -10,6 +10,7 @@ export function AppRoutes({
   profilePage,
   adminPage,
   siteUploadPage,
+  heritageSiteInsightsPage,
 }: {
   currentUser: AuthUser | null
   isAuthLoading: boolean
@@ -18,6 +19,7 @@ export function AppRoutes({
   profilePage: ReactNode
   adminPage?: ReactNode
   siteUploadPage: ReactNode
+  heritageSiteInsightsPage: ReactNode
 }) {
   if (isAuthLoading) {
     return null
@@ -53,6 +55,14 @@ export function AppRoutes({
         path="/site-upload"
         element={currentUser ? siteUploadPage : <Navigate replace to="/login" />}
       />
+
+      <Route
+        path="/resources/heritage-site-insights"
+        element={
+          currentUser ? heritageSiteInsightsPage : <Navigate replace to="/login" />
+        }
+      />
+
       <Route
         path="*"
         element={<Navigate replace to={currentUser ? '/app' : '/login'} />}

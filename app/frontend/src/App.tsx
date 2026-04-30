@@ -1,7 +1,7 @@
 import type { FormEvent } from 'react'
 import { useEffect, useState } from 'react'
 import 'leaflet/dist/leaflet.css'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './App.css'
 
 import type { ExportBounds } from './api/export'
@@ -22,6 +22,7 @@ import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
 import { Risk } from './components/risk/Risk'
 import { SiteUpload } from './components/site-upload/SiteUpload'
+import { HeritageSiteInsights } from './components/resources/HeritageSiteInsights'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
 import type { AuthFormState, AuthMode, AuthUser } from './types/auth'
@@ -38,6 +39,7 @@ const EMPTY_AUTH_FORM: AuthFormState = {
 
 function App() {
   const navigate = useNavigate()
+  const location = useLocation()
   const storedToken = getStoredToken()
   async function loadLayer(layerKey: LayerKey) {
     try {
@@ -222,7 +224,7 @@ function App() {
     return (
       <main className="auth-shell">
         <section className="auth-gate-card auth-gate-card--compact">
-          <p className="eyebrow">Heritage Fire Watch</p>
+          <p className="eyebrow">Karla Heritage Watch</p>
           <h1>Checking your session</h1>
           <p className="intro">Please wait while we restore your account.</p>
         </section>
@@ -234,7 +236,7 @@ function App() {
     <main className="auth-shell">
       <section className="auth-gate-card">
         <div className="auth-gate-copy">
-          <p className="eyebrow">Heritage Fire Watch</p>
+          <p className="eyebrow">Karla Heritage Watch</p>
           <h1>Sign in to continue</h1>
           <p className="intro">
             Access the heritage fire vulnerability map by signing in with your
@@ -262,6 +264,9 @@ function App() {
     </main>
   )
 
+  const activePath = location.pathname
+  const isActive = (path: string) => activePath === path
+
   const topbar = currentUser ? (
     <header className="topbar">
       <div className="topbar-left">
@@ -270,17 +275,61 @@ function App() {
           onClick={() => navigate('/app')}
           type="button"
         >
-          Heritage Fire Watch
-        </button>
 
-        <button
-          className="topbar-nav"
-          onClick={() => navigate('/site-upload')}
-          type="button"
-        >
-          Site Upload
+          <span className="topbar-brand-name">Karla Heritage Watch</span>
+          <span className="topbar-brand-subtitle">Albany, WA Region</span>
         </button>
       </div>
+
+      <nav className="topbar-center" aria-label="Primary navigation">
+        <div className="topbar-nav-group">
+          <button
+            className={isActive('/app') ? 'topbar-nav is-active' : 'topbar-nav'}
+            onClick={() => navigate('/app')}
+            type="button"
+          >
+            Risk Map
+          </button>
+
+          <button
+            className={
+              isActive('/resources/heritage-site-insights')
+                ? 'topbar-nav is-active'
+                : 'topbar-nav'
+            }
+            onClick={() => navigate('/resources/heritage-site-insights')}
+            type="button"
+          >
+            Site Insights
+          </button>
+
+          {/* Reports and About are hidden until their page routes are fully implemented. */}
+          {/* <button
+            className={isActive('/reports') ? 'topbar-nav is-active' : 'topbar-nav'}
+            onClick={() => navigate('/reports')}
+            type="button"
+          >
+            Reports
+          </button>
+
+          <button
+            className={isActive('/about') ? 'topbar-nav is-active' : 'topbar-nav'}
+            onClick={() => navigate('/about')}
+            type="button"
+          >
+            About
+          </button> */}
+
+          <button
+            className={isActive('/site-upload') ? 'topbar-nav is-active' : 'topbar-nav'}
+            onClick={() => navigate('/site-upload')}
+            type="button"
+          >
+            Site Upload
+          </button>
+        </div>
+      </nav>
+
 
       <button
         className="topbar-user"
@@ -369,15 +418,28 @@ function App() {
     />
   ) : null
 
-  return (
-    <AppRoutes
-      currentUser={currentUser}
+const heritageSiteInsightsPage = currentUser ? (
+  <main className="map-shell">
+    {topbar}
+    <section className="map-body map-body--insights">
+      <section className="map-stage map-stage--insights">
+        <HeritageSiteInsights onBackToMap={() => navigate('/app')} />
+      </section>
+    </section>
+  </main>
+) : null
+
+
+return (
+  <AppRoutes
+    currentUser={currentUser}
       isAuthLoading={isAuthLoading}
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}
-      adminPage={adminPage}
-      siteUploadPage={siteUploadPage}
+    adminPage={adminPage}
+    siteUploadPage={siteUploadPage}
+    heritageSiteInsightsPage={heritageSiteInsightsPage}
     />
   )
 }
