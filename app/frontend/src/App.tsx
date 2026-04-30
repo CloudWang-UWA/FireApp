@@ -429,15 +429,13 @@ const heritageSiteInsightsPage = currentUser ? (
   </main>
 ) : null
 
-  const aboutPage = null
 
 return (
   <AppRoutes
-    currentUser={Boolean(currentUser)}
+    currentUser={currentUser}
       isAuthLoading={isAuthLoading}
       loginPage={loginPage}
       mapPage={mapPage}
-      aboutPage={aboutPage}
       profilePage={profilePage}
     adminPage={adminPage}
     siteUploadPage={siteUploadPage}
