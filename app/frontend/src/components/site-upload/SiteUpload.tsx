@@ -182,14 +182,6 @@ export function SiteUpload({
             assessment.
           </p>
         </div>
-
-        <button
-          className="secondary-button upload-back-button"
-          onClick={onBack}
-          type="button"
-        >
-          Back to Map
-        </button>
       </section>
 
       <section className="site-upload-content">
@@ -294,6 +286,17 @@ export function SiteUpload({
             />
           </label>
 
+          <div className="site-upload-actions site-upload-actions--center">
+            <button
+              className="auth-submit"
+              type="button"
+              onClick={fillCurrentLocation}
+              disabled={isGettingLocation || isSubmitting}
+            >
+              {isGettingLocation ? 'Getting location...' : 'Use current location'}
+            </button>
+          </div>
+
           <label className="auth-field">
             <span>Site size (m)</span>
             <input
@@ -314,14 +317,11 @@ export function SiteUpload({
             </small>
           </label>
 
-          <button
-            className="auth-submit"
-            type="button"
-            onClick={fillCurrentLocation}
-            disabled={isGettingLocation || isSubmitting}
-          >
-            {isGettingLocation ? 'Getting location...' : 'Use current location'}
-          </button>
+          <div className="site-upload-actions site-upload-actions--center">
+            <button className="auth-submit" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save site'}
+            </button>
+          </div>
 
           {locationMessage ? (
             <p className="auth-feedback">{locationMessage}</p>
@@ -336,21 +336,9 @@ export function SiteUpload({
               {successMessage}
             </p>
           ) : null}
-
-          <button className="auth-submit" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save site'}
-          </button>
         </form>
 
         <aside className="site-upload-aside">
-          <section className="upload-guidance-card">
-            <h2>Submission Review</h2>
-            <p>
-              Uploaded places are stored for review and added to the uploaded
-              site priority layer after risk processing.
-            </p>
-          </section>
-
           {outOfAreaWarning ? (
             <section className="upload-result upload-result--warning">
               <h2>Study Area Warning</h2>
@@ -370,6 +358,22 @@ export function SiteUpload({
               ) : null}
             </section>
           ) : null}
+
+          <section className="upload-guidance-card">
+            <h2>Submission Review</h2>
+            <p>
+              Uploaded places are stored for review and added to the uploaded
+              site priority layer after risk processing.
+            </p>
+          </section>
+
+          <button
+            className="secondary-button upload-back-button"
+            onClick={onBack}
+            type="button"
+          >
+            Back to Map
+          </button>
         </aside>
       </section>
     </section>
