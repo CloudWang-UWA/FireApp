@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
   createSiteUpload,
@@ -48,6 +48,24 @@ export function SiteUpload({
   const [outOfAreaWarning, setOutOfAreaWarning] = useState('')
   const [uploadSummary, setUploadSummary] = useState<SiteUploadResponse | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
+  const locationRequestId = useRef(0)
+  const manualEditVersion = useRef(0)
+
+  function getLocationErrorMessage(error: GeolocationPositionError) {
+    if (error.code === error.PERMISSION_DENIED) {
+      return 'Location permission was denied'
+    }
+
+    if (error.code === error.POSITION_UNAVAILABLE) {
+      return 'Location is unavailable right now'
+    }
+
+    if (error.code === error.TIMEOUT) {
+      return 'Location request timed out'
+    }
+
+    return error.message || 'Could not get current location'
+  }
 
   function fillCurrentLocation() {
     if (!navigator.geolocation) {
@@ -55,11 +73,23 @@ export function SiteUpload({
       return
     }
 
+    const requestId = locationRequestId.current + 1
+    const editVersionAtRequest = manualEditVersion.current
+    locationRequestId.current = requestId
     setIsGettingLocation(true)
     setLocationMessage('')
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        if (
+          requestId !== locationRequestId.current ||
+          editVersionAtRequest !== manualEditVersion.current
+        ) {
+          setLocationMessage('Kept manually entered coordinates')
+          setIsGettingLocation(false)
+          return
+        }
+
         setSiteForm((current) => ({
           ...current,
           latitude: String(position.coords.latitude),
@@ -69,13 +99,18 @@ export function SiteUpload({
         setLocationMessage('Current location loaded')
         setIsGettingLocation(false)
       },
-      () => {
+      (error) => {
         setSiteForm((current) => ({
           ...current,
           locationSource: 'manual',
         }))
-        setLocationMessage('Could not get current location')
+        setLocationMessage(getLocationErrorMessage(error))
         setIsGettingLocation(false)
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 20000,
       },
     )
   }
@@ -230,6 +265,10 @@ export function SiteUpload({
                   locationSource: 'manual',
                 }))
               }
+              onInput={() => {
+                manualEditVersion.current += 1
+              }}
+              onWheel={(event) => event.currentTarget.blur()}
               required
             />
           </label>
@@ -247,6 +286,10 @@ export function SiteUpload({
                   locationSource: 'manual',
                 }))
               }
+              onInput={() => {
+                manualEditVersion.current += 1
+              }}
+              onWheel={(event) => event.currentTarget.blur()}
               required
             />
           </label>
