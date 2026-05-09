@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 import {
   createSiteUpload,
@@ -48,7 +48,6 @@ export function SiteUpload({
   const [outOfAreaWarning, setOutOfAreaWarning] = useState('')
   const [uploadSummary, setUploadSummary] = useState<SiteUploadResponse | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
-  const hasManualLocationEdit = useRef(false)
 
   function fillCurrentLocation() {
     if (!navigator.geolocation) {
@@ -61,13 +60,6 @@ export function SiteUpload({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // Do not let a late GPS response overwrite coordinates the user already changed.
-        if (hasManualLocationEdit.current) {
-          setLocationMessage('Skipped auto location because coordinates were edited')
-          setIsGettingLocation(false)
-          return
-        }
-
         setSiteForm((current) => ({
           ...current,
           latitude: String(position.coords.latitude),
@@ -87,10 +79,6 @@ export function SiteUpload({
       },
     )
   }
-
-  useEffect(() => {
-    fillCurrentLocation()
-  }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -149,10 +137,10 @@ export function SiteUpload({
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-gate-card">
-        <div className="auth-gate-copy">
-          <p className="eyebrow">Heritage Fire Watch</p>
+    <section className="site-upload-page">
+      <section className="site-upload-header">
+        <div>
+          <p className="eyebrow">Karla Heritage Watch</p>
           <h1>Site Upload</h1>
           <p className="intro">
             Record a newly identified heritage site for later review and risk
@@ -160,11 +148,17 @@ export function SiteUpload({
           </p>
         </div>
 
-        <button className="secondary-button upload-back-button" onClick={onBack} type="button">
-          Back to map
+        <button
+          className="secondary-button upload-back-button"
+          onClick={onBack}
+          type="button"
+        >
+          Back to Map
         </button>
+      </section>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+      <section className="site-upload-content">
+        <form className="auth-form site-upload-form" onSubmit={handleSubmit}>
           <label className="auth-field">
             <span>Site name</span>
             <input
@@ -236,9 +230,6 @@ export function SiteUpload({
                   locationSource: 'manual',
                 }))
               }
-              onInput={() => {
-                hasManualLocationEdit.current = true
-              }}
               required
             />
           </label>
@@ -256,9 +247,6 @@ export function SiteUpload({
                   locationSource: 'manual',
                 }))
               }
-              onInput={() => {
-                hasManualLocationEdit.current = true
-              }}
               required
             />
           </label>
@@ -311,26 +299,36 @@ export function SiteUpload({
           </button>
         </form>
 
-        {outOfAreaWarning ? (
-          <section className="upload-result upload-result--warning">
-            <h2>Study Area Warning</h2>
-            <p>{outOfAreaWarning}</p>
-          </section>
-        ) : null}
-
-        {uploadSummary && !outOfAreaWarning ? (
-          <section className="upload-result">
-            <h2>Upload Summary</h2>
+        <aside className="site-upload-aside">
+          <section className="upload-guidance-card">
+            <h2>Submission Review</h2>
             <p>
-              Site <strong>{uploadSummary.site.name}</strong> was saved at{' '}
-              {uploadSummary.site.latitude}, {uploadSummary.site.longitude}.
+              Uploaded places are stored for review and added to the uploaded
+              site priority layer after risk processing.
             </p>
-            {uploadSummary.site.photoFilename ? (
-              <p>Photo attached: {uploadSummary.site.photoFilename}</p>
-            ) : null}
           </section>
-        ) : null}
+
+          {outOfAreaWarning ? (
+            <section className="upload-result upload-result--warning">
+              <h2>Study Area Warning</h2>
+              <p>{outOfAreaWarning}</p>
+            </section>
+          ) : null}
+
+          {uploadSummary && !outOfAreaWarning ? (
+            <section className="upload-result">
+              <h2>Upload Summary</h2>
+              <p>
+                Site <strong>{uploadSummary.site.name}</strong> was saved at{' '}
+                {uploadSummary.site.latitude}, {uploadSummary.site.longitude}.
+              </p>
+              {uploadSummary.site.photoFilename ? (
+                <p>Photo attached: {uploadSummary.site.photoFilename}</p>
+              ) : null}
+            </section>
+          ) : null}
+        </aside>
       </section>
-    </main>
+    </section>
   )
 }

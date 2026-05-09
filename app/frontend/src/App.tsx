@@ -469,11 +469,18 @@ function App() {
     ) : null
 
   const siteUploadPage = currentUser ? (
-    <SiteUpload
-      authToken={authToken}
-      onBack={() => navigate('/app')}
-      onUploadSuccess={() => loadGeoJsonLayer('uploaded_site_priority')}
-    />
+    <main className="map-shell">
+      {topbar}
+      <section className="map-body map-body--upload">
+        <section className="map-stage map-stage--upload">
+          <SiteUpload
+            authToken={authToken}
+            onBack={() => navigate('/app')}
+            onUploadSuccess={() => loadGeoJsonLayer('uploaded_site_priority')}
+          />
+        </section>
+      </section>
+    </main>
   ) : null
 
 const heritageSiteInsightsPage = currentUser ? (
