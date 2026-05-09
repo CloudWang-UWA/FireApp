@@ -196,7 +196,7 @@ Current deployment approach:
 - Frontend: Vercel
 - Backend: Render Web Service
 - Database: Render PostgreSQL
-- Production branch: `release`
+- Production branch: `main`
 
 Official deployed application:
 
