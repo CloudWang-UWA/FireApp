@@ -68,9 +68,10 @@ function MapBoundsTracker({
 }
 
 function getPriorityColor(level: unknown) {
+  // Stop-light risk colours: high = red, medium = yellow/orange, low = green.
   if (level === 3) return '#d73027'
-  if (level === 2) return '#fdb863'
-  if (level === 1) return '#fddbc7'
+  if (level === 2) return '#f59e0b'
+  if (level === 1) return '#22c55e'
   return '#d9d9d9'
 }
 

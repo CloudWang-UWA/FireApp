@@ -56,8 +56,8 @@ function getLevelColor(level: unknown) {
   const numericLevel = Number(level)
 
   if (numericLevel === 3) return '#d73027'
-  if (numericLevel === 2) return '#fdb863'
-  if (numericLevel === 1) return '#5b8c5a'
+  if (numericLevel === 2) return '#f59e0b'
+  if (numericLevel === 1) return '#22c55e'
   return '#4b5563'
 }
 
