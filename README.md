@@ -198,6 +198,12 @@ Current deployment approach:
 - Database: Render PostgreSQL
 - Production branch: `release`
 
+Official deployed application:
+
+```text
+https://heritage-fire-watch.vercel.app/
+```
+
 ### Backend on Render
 
 Create a Render Web Service:
