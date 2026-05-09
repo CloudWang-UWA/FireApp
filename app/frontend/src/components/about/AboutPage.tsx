@@ -2,10 +2,10 @@ export function AboutPage() {
   return (
     <article className="about-layout">
       <header className="about-hero">
-        <p className="about-eyebrow">Karla Heritage Watch</p>
+        <p className="about-eyebrow">Heritage Fire Watch</p>
         <h1>About</h1>
         <p className="about-lead">
-          Karla Heritage Watch (Albany, WA Region) is a map-based decision support
+          Heritage Fire Watch (Albany, WA Region) is a map-based decision support
           tool for exploring fire vulnerability context around heritage sites.
         </p>
       </header>

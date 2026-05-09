@@ -175,7 +175,7 @@ export function SiteUpload({
     <section className="site-upload-page">
       <section className="site-upload-header">
         <div>
-          <p className="eyebrow">Karla Heritage Watch</p>
+          <p className="eyebrow">Heritage Fire Watch</p>
           <h1>Site Upload</h1>
           <p className="intro">
             Record a newly identified heritage site for later review and risk
