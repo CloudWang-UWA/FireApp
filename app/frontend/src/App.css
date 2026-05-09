@@ -853,6 +853,15 @@
   border-radius: 16px;
   aspect-ratio: 4 / 3;
   border: 1px solid rgba(108, 91, 68, 0.14);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .logo-row {
@@ -863,11 +872,24 @@
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 16px;
   padding: 0.85rem;
+  min-height: 130px;
   text-align: center;
   font-size: 0.9rem;
   border: 1px solid rgba(108, 91, 68, 0.14);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.logo img {
+  display: block;
+  max-width: 100%;
+  max-height: 110px;
+  object-fit: contain;
 }
 
 .placeholder {

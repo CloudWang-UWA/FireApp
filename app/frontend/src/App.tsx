@@ -13,6 +13,7 @@ import {
   logout,
   register,
 } from './api/auth'
+import { AboutPage } from './components/about/AboutPage'
 import { Auth } from './components/auth/Auth'
 import { Profile } from './components/auth/Profile'
 import { Export } from './components/export/Export'
@@ -360,14 +361,14 @@ function App() {
             Site Insights
           </button>
 
-          {/* Reports and About are hidden until their page routes are fully implemented. */}
+          {/* Reports is hidden until its page route is fully implemented. */}
           {/* <button
             className={isActive('/reports') ? 'topbar-nav is-active' : 'topbar-nav'}
             onClick={() => navigate('/reports')}
             type="button"
           >
             Reports
-          </button>
+          </button> */}
 
           <button
             className={isActive('/about') ? 'topbar-nav is-active' : 'topbar-nav'}
@@ -375,7 +376,7 @@ function App() {
             type="button"
           >
             About
-          </button> */}
+          </button>
 
           <button
             className={isActive('/site-upload') ? 'topbar-nav is-active' : 'topbar-nav'}
@@ -486,6 +487,24 @@ const heritageSiteInsightsPage = currentUser ? (
   </main>
 ) : null
 
+const aboutPage = currentUser ? (
+  <main className="map-shell">
+    {topbar}
+    <section className="map-body map-body--profile">
+      <section className="profile-view">
+        <div className="profile-card">
+          <AboutPage />
+          <div className="profile-actions">
+            <button className="secondary-button" onClick={() => navigate('/app')} type="button">
+              Back to map
+            </button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+) : null
+
 
 return (
   <AppRoutes
@@ -494,6 +513,7 @@ return (
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}
+    aboutPage={aboutPage}
     adminPage={adminPage}
     siteUploadPage={siteUploadPage}
     heritageSiteInsightsPage={heritageSiteInsightsPage}
