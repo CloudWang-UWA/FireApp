@@ -109,10 +109,18 @@ export function getCombinedLayerBounds(layers: LayerStateMap) {
       continue
     }
 
-    const data = layers[key].data
-    if (!data || data.features.length === 0) {
+    const state = layers[key]
+
+    if (state.kind === 'image_overlay') {
+      const overlayBounds = state.overlay?.bounds
+      if (overlayBounds) {
+        bounds.extend(L.latLngBounds(overlayBounds))
+      }
       continue
     }
+
+    const data = state.geojson
+    if (!data || data.features.length === 0) continue
 
     const layerBounds = L.geoJSON(data).getBounds()
     if (layerBounds.isValid()) {

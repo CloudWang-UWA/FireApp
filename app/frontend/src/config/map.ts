@@ -1,4 +1,4 @@
-import type { BasemapKey, LayerKey } from '../types/map'
+import type { BasemapKey, LayerKey, LayerKind } from '../types/map'
 
 // Base URL for backend API, fallback to local server during development
 export const API_BASE_URL =
@@ -14,23 +14,49 @@ export const INITIAL_CENTER: [number, number] = [-34.95, 117.88]
 export const LAYER_CONFIG: Array<{
   key: LayerKey
   label: string
-  color: string
+  kind: LayerKind
+  color?: string
 }> = [
   {
     key: 'recorded_site_priority',
     label: 'Recorded Site Priority',
+    kind: 'geojson',
     color: '#b2182b',
   },
   {
     key: 'precaution_zone',
     label: 'Precaution Areas',
+    kind: 'geojson',
     color: '#ef8a62',
   },
   {
     key: 'uploaded_site_priority',
     label: 'Uploaded Site Priority',
+    kind: 'geojson',
     color: '#2b8cbe',
-  }
+  },
+  {
+    key: 'granite',
+    label: 'Granite',
+    kind: 'geojson',
+    color: '#6b7280',
+  },
+  {
+    key: 'fire_history',
+    label: 'Fire History',
+    kind: 'geojson',
+    color: '#dc2626',
+  },
+  {
+    key: 'fuel',
+    label: 'Fuel (overlay)',
+    kind: 'image_overlay',
+  },
+  {
+    key: 'slope',
+    label: 'Slope (overlay)',
+    kind: 'image_overlay',
+  },
 ]
 
 // Configuration for available basemaps

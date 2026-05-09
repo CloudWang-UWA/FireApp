@@ -13,7 +13,7 @@ import {
   logout,
   register,
 } from './api/auth'
-import { fetchLayer } from './api/layers'
+import { AboutPage } from './components/about/AboutPage'
 import { Auth } from './components/auth/Auth'
 import { Profile } from './components/auth/Profile'
 import { Export } from './components/export/Export'
@@ -25,6 +25,7 @@ import { SiteUpload } from './components/site-upload/SiteUpload'
 import { HeritageSiteInsights } from './components/resources/HeritageSiteInsights'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
+import { fetchLayer, fetchOverlay } from './api/layers'
 import type { AuthFormState, AuthMode, AuthUser } from './types/auth'
 import type { BasemapKey, LayerKey, LayerState, LayerStateMap } from './types/map'
 import { prepareLayerData } from './utils/geojson'
@@ -41,18 +42,26 @@ function App() {
   const navigate = useNavigate()
   const location = useLocation()
   const storedToken = getStoredToken()
-  async function loadLayer(layerKey: LayerKey) {
+
+  async function loadGeoJsonLayer(layerKey: LayerKey) {
     try {
       const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
       setLayers((current) => ({
         ...current,
-        [layerKey]: { data, isLoading: false, error: null },
+        [layerKey]: {
+          ...current[layerKey],
+          geojson: data,
+          isLoading: false,
+          error: null,
+        },
       }))
     } catch (error) {
       setLayers((current) => ({
         ...current,
         [layerKey]: {
-          data: null,
+          ...current[layerKey],
+          geojson: null,
+          overlay: null,
           isLoading: false,
           error: error instanceof Error ? error.message : 'Unable to load layer',
         },
@@ -62,9 +71,15 @@ function App() {
 
   const [layers, setLayers] = useState<LayerStateMap>(() =>
     Object.fromEntries(
-      LAYER_CONFIG.map(({ key }) => [
+      LAYER_CONFIG.map(({ key, kind }) => [
         key,
-        { data: null, isLoading: true, error: null } satisfies LayerState,
+        {
+          kind,
+          geojson: null,
+          overlay: null,
+          isLoading: true,
+          error: null,
+        } satisfies LayerState,
       ]),
     ) as LayerStateMap,
   )
@@ -72,6 +87,10 @@ function App() {
     recorded_site_priority: true,
     precaution_zone: true,
     uploaded_site_priority: true,
+    granite: false,
+    fire_history: false,
+    fuel: false,
+    slope: false,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
   const [mapBounds, setMapBounds] = useState<ExportBounds | null>(null)
@@ -93,11 +112,48 @@ function App() {
 
     async function loadLayerOnce(layerKey: LayerKey) {
       try {
+        const config = LAYER_CONFIG.find((layer) => layer.key === layerKey)
+        if (!config) {
+          return
+        }
+
+        if (config.kind === 'image_overlay') {
+          const overlay =
+            layerKey === 'fuel'
+              ? await fetchOverlay('fuel')
+              : layerKey === 'slope'
+                ? await fetchOverlay('slope')
+                : null
+
+          if (!overlay) {
+            throw new Error(`Unsupported overlay layer '${layerKey}'`)
+          }
+          if (!isCancelled) {
+            setLayers((current) => ({
+              ...current,
+              [layerKey]: {
+                ...current[layerKey],
+                overlay,
+                geojson: null,
+                isLoading: false,
+                error: null,
+              },
+            }))
+          }
+          return
+        }
+
         const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
         if (!isCancelled) {
           setLayers((current) => ({
             ...current,
-            [layerKey]: { data, isLoading: false, error: null },
+            [layerKey]: {
+              ...current[layerKey],
+              geojson: data,
+              overlay: null,
+              isLoading: false,
+              error: null,
+            },
           }))
         }
       } catch (error) {
@@ -105,7 +161,9 @@ function App() {
           setLayers((current) => ({
             ...current,
             [layerKey]: {
-              data: null,
+              ...current[layerKey],
+              geojson: null,
+              overlay: null,
               isLoading: false,
               error:
                 error instanceof Error ? error.message : 'Unable to load layer',
@@ -303,14 +361,14 @@ function App() {
             Site Insights
           </button>
 
-          {/* Reports and About are hidden until their page routes are fully implemented. */}
+          {/* Reports is hidden until its page route is fully implemented. */}
           {/* <button
             className={isActive('/reports') ? 'topbar-nav is-active' : 'topbar-nav'}
             onClick={() => navigate('/reports')}
             type="button"
           >
             Reports
-          </button>
+          </button> */}
 
           <button
             className={isActive('/about') ? 'topbar-nav is-active' : 'topbar-nav'}
@@ -318,7 +376,7 @@ function App() {
             type="button"
           >
             About
-          </button> */}
+          </button>
 
           <button
             className={isActive('/site-upload') ? 'topbar-nav is-active' : 'topbar-nav'}
@@ -414,7 +472,7 @@ function App() {
     <SiteUpload
       authToken={authToken}
       onBack={() => navigate('/app')}
-      onUploadSuccess={() => loadLayer('uploaded_site_priority')}
+      onUploadSuccess={() => loadGeoJsonLayer('uploaded_site_priority')}
     />
   ) : null
 
@@ -429,6 +487,24 @@ const heritageSiteInsightsPage = currentUser ? (
   </main>
 ) : null
 
+const aboutPage = currentUser ? (
+  <main className="map-shell">
+    {topbar}
+    <section className="map-body map-body--profile">
+      <section className="profile-view">
+        <div className="profile-card">
+          <AboutPage />
+          <div className="profile-actions">
+            <button className="secondary-button" onClick={() => navigate('/app')} type="button">
+              Back to map
+            </button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+) : null
+
 
 return (
   <AppRoutes
@@ -437,6 +513,7 @@ return (
       loginPage={loginPage}
       mapPage={mapPage}
       profilePage={profilePage}
+    aboutPage={aboutPage}
     adminPage={adminPage}
     siteUploadPage={siteUploadPage}
     heritageSiteInsightsPage={heritageSiteInsightsPage}

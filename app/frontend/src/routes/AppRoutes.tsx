@@ -8,6 +8,7 @@ export function AppRoutes({
   loginPage,
   mapPage,
   profilePage,
+  aboutPage,
   adminPage,
   siteUploadPage,
   heritageSiteInsightsPage,
@@ -17,6 +18,7 @@ export function AppRoutes({
   loginPage: ReactNode
   mapPage: ReactNode
   profilePage: ReactNode
+  aboutPage: ReactNode
   adminPage?: ReactNode
   siteUploadPage: ReactNode
   heritageSiteInsightsPage: ReactNode
@@ -49,6 +51,11 @@ export function AppRoutes({
             ? adminPage ?? <div>Admin panel</div>
             : <Navigate replace to={currentUser ? '/app' : '/login'} />
         }
+      />
+
+      <Route
+        path="/about"
+        element={currentUser ? aboutPage : <Navigate replace to="/login" />}
       />
 
       <Route
