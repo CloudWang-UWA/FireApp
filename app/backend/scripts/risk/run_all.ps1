@@ -1,3 +1,4 @@
+python copy_analysis_ready_data.py
 python generate_hazard_outputs.py
 python generate_site_vulnerability.py
 python generate_granite_influence.py

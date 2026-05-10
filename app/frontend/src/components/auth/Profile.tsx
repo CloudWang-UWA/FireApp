@@ -14,47 +14,63 @@ export function Profile({
   return (
     <section className="profile-view">
       <div className="profile-card">
-        <p className="eyebrow">User details</p>
-        <h1>{currentUser.displayName}</h1>
-        <p className="intro">
-          This profile page gives users access to their account information and
-          role details, with room for future account settings and profile updates.
-        </p>
-
-        <div className="profile-grid">
-          <div className="status-card">
-            <h2>Account</h2>
-
-            <p>
-              <strong>Name:</strong> {currentUser.displayName}
-            </p>
-
-            <p>
-              <strong>Username:</strong> @{currentUser.username}
-            </p>
-
-            <p>
-              <strong>Email:</strong> {currentUser.email}
-            </p>
-
-            <p>
-              <strong>Role:</strong> {currentUser.role}
-            </p>
-
-            <p>
-              <strong>Status:</strong>{' '}
-              {currentUser.isActive ? 'Active' : 'Inactive'}
-            </p>
-
-            <p>
-              <strong>Bio:</strong> {currentUser.bio || 'No bio added yet'}
-            </p>
-
-            <p>
-              <strong>Created:</strong>{' '}
-              {new Date(currentUser.createdAt).toLocaleString()}
+        <header className="profile-header">
+          <div className="profile-avatar" aria-hidden="true">
+            {currentUser.displayName.trim().charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <p className="eyebrow">User details</p>
+            <h1>{currentUser.displayName}</h1>
+            <p className="intro">
+              Account information, role details, and profile status.
             </p>
           </div>
+        </header>
+
+        <div className="profile-grid">
+          <section className="profile-details-card">
+            <h2>Account</h2>
+            <dl className="profile-detail-list">
+              <div>
+                <dt>Name</dt>
+                <dd>{currentUser.displayName}</dd>
+              </div>
+              <div>
+                <dt>Username</dt>
+                <dd>@{currentUser.username}</dd>
+              </div>
+              <div>
+                <dt>Email</dt>
+                <dd>{currentUser.email}</dd>
+              </div>
+              <div>
+                <dt>Role</dt>
+                <dd>{currentUser.role}</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>
+                  <span
+                    className={
+                      currentUser.isActive
+                        ? 'profile-status is-active'
+                        : 'profile-status'
+                    }
+                  >
+                    {currentUser.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </dd>
+              </div>
+              <div>
+                <dt>Bio</dt>
+                <dd>{currentUser.bio || 'No bio added yet'}</dd>
+              </div>
+              <div>
+                <dt>Created</dt>
+                <dd>{new Date(currentUser.createdAt).toLocaleString()}</dd>
+              </div>
+            </dl>
+          </section>
         </div>
 
         <div className="profile-actions">

@@ -282,7 +282,7 @@ function App() {
     return (
       <main className="auth-shell">
         <section className="auth-gate-card auth-gate-card--compact">
-          <p className="eyebrow">Karla Heritage Watch</p>
+          <p className="eyebrow">Heritage Fire Watch</p>
           <h1>Checking your session</h1>
           <p className="intro">Please wait while we restore your account.</p>
         </section>
@@ -294,7 +294,7 @@ function App() {
     <main className="auth-shell">
       <section className="auth-gate-card">
         <div className="auth-gate-copy">
-          <p className="eyebrow">Karla Heritage Watch</p>
+          <p className="eyebrow">Heritage Fire Watch</p>
           <h1>Sign in to continue</h1>
           <p className="intro">
             Access the heritage fire vulnerability map by signing in with your
@@ -334,7 +334,7 @@ function App() {
           type="button"
         >
 
-          <span className="topbar-brand-name">Karla Heritage Watch</span>
+          <span className="topbar-brand-name">Heritage Fire Watch</span>
           <span className="topbar-brand-subtitle">Albany, WA Region</span>
         </button>
       </div>
@@ -469,11 +469,18 @@ function App() {
     ) : null
 
   const siteUploadPage = currentUser ? (
-    <SiteUpload
-      authToken={authToken}
-      onBack={() => navigate('/app')}
-      onUploadSuccess={() => loadGeoJsonLayer('uploaded_site_priority')}
-    />
+    <main className="map-shell">
+      {topbar}
+      <section className="map-body map-body--upload">
+        <section className="map-stage map-stage--upload">
+          <SiteUpload
+            authToken={authToken}
+            onBack={() => navigate('/app')}
+            onUploadSuccess={() => loadGeoJsonLayer('uploaded_site_priority')}
+          />
+        </section>
+      </section>
+    </main>
   ) : null
 
 const heritageSiteInsightsPage = currentUser ? (

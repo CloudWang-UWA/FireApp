@@ -1,4 +1,4 @@
-# Karla Heritage Watch New Site Upload Module Documentation
+# Heritage Fire Watch New Site Upload Module Documentation
 
 ## Overview
 

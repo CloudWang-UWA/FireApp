@@ -244,9 +244,20 @@
   overflow: hidden;
 }
 
+.map-body--upload {
+  grid-template-columns: 1fr;
+  overflow: hidden;
+}
+
 .map-stage--insights {
   height: 100%;
   overflow-y: auto;
+}
+
+.map-stage--upload {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
 }
 
 .map-panel {
@@ -405,7 +416,8 @@
 }
 
 .auth-field input,
-.auth-field textarea {
+.auth-field textarea,
+.auth-field select {
   border: 1px solid rgba(101, 77, 45, 0.18);
   border-radius: 12px;
   padding: 0.72rem 0.85rem;
@@ -419,7 +431,8 @@
 }
 
 .auth-field input:focus,
-.auth-field textarea:focus {
+.auth-field textarea:focus,
+.auth-field select:focus {
   outline: 2px solid rgba(122, 85, 55, 0.24);
   border-color: rgba(122, 85, 55, 0.42);
 }
@@ -514,7 +527,6 @@
 }
 
 .upload-result {
-  margin-top: 1rem;
   padding: 1rem;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.78);
@@ -533,20 +545,17 @@
 }
 
 .upload-back-button {
-  align-self: start;
-  justify-self: end;
-  min-width: 168px;
-  margin-bottom: 1rem;
-  padding: 0.8rem 1.1rem;
-  background: #2563eb;
-  border: 1px solid #2563eb;
-  color: #f8fbff;
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2);
+  min-width: 144px;
+  padding: 0.78rem 1.05rem;
+  background: rgb(20, 63, 59);
+  border: 1px solid rgba(20, 63, 59, 0.18);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(20, 63, 59, 0.18);
 }
 
 .upload-back-button:hover {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
+  background: rgb(28, 86, 80);
+  border-color: rgba(20, 63, 59, 0.24);
   color: #ffffff;
 }
 
@@ -573,6 +582,142 @@
   margin: 0.2rem 0 0;
   color: #2c2118;
   font-weight: 600;
+}
+
+.site-upload-page {
+  width: 100%;
+  min-height: 100%;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  color: #2c2118;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.site-upload-header,
+.site-upload-content {
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(255, 250, 243, 0.9));
+  border: 1px solid rgba(87, 66, 42, 0.12);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 14px 34px rgba(55, 48, 39, 0.1);
+}
+
+.site-upload-header {
+  display: flex;
+  align-items: start;
+  padding: 1.25rem;
+}
+
+.site-upload-header h1 {
+  margin: 0;
+  color: rgb(16, 56, 53);
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  line-height: 1;
+}
+
+.site-upload-header .intro {
+  margin-top: 0.55rem;
+  color: #5d5248;
+  max-width: 64ch;
+}
+
+.site-upload-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1.05rem;
+}
+
+.site-upload-form {
+  border-radius: 16px;
+  border: 1px solid rgba(108, 91, 68, 0.16);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(58, 48, 37, 0.08);
+}
+
+.site-upload-form .auth-field span {
+  color: #5b5148;
+  font-weight: 700;
+}
+
+.site-upload-form .auth-submit {
+  align-self: flex-start;
+  min-width: 180px;
+  background: rgb(20, 63, 59);
+  border-color: rgb(20, 63, 59);
+}
+
+.site-upload-form .auth-submit:hover {
+  background: rgb(28, 86, 80);
+  border-color: rgb(28, 86, 80);
+}
+
+.site-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.site-upload-actions--center {
+  justify-content: center;
+}
+
+.site-upload-actions .auth-submit {
+  min-width: 160px;
+}
+
+.site-upload-actions .auth-submit--secondary {
+  background: #ffffff;
+  border-color: rgba(20, 63, 59, 0.28);
+  color: rgb(20, 63, 59);
+  box-shadow: none;
+}
+
+.site-upload-actions .auth-submit--secondary:hover {
+  background: rgba(20, 63, 59, 0.08);
+  border-color: rgba(20, 63, 59, 0.36);
+  color: rgb(20, 63, 59);
+}
+
+.site-upload-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: start;
+}
+
+.upload-guidance-card {
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(20, 63, 59, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(17, 63, 58, 0.13),
+    rgba(30, 95, 89, 0.07)
+  );
+}
+
+.upload-guidance-card h2 {
+  margin: 0 0 0.55rem;
+  color: rgb(24, 62, 59);
+  font-size: 1.04rem;
+}
+
+.upload-guidance-card p {
+  margin: 0;
+  color: #4e5f5c;
+  line-height: 1.5;
+}
+
+.site-upload-aside .upload-back-button {
+  align-self: center;
+  width: auto;
 }
 
 .layer-list {
@@ -909,26 +1054,109 @@
 }
 
 .profile-card {
-  max-width: 980px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 1.5rem;
-  border-radius: 28px;
+  padding: 1.35rem;
+  border-radius: 24px;
   background: rgba(255, 252, 247, 0.88);
   border: 1px solid rgba(78, 58, 34, 0.12);
   box-shadow: 0 20px 50px rgba(55, 48, 39, 0.1);
 }
 
+.profile-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(17, 63, 58, 0.1), rgba(255, 255, 255, 0.58));
+  border: 1px solid rgba(20, 63, 59, 0.12);
+}
+
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: rgb(20, 63, 59);
+  color: #fffaf2;
+  font-size: 2rem;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(20, 63, 59, 0.18);
+}
+
 .profile-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin-top: 1.25rem;
+}
+
+.profile-details-card {
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(108, 91, 68, 0.14);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.profile-details-card h2 {
+  margin: 0 0 0.85rem;
+  color: rgb(20, 59, 57);
+  font-size: 1.05rem;
+}
+
+.profile-detail-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.profile-detail-list div {
+  padding: 0.78rem 0.85rem;
+  border-radius: 14px;
+  background: rgba(247, 244, 238, 0.82);
+  border: 1px solid rgba(108, 91, 68, 0.1);
+}
+
+.profile-detail-list dt {
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(50, 76, 72, 0.72);
+}
+
+.profile-detail-list dd {
+  margin: 0;
+  color: #2c2118;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.profile-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+  background: rgba(148, 163, 184, 0.16);
+  color: #475569;
+}
+
+.profile-status.is-active {
+  background: rgba(20, 63, 59, 0.12);
+  color: rgb(20, 63, 59);
 }
 
 .profile-actions {
   display: flex;
   gap: 0.75rem;
   margin-top: 1.25rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .insights-page {

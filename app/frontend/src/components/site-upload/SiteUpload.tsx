@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
   createSiteUpload,
@@ -48,7 +48,24 @@ export function SiteUpload({
   const [outOfAreaWarning, setOutOfAreaWarning] = useState('')
   const [uploadSummary, setUploadSummary] = useState<SiteUploadResponse | null>(null)
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
-  const hasManualLocationEdit = useRef(false)
+  const locationRequestId = useRef(0)
+  const manualEditVersion = useRef(0)
+
+  function getLocationErrorMessage(error: GeolocationPositionError) {
+    if (error.code === error.PERMISSION_DENIED) {
+      return 'Location permission was denied'
+    }
+
+    if (error.code === error.POSITION_UNAVAILABLE) {
+      return 'Location is unavailable right now'
+    }
+
+    if (error.code === error.TIMEOUT) {
+      return 'Location request timed out'
+    }
+
+    return error.message || 'Could not get current location'
+  }
 
   function fillCurrentLocation() {
     if (!navigator.geolocation) {
@@ -56,14 +73,19 @@ export function SiteUpload({
       return
     }
 
+    const requestId = locationRequestId.current + 1
+    const editVersionAtRequest = manualEditVersion.current
+    locationRequestId.current = requestId
     setIsGettingLocation(true)
     setLocationMessage('')
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // Do not let a late GPS response overwrite coordinates the user already changed.
-        if (hasManualLocationEdit.current) {
-          setLocationMessage('Skipped auto location because coordinates were edited')
+        if (
+          requestId !== locationRequestId.current ||
+          editVersionAtRequest !== manualEditVersion.current
+        ) {
+          setLocationMessage('Kept manually entered coordinates')
           setIsGettingLocation(false)
           return
         }
@@ -77,20 +99,21 @@ export function SiteUpload({
         setLocationMessage('Current location loaded')
         setIsGettingLocation(false)
       },
-      () => {
+      (error) => {
         setSiteForm((current) => ({
           ...current,
           locationSource: 'manual',
         }))
-        setLocationMessage('Could not get current location')
+        setLocationMessage(getLocationErrorMessage(error))
         setIsGettingLocation(false)
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 20000,
       },
     )
   }
-
-  useEffect(() => {
-    fillCurrentLocation()
-  }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -149,9 +172,9 @@ export function SiteUpload({
   }
 
   return (
-    <main className="auth-shell">
-      <section className="auth-gate-card">
-        <div className="auth-gate-copy">
+    <section className="site-upload-page">
+      <section className="site-upload-header">
+        <div>
           <p className="eyebrow">Heritage Fire Watch</p>
           <h1>Site Upload</h1>
           <p className="intro">
@@ -159,12 +182,10 @@ export function SiteUpload({
             assessment.
           </p>
         </div>
+      </section>
 
-        <button className="secondary-button upload-back-button" onClick={onBack} type="button">
-          Back to map
-        </button>
-
-        <form className="auth-form" onSubmit={handleSubmit}>
+      <section className="site-upload-content">
+        <form className="auth-form site-upload-form" onSubmit={handleSubmit}>
           <label className="auth-field">
             <span>Site name</span>
             <input
@@ -237,8 +258,9 @@ export function SiteUpload({
                 }))
               }
               onInput={() => {
-                hasManualLocationEdit.current = true
+                manualEditVersion.current += 1
               }}
+              onWheel={(event) => event.currentTarget.blur()}
               required
             />
           </label>
@@ -257,11 +279,23 @@ export function SiteUpload({
                 }))
               }
               onInput={() => {
-                hasManualLocationEdit.current = true
+                manualEditVersion.current += 1
               }}
+              onWheel={(event) => event.currentTarget.blur()}
               required
             />
           </label>
+
+          <div className="site-upload-actions site-upload-actions--center">
+            <button
+              className="auth-submit"
+              type="button"
+              onClick={fillCurrentLocation}
+              disabled={isGettingLocation || isSubmitting}
+            >
+              {isGettingLocation ? 'Getting location...' : 'Use current location'}
+            </button>
+          </div>
 
           <label className="auth-field">
             <span>Site size (m)</span>
@@ -283,14 +317,11 @@ export function SiteUpload({
             </small>
           </label>
 
-          <button
-            className="auth-submit"
-            type="button"
-            onClick={fillCurrentLocation}
-            disabled={isGettingLocation || isSubmitting}
-          >
-            {isGettingLocation ? 'Getting location...' : 'Use current location'}
-          </button>
+          <div className="site-upload-actions site-upload-actions--center">
+            <button className="auth-submit" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Saving...' : 'Save site'}
+            </button>
+          </div>
 
           {locationMessage ? (
             <p className="auth-feedback">{locationMessage}</p>
@@ -305,32 +336,46 @@ export function SiteUpload({
               {successMessage}
             </p>
           ) : null}
-
-          <button className="auth-submit" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save site'}
-          </button>
         </form>
 
-        {outOfAreaWarning ? (
-          <section className="upload-result upload-result--warning">
-            <h2>Study Area Warning</h2>
-            <p>{outOfAreaWarning}</p>
-          </section>
-        ) : null}
+        <aside className="site-upload-aside">
+          {outOfAreaWarning ? (
+            <section className="upload-result upload-result--warning">
+              <h2>Study Area Warning</h2>
+              <p>{outOfAreaWarning}</p>
+            </section>
+          ) : null}
 
-        {uploadSummary && !outOfAreaWarning ? (
-          <section className="upload-result">
-            <h2>Upload Summary</h2>
+          {uploadSummary && !outOfAreaWarning ? (
+            <section className="upload-result">
+              <h2>Upload Summary</h2>
+              <p>
+                Site <strong>{uploadSummary.site.name}</strong> was saved at{' '}
+                {uploadSummary.site.latitude}, {uploadSummary.site.longitude}.
+              </p>
+              {uploadSummary.site.photoFilename ? (
+                <p>Photo attached: {uploadSummary.site.photoFilename}</p>
+              ) : null}
+            </section>
+          ) : null}
+
+          <section className="upload-guidance-card">
+            <h2>Submission Review</h2>
             <p>
-              Site <strong>{uploadSummary.site.name}</strong> was saved at{' '}
-              {uploadSummary.site.latitude}, {uploadSummary.site.longitude}.
+              Uploaded places are stored for review and added to the uploaded
+              site priority layer after risk processing.
             </p>
-            {uploadSummary.site.photoFilename ? (
-              <p>Photo attached: {uploadSummary.site.photoFilename}</p>
-            ) : null}
           </section>
-        ) : null}
+
+          <button
+            className="secondary-button upload-back-button"
+            onClick={onBack}
+            type="button"
+          >
+            Back to Map
+          </button>
+        </aside>
       </section>
-    </main>
+    </section>
   )
 }
