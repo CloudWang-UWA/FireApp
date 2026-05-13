@@ -163,7 +163,15 @@ export function buildPopupContent(
       ['recorded_site_priority_level', properties.recorded_site_priority_level, true],
     ]
 
-    return buildPopupRows(rows)
+    const body = buildPopupRows(rows)
+    const achRaw = properties.ach_identifier
+    const achStr =
+      achRaw != null && String(achRaw).trim() !== '' ? String(achRaw).trim() : null
+    if (!achStr) {
+      return body
+    }
+    const href = `/resources/heritage-site-insights?siteId=${encodeURIComponent(achStr)}`
+    return `${body}<div class="map-popup-insights-wrap"><a class="map-popup-insights-btn" href="${href}">View Site Insights</a></div>`
   }
 
   if (layerKey === 'precaution_zone') {
