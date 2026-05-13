@@ -36,15 +36,27 @@ def get_admin_emails() -> set[str]:
     if not configured_emails and not os.getenv("DATABASE_URL"):
         configured_emails = "group21@uwa.com"
 
+    return parse_admin_emails(configured_emails)
+
+
+def get_reserved_admin_emails() -> set[str]:
+    return parse_admin_emails(os.getenv("ADMIN_EMAILS", ""))
+
+
+def parse_admin_emails(raw_emails: str) -> set[str]:
     return {
         normalize_email(email)
-        for email in configured_emails.split(",")
+        for email in raw_emails.split(",")
         if normalize_email(email)
     }
 
 
 def is_admin_email(email: str) -> bool:
     return normalize_email(email) in get_admin_emails()
+
+
+def is_reserved_admin_email(email: str) -> bool:
+    return normalize_email(email) in get_reserved_admin_emails()
 
 
 def sync_admin_role(user: User) -> None:

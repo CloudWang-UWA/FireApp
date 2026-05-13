@@ -219,6 +219,7 @@ Required environment variables:
 DATABASE_URL=postgresql+psycopg://...
 FLASK_SECRET_KEY=...
 FRONTEND_ORIGINS=https://your-frontend-domain.vercel.app,http://localhost:5173,http://127.0.0.1:5173
+ADMIN_EMAILS=email1@example.com,email2@example.com
 ```
 
 ### Database on Render

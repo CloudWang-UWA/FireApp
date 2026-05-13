@@ -138,6 +138,17 @@ def test_register_rejects_duplicate_username(client):
     assert response.get_json()["error"] == "Username already exists"
 
 
+def test_register_rejects_reserved_admin_email(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_EMAILS", "admin@example.com")
+
+    response = register_user(client, email="admin@example.com")
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == (
+        "This email is reserved for an administrator account"
+    )
+
+
 def test_login_success(client):
     register_user(client)
 

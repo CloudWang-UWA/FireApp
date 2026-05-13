@@ -7,6 +7,7 @@ from services.auth_service import (
     find_user_by_email,
     find_user_by_username,
     issue_auth_token,
+    is_reserved_admin_email,
     require_admin,
     sync_admin_role,
 )
@@ -35,6 +36,9 @@ def register():
 
     if len(password) < 8:
         abort(400, description="Password must be at least 8 characters long")
+
+    if is_reserved_admin_email(email):
+        abort(400, description="This email is reserved for an administrator account")
 
     if find_user_by_email(email) is not None:
         abort(400, description="An account with that email already exists")

@@ -44,19 +44,58 @@ function App() {
   const location = useLocation()
   const storedToken = getStoredToken()
 
-  async function loadGeoJsonLayer(layerKey: LayerKey) {
+  async function loadMapLayer(layerKey: LayerKey, isCancelled = () => false) {
     try {
+      const config = LAYER_CONFIG.find((layer) => layer.key === layerKey)
+      if (!config) {
+        return
+      }
+
+      if (config.kind === 'image_overlay') {
+        const overlay =
+          layerKey === 'fuel'
+            ? await fetchOverlay('fuel')
+            : layerKey === 'slope'
+              ? await fetchOverlay('slope')
+              : null
+
+        if (!overlay) {
+          throw new Error(`Unsupported overlay layer '${layerKey}'`)
+        }
+        if (isCancelled()) {
+          return
+        }
+        setLayers((current) => ({
+          ...current,
+          [layerKey]: {
+            ...current[layerKey],
+            overlay,
+            geojson: null,
+            isLoading: false,
+            error: null,
+          },
+        }))
+        return
+      }
+
       const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
+      if (isCancelled()) {
+        return
+      }
       setLayers((current) => ({
         ...current,
         [layerKey]: {
           ...current[layerKey],
           geojson: data,
+          overlay: null,
           isLoading: false,
           error: null,
         },
       }))
     } catch (error) {
+      if (isCancelled()) {
+        return
+      }
       setLayers((current) => ({
         ...current,
         [layerKey]: {
@@ -103,7 +142,7 @@ function App() {
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
 
-  // Load all configured GIS layers after the user is authenticated
+  // Load only initially visible GIS layers after the user is authenticated.
   useEffect(() => {
     if (
       !currentUser ||
@@ -114,77 +153,54 @@ function App() {
 
     let isCancelled = false
 
-    async function loadLayerOnce(layerKey: LayerKey) {
-      try {
-        const config = LAYER_CONFIG.find((layer) => layer.key === layerKey)
-        if (!config) {
-          return
-        }
-
-        if (config.kind === 'image_overlay') {
-          const overlay =
-            layerKey === 'fuel'
-              ? await fetchOverlay('fuel')
-              : layerKey === 'slope'
-                ? await fetchOverlay('slope')
-                : null
-
-          if (!overlay) {
-            throw new Error(`Unsupported overlay layer '${layerKey}'`)
-          }
-          if (!isCancelled) {
-            setLayers((current) => ({
-              ...current,
-              [layerKey]: {
-                ...current[layerKey],
-                overlay,
-                geojson: null,
-                isLoading: false,
-                error: null,
-              },
-            }))
-          }
-          return
-        }
-
-        const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
-        if (!isCancelled) {
-          setLayers((current) => ({
-            ...current,
-            [layerKey]: {
-              ...current[layerKey],
-              geojson: data,
-              overlay: null,
-              isLoading: false,
-              error: null,
-            },
-          }))
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          setLayers((current) => ({
-            ...current,
-            [layerKey]: {
-              ...current[layerKey],
-              geojson: null,
-              overlay: null,
-              isLoading: false,
-              error:
-                error instanceof Error ? error.message : 'Unable to load layer',
-            },
-          }))
-        }
-      }
-    }
-
     for (const { key } of LAYER_CONFIG) {
-      void loadLayerOnce(key)
+      if (visibleLayers[key]) {
+        void loadMapLayer(key, () => isCancelled)
+      } else {
+        setLayers((current) => ({
+          ...current,
+          [key]: {
+            ...current[key],
+            isLoading: false,
+          },
+        }))
+      }
     }
 
     return () => {
       isCancelled = true
     }
   }, [currentUser])
+
+  // Load optional layers only when the user turns them on.
+  useEffect(() => {
+    if (
+      !currentUser ||
+      (currentUser.role !== 'viewer' && currentUser.role !== 'admin')
+    ) {
+      return
+    }
+
+    for (const { key } of LAYER_CONFIG) {
+      const layer = layers[key]
+      if (
+        visibleLayers[key] &&
+        !layer.geojson &&
+        !layer.overlay &&
+        !layer.isLoading &&
+        !layer.error
+      ) {
+        setLayers((current) => ({
+          ...current,
+          [key]: {
+            ...current[key],
+            isLoading: true,
+          },
+        }))
+        void loadMapLayer(key)
+      }
+    }
+  }, [currentUser, visibleLayers, layers])
 
   // Restore the saved user session from the stored token
   useEffect(() => {
@@ -508,7 +524,7 @@ function App() {
           <SiteUpload
             authToken={authToken}
             onBack={() => navigate('/app')}
-            onUploadSuccess={() => loadGeoJsonLayer('uploaded_site_priority')}
+            onUploadSuccess={() => loadMapLayer('uploaded_site_priority')}
           />
         </section>
       </section>
