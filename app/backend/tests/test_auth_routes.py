@@ -10,6 +10,7 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
     
 from models.user import User, db
+from routes.admin_routes import admin_bp
 from routes.auth_routes import auth_bp
 from services.auth_service import get_current_user
 
@@ -47,6 +48,7 @@ def app(tmp_path):
         return jsonify({"error": error.description}), error.code
 
     test_app.register_blueprint(auth_bp)
+    test_app.register_blueprint(admin_bp)
 
     with test_app.app_context():
         db.create_all()
@@ -107,7 +109,7 @@ def test_register_success(client):
     assert payload["token"]
     assert payload["user"]["email"] == "test@example.com"
     assert payload["user"]["username"] == "testuser"
-    assert payload["user"]["role"] == "member"
+    assert payload["user"]["role"] == "pending"
 
 
 def test_register_rejects_duplicate_email(client):
@@ -136,6 +138,17 @@ def test_register_rejects_duplicate_username(client):
     assert response.get_json()["error"] == "Username already exists"
 
 
+def test_register_rejects_reserved_admin_email(client, monkeypatch):
+    monkeypatch.setenv("ADMIN_EMAILS", "admin@example.com")
+
+    response = register_user(client, email="admin@example.com")
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == (
+        "This email is reserved for an administrator account"
+    )
+
+
 def test_login_success(client):
     register_user(client)
 
@@ -147,6 +160,17 @@ def test_login_success(client):
     assert payload["message"] == "Login successful"
     assert payload["token"]
     assert payload["user"]["email"] == "test@example.com"
+    assert payload["user"]["role"] == "pending"
+
+
+def test_admin_email_gets_admin_role(client, monkeypatch):
+    register_user(client, email="admin@example.com")
+    monkeypatch.setenv("ADMIN_EMAILS", "admin@example.com")
+
+    response = login_user(client, email="admin@example.com")
+
+    assert response.status_code == 200
+    assert response.get_json()["user"]["role"] == "admin"
 
 
 def test_login_rejects_invalid_credentials(client):
@@ -209,7 +233,7 @@ def test_logout_clears_auth_token(client):
     assert me_response.get_json()["error"] == "Authentication required"
 
 
-def test_admin_only_rejects_member(client):
+def test_admin_only_rejects_pending_user(client):
     register_user(client)
     login_response = login_user(client)
     token = login_response.get_json()["token"]
@@ -240,3 +264,37 @@ def test_admin_only_allows_admin(client, app):
 
     assert payload["message"] == "Welcome Admin!"
     assert payload["role"] == "admin"
+
+
+def test_admin_approves_pending_user(client, app):
+    register_user(client, email="admin@example.com", username="adminuser")
+    register_user(client, email="pending@example.com", username="pendinguser")
+
+    with app.app_context():
+        admin = db.session.execute(
+            db.select(User).where(User.email == "admin@example.com")
+        ).scalar_one()
+        pending = db.session.execute(
+            db.select(User).where(User.email == "pending@example.com")
+        ).scalar_one()
+        admin.role = "admin"
+        db.session.commit()
+        pending_id = pending.id
+
+    login_response = login_user(client, email="admin@example.com")
+    token = login_response.get_json()["token"]
+
+    list_response = client.get(
+        "/api/admin/pending-users",
+        headers=auth_headers(token),
+    )
+    assert list_response.status_code == 200
+    pending_emails = {user["email"] for user in list_response.get_json()["users"]}
+    assert "pending@example.com" in pending_emails
+
+    approve_response = client.post(
+        f"/api/admin/users/{pending_id}/approve",
+        headers=auth_headers(token),
+    )
+    assert approve_response.status_code == 200
+    assert approve_response.get_json()["user"]["role"] == "viewer"

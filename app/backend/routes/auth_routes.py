@@ -7,6 +7,9 @@ from services.auth_service import (
     find_user_by_email,
     find_user_by_username,
     issue_auth_token,
+    is_reserved_admin_email,
+    require_admin,
+    sync_admin_role,
 )
 from utils.helpers import normalize_email
 
@@ -34,20 +37,23 @@ def register():
     if len(password) < 8:
         abort(400, description="Password must be at least 8 characters long")
 
+    if is_reserved_admin_email(email):
+        abort(400, description="This email is reserved for an administrator account")
+
     if find_user_by_email(email) is not None:
         abort(400, description="An account with that email already exists")
 
     if find_user_by_username(username) is not None:
         abort(400, description="Username already exists")
 
-    # Always register as MEMBER (never allow frontend to choose admin)
+    # New accounts wait for admin approval by default.
     user = create_user(
         email,
         password,
         display_name,
         username,
         bio,
-        role="member"
+        role="pending",
     )
 
     token = issue_auth_token(user)
@@ -86,6 +92,7 @@ def login():
     if not user.is_active:
         abort(401, description="This account is inactive")
 
+    sync_admin_role(user)
     token = issue_auth_token(user)
 
     return jsonify(
@@ -125,13 +132,8 @@ def logout():
 # =========================
 @auth_bp.get("/admin-only")
 def admin_only():
-    if g.current_user is None:
-        abort(401, description="Login required")
-
-    if g.current_user.role != "admin":
-        abort(403, description="Admin access only")
-
+    current_user = require_admin()
     return jsonify({
         "message": "Welcome Admin!",
-        "role": g.current_user.role
+        "role": current_user.role
     })

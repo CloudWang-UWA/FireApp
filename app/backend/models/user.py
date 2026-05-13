@@ -11,7 +11,7 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     display_name = db.Column(db.String(120), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default="member")
+    role = db.Column(db.String(20), nullable=False, default="pending")
     username = db.Column(db.String(50), unique=True, nullable=False)
     bio = db.Column(db.String(200), nullable=True)
 
