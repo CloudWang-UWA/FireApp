@@ -1,6 +1,7 @@
+import os
 import secrets
 
-from flask import request
+from flask import abort, g, request
 from sqlalchemy import func
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -14,7 +15,7 @@ def create_user(
     display_name: str,
     username: str,
     bio: str = "",
-    role: str = "member",
+    role: str = "pending",
 ) -> User:
     user = User(
         email=normalize_email(email),
@@ -27,6 +28,40 @@ def create_user(
     db.session.add(user)
     db.session.commit()
     return user
+
+
+def get_admin_emails() -> set[str]:
+    configured_emails = os.getenv("ADMIN_EMAILS", "")
+    # Local default for quick demos. Render should set ADMIN_EMAILS.
+    if not configured_emails and not os.getenv("DATABASE_URL"):
+        configured_emails = "group21@uwa.com"
+
+    return {
+        normalize_email(email)
+        for email in configured_emails.split(",")
+        if normalize_email(email)
+    }
+
+
+def is_admin_email(email: str) -> bool:
+    return normalize_email(email) in get_admin_emails()
+
+
+def sync_admin_role(user: User) -> None:
+    # Promote whitelisted emails to admin on login.
+    if is_admin_email(user.email) and user.role != "admin":
+        user.role = "admin"
+        db.session.commit()
+
+
+def require_admin() -> User:
+    if g.current_user is None:
+        abort(401, description="Authentication required")
+
+    if g.current_user.role != "admin":
+        abort(403, description="Admin access only")
+
+    return g.current_user
 
 
 def find_user_by_email(email: str) -> User | None:

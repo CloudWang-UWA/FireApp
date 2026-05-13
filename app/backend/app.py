@@ -5,6 +5,7 @@ from flask_cors import CORS
 from models.user import db
 from models.uploaded_site import UploadedSite
 from sqlalchemy import inspect, text
+from routes.admin_routes import admin_bp
 from routes.auth_routes import auth_bp
 from routes.export_routes import export_bp
 from routes.layer_routes import layer_bp
@@ -120,6 +121,7 @@ def test():
 # REGISTER ROUTES
 # =========================
 app.register_blueprint(auth_bp)
+app.register_blueprint(admin_bp)
 app.register_blueprint(layer_bp)
 app.register_blueprint(risk_bp)
 app.register_blueprint(permission_bp)

@@ -6,6 +6,7 @@ export function AppRoutes({
   currentUser,
   isAuthLoading,
   loginPage,
+  pendingPage,
   mapPage,
   profilePage,
   aboutPage,
@@ -16,6 +17,7 @@ export function AppRoutes({
   currentUser: AuthUser | null
   isAuthLoading: boolean
   loginPage: ReactNode
+  pendingPage: ReactNode
   mapPage: ReactNode
   profilePage: ReactNode
   aboutPage: ReactNode
@@ -27,6 +29,9 @@ export function AppRoutes({
     return null
   }
 
+  const canAccessApp =
+    currentUser?.role === 'viewer' || currentUser?.role === 'admin'
+
   return (
     <Routes>
       <Route
@@ -36,12 +41,24 @@ export function AppRoutes({
 
       <Route
         path="/app"
-        element={currentUser ? mapPage : <Navigate replace to="/login" />}
+        element={
+          currentUser
+            ? canAccessApp
+              ? mapPage
+              : pendingPage
+            : <Navigate replace to="/login" />
+        }
       />
 
       <Route
         path="/profile"
-        element={currentUser ? profilePage : <Navigate replace to="/login" />}
+        element={
+          currentUser
+            ? canAccessApp
+              ? profilePage
+              : pendingPage
+            : <Navigate replace to="/login" />
+        }
       />
 
       <Route
@@ -55,18 +72,34 @@ export function AppRoutes({
 
       <Route
         path="/about"
-        element={currentUser ? aboutPage : <Navigate replace to="/login" />}
+        element={
+          currentUser
+            ? canAccessApp
+              ? aboutPage
+              : pendingPage
+            : <Navigate replace to="/login" />
+        }
       />
 
       <Route
         path="/site-upload"
-        element={currentUser ? siteUploadPage : <Navigate replace to="/login" />}
+        element={
+          currentUser
+            ? canAccessApp
+              ? siteUploadPage
+              : pendingPage
+            : <Navigate replace to="/login" />
+        }
       />
 
       <Route
         path="/resources/heritage-site-insights"
         element={
-          currentUser ? heritageSiteInsightsPage : <Navigate replace to="/login" />
+          currentUser
+            ? canAccessApp
+              ? heritageSiteInsightsPage
+              : pendingPage
+            : <Navigate replace to="/login" />
         }
       />
 
