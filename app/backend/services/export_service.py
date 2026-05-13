@@ -6,6 +6,8 @@ import geopandas as gpd
 import pandas as pd
 from flask import abort
 from shapely.geometry import box
+from shapely.geometry import shape
+from services.layer_service import load_uploaded_sites
 
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
@@ -21,6 +23,8 @@ EXPORT_LAYER_FILES = {
     "precaution_zone": RISK_OUTPUT_DIR / "precaution_zone.geojson",
 }
 
+DATABASE_EXPORT_LAYERS = {"uploaded_sites"}
+
 
 def get_export_status() -> dict:
     available_layers = [
@@ -28,6 +32,7 @@ def get_export_status() -> dict:
         for layer_name, file_path in EXPORT_LAYER_FILES.items()
         if file_path.exists()
     ]
+    available_layers.extend(sorted(DATABASE_EXPORT_LAYERS))
 
     return {
         "ready": True,
@@ -42,18 +47,24 @@ def create_export_download(
     export_format: str,
     bounds: dict,
 ) -> tuple[BytesIO, str, str]:
-    layer_path = EXPORT_LAYER_FILES.get(layer_name)
+    if layer_name in DATABASE_EXPORT_LAYERS:
+        layer_data = _load_database_export_layer(layer_name)
+    else:
+        layer_path = EXPORT_LAYER_FILES.get(layer_name)
 
-    if layer_path is None:
+        if layer_path is None:
+            abort(404, description=f"Unknown export layer '{layer_name}'")
+
+        if not layer_path.exists():
+            abort(404, description=f"Export layer '{layer_name}' is not available")
+
+        layer_data = gpd.read_file(layer_path)
+
+    if layer_name not in DATABASE_EXPORT_LAYERS and layer_name not in EXPORT_LAYER_FILES:
         abort(404, description=f"Unknown export layer '{layer_name}'")
-
-    if not layer_path.exists():
-        abort(404, description=f"Export layer '{layer_name}' is not available")
 
     if export_format not in {"csv", "xlsx"}:
         abort(400, description="format must be csv or xlsx")
-
-    layer_data = gpd.read_file(layer_path)
 
     if layer_data.empty:
         return _build_download(
@@ -82,6 +93,30 @@ def create_export_download(
         layer_name=layer_name,
         export_format=export_format,
     )
+
+
+def _load_database_export_layer(layer_name: str) -> gpd.GeoDataFrame:
+    if layer_name != "uploaded_sites":
+        abort(404, description=f"Unknown export layer '{layer_name}'")
+
+    uploaded_sites = load_uploaded_sites()
+    features = uploaded_sites.get("features", [])
+
+    rows = []
+    for feature in features:
+        properties = feature.get("properties") or {}
+        geometry = feature.get("geometry")
+        if geometry is None:
+            continue
+
+        rows.append(
+            {
+                **properties,
+                "geometry": shape(geometry),
+            }
+        )
+
+    return gpd.GeoDataFrame(rows, geometry="geometry", crs="EPSG:4326")
 
 
 def _prepare_export_rows(layer_data: gpd.GeoDataFrame) -> pd.DataFrame:

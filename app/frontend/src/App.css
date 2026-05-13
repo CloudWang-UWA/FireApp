@@ -475,17 +475,34 @@
   font-size: 0.92rem;
 }
 
-.field input {
+.field input,
+.field select {
   border: 1px solid rgba(101, 77, 45, 0.18);
   border-radius: 12px;
   padding: 0.72rem 0.85rem;
   background: rgba(255, 255, 255, 0.92);
   color: #241b16;
+  font: inherit;
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   outline: 2px solid rgba(122, 85, 55, 0.24);
   border-color: rgba(122, 85, 55, 0.42);
+}
+
+.export-download-button {
+  width: 100%;
+  margin-top: 0.15rem;
+  background: rgb(20, 63, 59);
+  border-color: rgb(20, 63, 59);
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.export-download-button:hover {
+  background: rgb(28, 86, 80);
+  border-color: rgb(28, 86, 80);
 }
 
 .auth-submit {
@@ -1187,6 +1204,63 @@
   margin-top: 1.25rem;
   justify-content: flex-end;
   flex-wrap: wrap;
+}
+
+.admin-card {
+  max-width: 1080px;
+}
+
+.admin-section {
+  margin-top: 1.25rem;
+}
+
+.admin-section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.85rem;
+}
+
+.admin-section-header h2 {
+  margin: 0;
+}
+
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.72rem 0.8rem;
+  border-bottom: 1px solid rgba(108, 91, 68, 0.14);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-table th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(50, 76, 72, 0.72);
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.danger-outline-button {
+  color: #9f1d1d;
+  border-color: rgba(220, 38, 38, 0.28);
 }
 
 .insights-page {

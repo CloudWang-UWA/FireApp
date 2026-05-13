@@ -7,7 +7,9 @@ import {
 } from '../../api/export'
 
 const EXPORTABLE_LAYERS = [
-  { key: 'site', label: 'Sites' },
+  { key: 'recorded_site_priority', label: 'Recorded site priority' },
+  { key: 'uploaded_sites', label: 'Uploaded sites' },
+  { key: 'precaution_zone', label: 'Precaution zone' },
   { key: 'granite', label: 'Granite' },
   { key: 'fire_history', label: 'Fire history' },
 ] as const
@@ -17,7 +19,7 @@ export function Export({
 }: {
   mapBounds: ExportBounds | null
 }) {
-  const [layerName, setLayerName] = useState<string>('site')
+  const [layerName, setLayerName] = useState<string>('recorded_site_priority')
   const [format, setFormat] = useState<ExportFormat>('csv')
   const [isExporting, setIsExporting] = useState(false)
   const [exportError, setExportError] = useState('')
@@ -89,7 +91,7 @@ export function Export({
       </label>
 
       <button
-        className="primary-button"
+        className="primary-button export-download-button"
         type="button"
         disabled={isExporting || !mapBounds}
         onClick={() => void handleExport()}

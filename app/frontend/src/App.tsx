@@ -14,6 +14,7 @@ import {
   register,
 } from './api/auth'
 import { AboutPage } from './components/about/AboutPage'
+import { AdminPage } from './components/admin/AdminPage'
 import { Auth } from './components/auth/Auth'
 import { Profile } from './components/auth/Profile'
 import { Export } from './components/export/Export'
@@ -43,19 +44,58 @@ function App() {
   const location = useLocation()
   const storedToken = getStoredToken()
 
-  async function loadGeoJsonLayer(layerKey: LayerKey) {
+  async function loadMapLayer(layerKey: LayerKey, isCancelled = () => false) {
     try {
+      const config = LAYER_CONFIG.find((layer) => layer.key === layerKey)
+      if (!config) {
+        return
+      }
+
+      if (config.kind === 'image_overlay') {
+        const overlay =
+          layerKey === 'fuel'
+            ? await fetchOverlay('fuel')
+            : layerKey === 'slope'
+              ? await fetchOverlay('slope')
+              : null
+
+        if (!overlay) {
+          throw new Error(`Unsupported overlay layer '${layerKey}'`)
+        }
+        if (isCancelled()) {
+          return
+        }
+        setLayers((current) => ({
+          ...current,
+          [layerKey]: {
+            ...current[layerKey],
+            overlay,
+            geojson: null,
+            isLoading: false,
+            error: null,
+          },
+        }))
+        return
+      }
+
       const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
+      if (isCancelled()) {
+        return
+      }
       setLayers((current) => ({
         ...current,
         [layerKey]: {
           ...current[layerKey],
           geojson: data,
+          overlay: null,
           isLoading: false,
           error: null,
         },
       }))
     } catch (error) {
+      if (isCancelled()) {
+        return
+      }
       setLayers((current) => ({
         ...current,
         [layerKey]: {
@@ -102,85 +142,65 @@ function App() {
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
 
-  // Load all configured GIS layers after the user is authenticated
+  // Load only initially visible GIS layers after the user is authenticated.
   useEffect(() => {
-    if (!currentUser) {
+    if (
+      !currentUser ||
+      (currentUser.role !== 'viewer' && currentUser.role !== 'admin')
+    ) {
       return
     }
 
     let isCancelled = false
 
-    async function loadLayerOnce(layerKey: LayerKey) {
-      try {
-        const config = LAYER_CONFIG.find((layer) => layer.key === layerKey)
-        if (!config) {
-          return
-        }
-
-        if (config.kind === 'image_overlay') {
-          const overlay =
-            layerKey === 'fuel'
-              ? await fetchOverlay('fuel')
-              : layerKey === 'slope'
-                ? await fetchOverlay('slope')
-                : null
-
-          if (!overlay) {
-            throw new Error(`Unsupported overlay layer '${layerKey}'`)
-          }
-          if (!isCancelled) {
-            setLayers((current) => ({
-              ...current,
-              [layerKey]: {
-                ...current[layerKey],
-                overlay,
-                geojson: null,
-                isLoading: false,
-                error: null,
-              },
-            }))
-          }
-          return
-        }
-
-        const data = prepareLayerData(layerKey, await fetchLayer(layerKey))
-        if (!isCancelled) {
-          setLayers((current) => ({
-            ...current,
-            [layerKey]: {
-              ...current[layerKey],
-              geojson: data,
-              overlay: null,
-              isLoading: false,
-              error: null,
-            },
-          }))
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          setLayers((current) => ({
-            ...current,
-            [layerKey]: {
-              ...current[layerKey],
-              geojson: null,
-              overlay: null,
-              isLoading: false,
-              error:
-                error instanceof Error ? error.message : 'Unable to load layer',
-            },
-          }))
-        }
-      }
-    }
-
     for (const { key } of LAYER_CONFIG) {
-      void loadLayerOnce(key)
+      if (visibleLayers[key]) {
+        void loadMapLayer(key, () => isCancelled)
+      } else {
+        setLayers((current) => ({
+          ...current,
+          [key]: {
+            ...current[key],
+            isLoading: false,
+          },
+        }))
+      }
     }
 
     return () => {
       isCancelled = true
     }
   }, [currentUser])
+
+  // Load optional layers only when the user turns them on.
+  useEffect(() => {
+    if (
+      !currentUser ||
+      (currentUser.role !== 'viewer' && currentUser.role !== 'admin')
+    ) {
+      return
+    }
+
+    for (const { key } of LAYER_CONFIG) {
+      const layer = layers[key]
+      if (
+        visibleLayers[key] &&
+        !layer.geojson &&
+        !layer.overlay &&
+        !layer.isLoading &&
+        !layer.error
+      ) {
+        setLayers((current) => ({
+          ...current,
+          [key]: {
+            ...current[key],
+            isLoading: true,
+          },
+        }))
+        void loadMapLayer(key)
+      }
+    }
+  }, [currentUser, visibleLayers, layers])
 
   // Restore the saved user session from the stored token
   useEffect(() => {
@@ -385,6 +405,16 @@ function App() {
           >
             Site Upload
           </button>
+
+          {currentUser.role === 'admin' ? (
+            <button
+              className={isActive('/admin') ? 'topbar-nav is-active' : 'topbar-nav'}
+              onClick={() => navigate('/admin')}
+              type="button"
+            >
+              Admin
+            </button>
+          ) : null}
         </div>
       </nav>
 
@@ -451,22 +481,40 @@ function App() {
       <main className="map-shell">
         {topbar}
         <section className="map-body map-body--profile">
-          <section className="status-card">
-            <h2>Admin Panel</h2>
-            <p>Welcome, {currentUser.displayName}.</p>
-            <p>This page is only available to users with the admin role.</p>
-
-            <button
-              className="primary-button"
-              type="button"
-              onClick={() => navigate('/app')}
-            >
-              Back to Map
-            </button>
-          </section>
+          <AdminPage authToken={authToken} onBack={() => navigate('/app')} />
         </section>
       </main>
     ) : null
+
+  const pendingPage = currentUser ? (
+    <main className="auth-shell">
+      <section className="auth-gate-card auth-gate-card--compact">
+        <div className="auth-gate-copy">
+          <p className="eyebrow">Account pending</p>
+          <h1>Approval required</h1>
+          <p className="intro">
+            Your account is waiting for administrator approval.
+          </p>
+        </div>
+
+        <div className="status-card">
+          <p className="auth-user-name">{currentUser.displayName}</p>
+          <p className="auth-user-email">{currentUser.email}</p>
+          <p className="auth-user-role">
+            Role: <strong>{currentUser.role}</strong>
+          </p>
+
+          <button
+            className="primary-button danger-button"
+            onClick={() => void handleLogout()}
+            type="button"
+          >
+            Log out
+          </button>
+        </div>
+      </section>
+    </main>
+  ) : null
 
   const siteUploadPage = currentUser ? (
     <main className="map-shell">
@@ -476,7 +524,7 @@ function App() {
           <SiteUpload
             authToken={authToken}
             onBack={() => navigate('/app')}
-            onUploadSuccess={() => loadGeoJsonLayer('uploaded_site_priority')}
+            onUploadSuccess={() => loadMapLayer('uploaded_site_priority')}
           />
         </section>
       </section>
@@ -518,6 +566,7 @@ return (
     currentUser={currentUser}
       isAuthLoading={isAuthLoading}
       loginPage={loginPage}
+      pendingPage={pendingPage}
       mapPage={mapPage}
       profilePage={profilePage}
     aboutPage={aboutPage}
