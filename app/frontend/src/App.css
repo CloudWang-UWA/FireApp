@@ -445,17 +445,34 @@
   font-size: 0.92rem;
 }
 
-.field input {
+.field input,
+.field select {
   border: 1px solid rgba(101, 77, 45, 0.18);
   border-radius: 12px;
   padding: 0.72rem 0.85rem;
   background: rgba(255, 255, 255, 0.92);
   color: #241b16;
+  font: inherit;
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   outline: 2px solid rgba(122, 85, 55, 0.24);
   border-color: rgba(122, 85, 55, 0.42);
+}
+
+.export-download-button {
+  width: 100%;
+  margin-top: 0.15rem;
+  background: rgb(20, 63, 59);
+  border-color: rgb(20, 63, 59);
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.export-download-button:hover {
+  background: rgb(28, 86, 80);
+  border-color: rgb(28, 86, 80);
 }
 
 .auth-submit {
