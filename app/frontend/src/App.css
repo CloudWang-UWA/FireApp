@@ -1226,6 +1226,48 @@
   margin: 0;
 }
 
+.admin-tabs {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: rgba(20, 63, 59, 0.08);
+  border: 1px solid rgba(20, 63, 59, 0.12);
+}
+
+.admin-tab {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.48rem 0.85rem;
+  background: transparent;
+  color: #4d4741;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.admin-tab.is-active {
+  background: rgb(20, 63, 59);
+  color: #f8fff9;
+}
+
+.admin-green-button {
+  background: rgb(20, 63, 59);
+  border-color: rgb(20, 63, 59);
+  color: #f8fff9;
+}
+
+.admin-green-button:hover {
+  background: rgb(28, 86, 80);
+  border-color: rgb(28, 86, 80);
+  color: #f8fff9;
+}
+
+.admin-green-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .admin-table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -1259,8 +1301,15 @@
 }
 
 .danger-outline-button {
-  color: #9f1d1d;
-  border-color: rgba(220, 38, 38, 0.28);
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff7f7;
+}
+
+.danger-outline-button:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff7f7;
 }
 
 .insights-page {

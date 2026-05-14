@@ -1,4 +1,5 @@
 from flask import Blueprint, abort, jsonify, request
+from werkzeug.security import generate_password_hash
 
 from models.user import User, db
 from services.auth_service import require_admin
@@ -27,6 +28,17 @@ def list_pending_users():
     return jsonify({"users": [user.to_dict() for user in users]})
 
 
+@admin_bp.get("/users")
+def list_users():
+    users = db.session.execute(
+        db.select(User)
+        .where(User.is_active.is_(True))
+        .order_by(User.created_at.desc())
+    ).scalars().all()
+
+    return jsonify({"users": [user.to_dict() for user in users]})
+
+
 @admin_bp.post("/users/<int:user_id>/approve")
 def approve_user(user_id: int):
     user = db.session.get(User, user_id)
@@ -37,6 +49,27 @@ def approve_user(user_id: int):
         abort(400, description="Admin users do not need approval")
 
     user.role = "viewer"
+    db.session.commit()
+
+    return jsonify({"user": user.to_dict()})
+
+
+@admin_bp.post("/users/<int:user_id>/reset-password")
+def reset_user_password(user_id: int):
+    user = db.session.get(User, user_id)
+    if user is None:
+        abort(404, description="User was not found")
+
+    if user.role == "admin":
+        abort(400, description="Admin passwords cannot be reset from this page")
+
+    payload = request.get_json(silent=True) or {}
+    new_password = payload.get("password", "")
+    if not isinstance(new_password, str) or len(new_password) < 8:
+        abort(400, description="Password must be at least 8 characters")
+
+    user.password_hash = generate_password_hash(new_password)
+    user.auth_token = None
     db.session.commit()
 
     return jsonify({"user": user.to_dict()})
