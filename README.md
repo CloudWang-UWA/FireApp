@@ -4,6 +4,10 @@ CITS5206 Capstone Project - Group 21 - Semester 1 2026
 
 Heritage Fire Watch is a GIS web application for visualising fire vulnerability risk around cultural heritage sites in the Albany, WA region.
 
+Live app: https://heritage-fire-watch.vercel.app/
+
+Newly registered users are pending by default and need administrator approval before they can access the main application.
+
 ## Tech Stack
 
 - Frontend: React, TypeScript, Vite, Leaflet
@@ -15,7 +19,9 @@ Heritage Fire Watch is a GIS web application for visualising fire vulnerability 
 
 See [`app/README.md`](app/README.md) for the application architecture, feature areas, project structure, API endpoints, and local development notes.
 
-## Prerequisites
+## Local Setup
+
+### Prerequisites
 
 Install:
 
@@ -37,7 +43,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-## Install Required Packages
+### Install Required Packages
 
 Install backend dependencies:
 
@@ -59,7 +65,7 @@ npm install
 cd ../..
 ```
 
-## Run Data Processing
+### Run Data Processing
 
 The ETL pipeline generates processed outputs under:
 
@@ -84,20 +90,15 @@ After downloading the raw data, place it under `app/data/raw/`, then run the ETL
 fire-vulnerability-etl --raw-data-dir app/data/raw --output-dir app/data/derived
 ```
 
-There is also an upstream acquisition command for supported public source datasets:
+### Run Risk Analysis
 
-```bash
-fire-vulnerability-acquire-upstream
-```
-
-## Run Risk Analysis
+The main risk layers are precomputed in the backend using the processed spatial datasets, so the frontend can load them directly on the map.
 
 On Windows:
 
 ```powershell
 cd app/backend/scripts/risk
 .\run_all.ps1
-cd ../../../..
 ```
 
 On macOS/Linux:
@@ -105,10 +106,9 @@ On macOS/Linux:
 ```bash
 cd app/backend/scripts/risk
 bash run_all.sh
-cd ../../../..
 ```
 
-## Run Backend Locally
+### Run Backend Locally
 
 From the repository root:
 
@@ -140,7 +140,7 @@ To use PostgreSQL locally, set:
 DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/database_name
 ```
 
-## Run Frontend Locally
+### Run Frontend Locally
 
 In another terminal:
 
@@ -167,7 +167,7 @@ To point the frontend to another backend, create `app/frontend/.env`:
 VITE_API_BASE_URL=https://your-backend-url
 ```
 
-## Useful Checks
+### Useful Checks
 
 Frontend production build:
 

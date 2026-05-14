@@ -331,6 +331,17 @@
   gap: 0.4rem;
 }
 
+.si-sidebar-actions .si-export-site-button {
+  background: rgb(20, 63, 59);
+  border-color: rgb(20, 63, 59);
+  color: #f8fff9;
+}
+
+.si-sidebar-actions .si-export-site-button:hover {
+  background: rgb(28, 86, 80);
+  border-color: rgb(28, 86, 80);
+}
+
 .si-primary-action {
   box-shadow: 0 10px 20px rgba(69, 87, 76, 0.2);
 }

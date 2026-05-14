@@ -29,12 +29,37 @@ export async function fetchPendingUsers(token: string) {
   return payload.users ?? []
 }
 
+export async function fetchUsers(token: string) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  const payload = await parseAdminResponse(response)
+  return payload.users ?? []
+}
+
 export async function approveUser(token: string, userId: number) {
   const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/approve`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  })
+
+  const payload = await parseAdminResponse(response)
+  return payload.user
+}
+
+export async function resetUserPassword(token: string, userId: number, password: string) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/reset-password`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password }),
   })
 
   const payload = await parseAdminResponse(response)

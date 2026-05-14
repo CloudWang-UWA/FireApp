@@ -45,6 +45,19 @@ function siteTypeLabel(source: unknown): string | null {
   return raw
 }
 
+function siteDisplayId(properties: GeoJSON.GeoJsonProperties): string | null {
+  const achId = nativeText(properties?.ach_identifier)
+  if (achId) return achId
+
+  const councilId = nativeText(properties?.place_no)
+  if (councilId) return councilId
+
+  const uploadId = nativeText(properties?.id)
+  if (uploadId) return uploadId
+
+  return null
+}
+
 // GeoJSON stores coordinates differently for points, lines, and polygons.
 // Flatten them into one list so the preview map can place a simple site marker.
 function collectPositions(geometry: GeoJSON.Geometry | null | undefined): number[][] {
@@ -108,12 +121,12 @@ function mapFeatureToInsights(
   )
 
   return {
-    site_id: nativeText(properties.ach_identifier) ?? nativeText(properties.id),
+    site_id: siteDisplayId(properties),
     site_name: nativeText(properties.name) ?? nativeText(properties.place_name),
     site_type: isUploadedSite ? 'Uploaded Site' : siteTypeLabel(properties.source),
     ach_identifier: nativeText(properties.ach_identifier),
     place_type: nativeText(properties.place_type),
-    area_name: nativeText(properties.region),
+    area_name: null,
     latitude,
     longitude,
     risk_level: priorityLevel,
