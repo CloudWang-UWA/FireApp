@@ -1,4 +1,4 @@
-import { Gauge, Layers, MapPinned, ShieldAlert, Trees } from 'lucide-react'
+import { Gauge, Layers, ShieldAlert, Tag, Trees } from 'lucide-react'
 import type { SiteInsightsApiResponse } from '../../api/risk'
 import {
   formatApiLevel,
@@ -17,7 +17,7 @@ export function InsightSidebar({
   onBackToMap?: () => void
 }) {
   const siteName = insights ? nonEmptyString(insights.site_name) : undefined
-  const areaName = insights ? nonEmptyString(insights.area_name) : undefined
+  const siteId = insights ? nonEmptyString(insights.site_id) : undefined
   const siteType = insights ? nonEmptyString(insights.site_type) : undefined
   const placeType = insights ? nonEmptyString(insights.place_type) : undefined
   const riskLabel = insights ? formatApiLevel(insights.risk_level) : undefined
@@ -44,6 +44,16 @@ export function InsightSidebar({
       <div className="si-meta-card">
         <div className="si-meta-row">
           <span className="si-meta-icon-wrap">
+            <Tag size={14} />
+          </span>
+          <div>
+            <p className="si-meta-key">Site ID</p>
+            <p className="si-meta-value">{siteId ?? 'Unavailable'}</p>
+          </div>
+        </div>
+
+        <div className="si-meta-row">
+          <span className="si-meta-icon-wrap">
             <Layers size={14} />
           </span>
           <div>
@@ -51,18 +61,6 @@ export function InsightSidebar({
             <p className="si-meta-value">{siteType ?? 'Unavailable'}</p>
           </div>
         </div>
-
-        {areaName ? (
-          <div className="si-meta-row">
-            <span className="si-meta-icon-wrap">
-              <MapPinned size={14} />
-            </span>
-            <div>
-              <p className="si-meta-key">Area / region</p>
-              <p className="si-meta-value">{areaName}</p>
-            </div>
-          </div>
-        ) : null}
 
         <div className="si-meta-row">
           <span className="si-meta-icon-wrap">
@@ -146,7 +144,7 @@ export function InsightSidebar({
       </section>
 
       <div className="si-sidebar-actions">
-        <button className="primary-button" type="button" disabled={!insights} onClick={onExportSite}>
+        <button className="primary-button si-export-site-button" type="button" disabled={!insights} onClick={onExportSite}>
           Export this site
         </button>
         <button className="secondary-button" type="button" onClick={onBackToMap}>
