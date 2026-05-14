@@ -36,27 +36,3 @@ export type SiteInsightsApiResponse = {
   granite_score?: number | null
   granite_level?: string | null
 }
-
-export async function fetchSiteInsights(options?: {
-  siteId?: string | null
-  signal?: AbortSignal
-}): Promise<SiteInsightsApiResponse> {
-  const siteId = options?.siteId != null ? String(options.siteId).trim() : ''
-  const signal = options?.signal
-  const params = new URLSearchParams()
-  if (siteId) {
-    params.set('site_id', siteId)
-  }
-  const query = params.toString()
-  const url =
-    query.length > 0
-      ? `${API_BASE_URL}/api/risk/site-insights?${query}`
-      : `${API_BASE_URL}/api/risk/site-insights`
-  const response = await fetch(url, { signal })
-
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`)
-  }
-
-  return response.json()
-}

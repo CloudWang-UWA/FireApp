@@ -21,7 +21,6 @@ import { Export } from './components/export/Export'
 import { Basemap } from './components/map/Basemap'
 import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
-import { Risk } from './components/risk/Risk'
 import { SiteUpload } from './components/site-upload/SiteUpload'
 import { HeritageSiteInsights } from './components/resources/HeritageSiteInsights'
 import { LAYER_CONFIG } from './config/map'
@@ -141,6 +140,10 @@ function App() {
   const [authError, setAuthError] = useState('')
   const [authMessage, setAuthMessage] = useState('')
   const [authForm, setAuthForm] = useState<AuthFormState>(EMPTY_AUTH_FORM)
+  const [selectedInsightFeature, setSelectedInsightFeature] = useState<{
+    layerKey: LayerKey
+    feature: GeoJSON.Feature
+  } | null>(null)
 
   // Load only initially visible GIS layers after the user is authenticated.
   useEffect(() => {
@@ -445,7 +448,6 @@ function App() {
               setVisibleLayers={setVisibleLayers}
             />
             <Basemap basemap={basemap} setBasemap={setBasemap} />
-            <Risk />
             <Export mapBounds={mapBounds} />
           </div>
         </aside>
@@ -456,6 +458,7 @@ function App() {
             layers={layers}
             visibleLayers={visibleLayers}
             onBoundsChange={setMapBounds}
+            onViewSiteInsights={setSelectedInsightFeature}
           />
         </section>
       </section>
@@ -536,7 +539,11 @@ const heritageSiteInsightsPage = currentUser ? (
     {topbar}
     <section className="map-body map-body--insights">
       <section className="map-stage map-stage--insights">
-        <HeritageSiteInsights onBackToMap={() => navigate('/app')} />
+        <HeritageSiteInsights
+          onBackToMap={() => navigate('/app')}
+          recordedSiteData={layers.recorded_site_priority.geojson}
+          selectedFeature={selectedInsightFeature}
+        />
       </section>
     </section>
   </main>

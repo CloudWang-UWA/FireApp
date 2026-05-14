@@ -682,8 +682,8 @@ export function SiteInsightsMainPanels({ api }: { api: SiteInsightsApiResponse }
             latitude={api.latitude}
             longitude={api.longitude}
             siteName={api.site_name ?? null}
-            siteId={api.site_id ?? null}
             areaName={api.area_name ?? null}
+            siteType={api.site_type ?? null}
             variant="embedded"
           />
         </section>

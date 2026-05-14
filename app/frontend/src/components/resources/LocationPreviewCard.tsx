@@ -9,33 +9,37 @@ type LocationPreviewCardProps = {
   latitude?: number | null
   longitude?: number | null
   siteName?: string | null
-  siteId?: string | null
   areaName?: string | null
+  siteType?: string | null
   /** When set, map sits inside a parent dashboard card (no outer si-card / duplicate title). */
   variant?: 'card' | 'embedded'
 }
 
 function SiteLocationPopup({
   siteName,
-  siteId,
   areaName,
+  siteType,
 }: {
   siteName: string | null
-  siteId: string | null
   areaName: string | null
+  siteType: string | null
 }) {
   return (
     <div className="si-site-loc-popup">
-      <p className="si-site-loc-popup-title">{siteName ?? '—'}</p>
+      <p className="si-site-loc-popup-title">{siteName ?? '-'}</p>
       <dl className="si-site-loc-popup-dl">
-        <div>
-          <dt>Site ID</dt>
-          <dd>{siteId ?? '—'}</dd>
-        </div>
-        <div>
-          <dt>Area</dt>
-          <dd>{areaName ?? '—'}</dd>
-        </div>
+        {siteType ? (
+          <div>
+            <dt>Source</dt>
+            <dd>{siteType}</dd>
+          </div>
+        ) : null}
+        {areaName ? (
+          <div>
+            <dt>Area</dt>
+            <dd>{areaName}</dd>
+          </div>
+        ) : null}
       </dl>
     </div>
   )
@@ -53,8 +57,8 @@ export function LocationPreviewCard({
   latitude,
   longitude,
   siteName = null,
-  siteId = null,
   areaName = null,
+  siteType = null,
   variant = 'card',
 }: LocationPreviewCardProps) {
   const hasCoords =
@@ -88,8 +92,8 @@ export function LocationPreviewCard({
   const coordinatesText = `Lat ${latitude.toFixed(6)}, Lng ${longitude.toFixed(6)}`
   const center: [number, number] = [latitude, longitude]
   const nameStr = siteName != null && String(siteName).trim() ? String(siteName).trim() : null
-  const idStr = siteId != null && String(siteId).trim() ? String(siteId).trim() : null
   const areaStr = areaName != null && String(areaName).trim() ? String(areaName).trim() : null
+  const siteTypeStr = siteType != null && String(siteType).trim() ? String(siteType).trim() : null
 
   const mapBlock = (
     <div className="si-location-map-wrap si-location-map-wrap--interactive">
@@ -127,7 +131,7 @@ export function LocationPreviewCard({
           }}
         >
           <Popup>
-            <SiteLocationPopup siteName={nameStr} siteId={idStr} areaName={areaStr} />
+            <SiteLocationPopup siteName={nameStr} areaName={areaStr} siteType={siteTypeStr} />
           </Popup>
         </CircleMarker>
       </MapContainer>

@@ -1,29 +1,215 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { fetchSiteInsights, type SiteInsightsApiResponse } from '../../api/risk'
+import { fetchLayer } from '../../api/layers'
+import type { SiteInsightsApiResponse } from '../../api/risk'
+import type { LayerKey } from '../../types/map'
 import './HeritageSiteInsights.css'
 import { InsightSidebar } from './InsightSidebar'
 import { SiteInsightsMainPanels } from './SiteInsightsMainPanels'
 
+type SelectedInsightFeature = {
+  layerKey: LayerKey
+  feature: GeoJSON.Feature
+}
+
+function nativeNumber(value: unknown): number | null {
+  if (typeof value === 'number' && !Number.isNaN(value)) return value
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value)
+    return Number.isNaN(parsed) ? null : parsed
+  }
+  return null
+}
+
+function nativeText(value: unknown): string | null {
+  if (value == null) return null
+  const text = String(value).trim()
+  return text || null
+}
+
+function levelName(value: unknown): string | null {
+  const level = nativeNumber(value)
+  if (level === 3) return 'HIGH'
+  if (level === 2) return 'MEDIUM'
+  if (level === 1) return 'LOW'
+  return nativeText(value)
+}
+
+function siteTypeLabel(source: unknown): string | null {
+  const raw = nativeText(source)
+  if (!raw) return null
+  const lower = raw.toLowerCase()
+  if (lower === 'registered') return 'ACHIS Registered'
+  if (lower === 'lodged') return 'ACHIS Lodged'
+  if (lower === 'council') return 'Council'
+  return raw
+}
+
+// GeoJSON stores coordinates differently for points, lines, and polygons.
+// Flatten them into one list so the preview map can place a simple site marker.
+function collectPositions(geometry: GeoJSON.Geometry | null | undefined): number[][] {
+  if (!geometry) return []
+  if (geometry.type === 'Point') return [geometry.coordinates as number[]]
+  if (geometry.type === 'MultiPoint' || geometry.type === 'LineString') {
+    return geometry.coordinates as number[][]
+  }
+  if (geometry.type === 'MultiLineString' || geometry.type === 'Polygon') {
+    return (geometry.coordinates as number[][][]).flat()
+  }
+  if (geometry.type === 'MultiPolygon') {
+    return (geometry.coordinates as number[][][][]).flat(2)
+  }
+  return []
+}
+
+// get marker position for the small preview map.
+function getMapMarkerPosition(geometry: GeoJSON.Geometry | null | undefined) {
+  const positions = collectPositions(geometry).filter(
+    (position) =>
+      typeof position[0] === 'number' &&
+      !Number.isNaN(position[0]) &&
+      typeof position[1] === 'number' &&
+      !Number.isNaN(position[1]),
+  )
+  if (positions.length === 0) {
+    return { latitude: null, longitude: null }
+  }
+
+  const totals = positions.reduce(
+    (sum, position) => ({
+      longitude: sum.longitude + position[0],
+      latitude: sum.latitude + position[1],
+    }),
+    { latitude: 0, longitude: 0 },
+  )
+
+  return {
+    latitude: totals.latitude / positions.length,
+    longitude: totals.longitude / positions.length,
+  }
+}
+
+function mapFeatureToInsights(
+  layerKey: LayerKey,
+  feature: GeoJSON.Feature,
+): SiteInsightsApiResponse {
+  const properties = feature.properties ?? {}
+  const { latitude, longitude } = getMapMarkerPosition(feature.geometry)
+  const isUploadedSite = layerKey === 'uploaded_site_priority'
+  const priorityScore = nativeNumber(
+    isUploadedSite
+      ? properties.site_priority_score
+      : properties.recorded_site_priority_score,
+  )
+  const priorityLevel = levelName(
+    isUploadedSite
+      ? properties.site_priority_level
+      : properties.recorded_site_priority_level,
+  )
+
+  return {
+    site_id: nativeText(properties.ach_identifier) ?? nativeText(properties.id),
+    site_name: nativeText(properties.name) ?? nativeText(properties.place_name),
+    site_type: isUploadedSite ? 'Uploaded Site' : siteTypeLabel(properties.source),
+    ach_identifier: nativeText(properties.ach_identifier),
+    place_type: nativeText(properties.place_type),
+    area_name: nativeText(properties.region),
+    latitude,
+    longitude,
+    risk_level: priorityLevel,
+    risk_score: priorityScore,
+    predicted_probability: null,
+    site_vulnerability_score: nativeNumber(properties.site_vulnerability_score),
+    slope_deg: nativeNumber(properties.slope_deg),
+    fuel_code: nativeNumber(properties.fuel_code),
+    fuel_label: nativeText(properties.fuel_type),
+    fire_year: nativeNumber(properties.fire_year),
+    fire_type: nativeText(properties.fire_type),
+    hazard_score: nativeNumber(properties.hazard_score),
+    hazard_level: levelName(properties.hazard_level),
+    site_priority_score: priorityScore,
+    site_priority_level: priorityLevel,
+    granite_score: null,
+    granite_level: null,
+  }
+}
+
+function findRecordedSite(
+  recordedSites: GeoJSON.FeatureCollection | null | undefined,
+  siteIdFromUrl: string | null,
+) {
+  if (!recordedSites?.features.length) return null
+
+  const siteId = siteIdFromUrl?.trim()
+  if (!siteId) return recordedSites.features[0]
+
+  return (
+    recordedSites.features.find((feature) => {
+      const achIdentifier = feature.properties?.ach_identifier
+      return achIdentifier != null && String(achIdentifier).trim() === siteId
+    }) ?? null
+  )
+}
+
 export function HeritageSiteInsights({
   onBackToMap,
+  recordedSiteData,
+  selectedFeature,
 }: {
   onBackToMap?: () => void
+  recordedSiteData?: GeoJSON.FeatureCollection | null
+  selectedFeature?: SelectedInsightFeature | null
 }) {
   const [searchParams] = useSearchParams()
   const siteIdFromUrl = searchParams.get('siteId')
+  const initialFeature = findRecordedSite(recordedSiteData, siteIdFromUrl)
 
-  const [insights, setInsights] = useState<SiteInsightsApiResponse | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [insights, setInsights] = useState<SiteInsightsApiResponse | null>(
+    selectedFeature
+      ? mapFeatureToInsights(selectedFeature.layerKey, selectedFeature.feature)
+      : initialFeature
+        ? mapFeatureToInsights('recorded_site_priority', initialFeature)
+        : null,
+  )
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const loadInsights = useCallback(async (signal?: AbortSignal) => {
-    setIsLoading(true)
+    if (selectedFeature) {
+      setInsights(mapFeatureToInsights(selectedFeature.layerKey, selectedFeature.feature))
+      setError(null)
+      setIsLoading(false)
+      return
+    }
+
+    if (recordedSiteData) {
+      const selectedFeature = findRecordedSite(recordedSiteData, siteIdFromUrl)
+      if (selectedFeature) {
+        setInsights(mapFeatureToInsights('recorded_site_priority', selectedFeature))
+        setError(null)
+      } else {
+        const siteId = siteIdFromUrl?.trim()
+        setInsights(null)
+        setError(siteId ? `No site found for siteId ${siteId}` : 'No recorded sites available')
+      }
+      setIsLoading(false)
+      return
+    }
+
     setError(null)
     try {
-      const api = await fetchSiteInsights({ siteId: siteIdFromUrl, signal })
+      const recordedSites =
+        recordedSiteData ?? await fetchLayer('recorded_site_priority', { signal })
       if (signal?.aborted) return
-      setInsights(api)
+
+      const siteId = siteIdFromUrl?.trim() ?? null
+      const selectedFeature = findRecordedSite(recordedSites, siteId)
+
+      if (!selectedFeature) {
+        throw new Error(siteId ? `No site found for siteId ${siteId}` : 'No recorded sites available')
+      }
+
+      setInsights(mapFeatureToInsights('recorded_site_priority', selectedFeature))
     } catch (e) {
       if (e instanceof DOMException && e.name === 'AbortError') return
       const message = e instanceof Error ? e.message : 'Failed to load site insights'
@@ -36,7 +222,7 @@ export function HeritageSiteInsights({
         setIsLoading(false)
       }
     }
-  }, [siteIdFromUrl])
+  }, [recordedSiteData, selectedFeature, siteIdFromUrl])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -52,12 +238,6 @@ export function HeritageSiteInsights({
           <button className="si-insights-retry" type="button" onClick={() => void loadInsights()}>
             Retry
           </button>
-        </div>
-      ) : null}
-
-      {isLoading ? (
-        <div className="si-insights-fetch-overlay" aria-busy="true" aria-live="polite">
-          <p className="si-insights-fetch-message">Loading site insights…</p>
         </div>
       ) : null}
 

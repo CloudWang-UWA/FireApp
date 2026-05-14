@@ -1,4 +1,4 @@
-import { Gauge, Layers, MapPinned, ShieldAlert, Tag, Trees } from 'lucide-react'
+import { Gauge, Layers, MapPinned, ShieldAlert, Trees } from 'lucide-react'
 import type { SiteInsightsApiResponse } from '../../api/risk'
 import {
   formatApiLevel,
@@ -14,7 +14,6 @@ export function InsightSidebar({
   insights: SiteInsightsApiResponse | null
   onBackToMap?: () => void
 }) {
-  const siteId = insights ? nonEmptyString(insights.site_id) : undefined
   const siteName = insights ? nonEmptyString(insights.site_name) : undefined
   const areaName = insights ? nonEmptyString(insights.area_name) : undefined
   const siteType = insights ? nonEmptyString(insights.site_type) : undefined
@@ -38,27 +37,31 @@ export function InsightSidebar({
     <aside className="si-sidebar si-card">
       <p className="si-sidebar-label">Selected heritage site</p>
       <h1 className="si-sidebar-title">Site Insights</h1>
-      <p className="si-site-name">{siteName ?? '—'}</p>
+      <p className="si-site-name">{siteName ?? '-'}</p>
 
       <div className="si-meta-card">
         <div className="si-meta-row">
           <span className="si-meta-icon-wrap">
-            <Tag size={14} />
+            <Layers size={14} />
           </span>
           <div>
-            <p className="si-meta-key">Site ID</p>
-            <p className="si-meta-value">{siteId ?? '—'}</p>
+            <p className="si-meta-key">Source</p>
+            <p className="si-meta-value">{siteType ?? 'Unavailable'}</p>
           </div>
         </div>
-        <div className="si-meta-row">
-          <span className="si-meta-icon-wrap">
-            <MapPinned size={14} />
-          </span>
-          <div>
-            <p className="si-meta-key">Area / region</p>
-            <p className="si-meta-value">{areaName ?? '—'}</p>
+
+        {areaName ? (
+          <div className="si-meta-row">
+            <span className="si-meta-icon-wrap">
+              <MapPinned size={14} />
+            </span>
+            <div>
+              <p className="si-meta-key">Area / region</p>
+              <p className="si-meta-value">{areaName}</p>
+            </div>
           </div>
-        </div>
+        ) : null}
+
         <div className="si-meta-row">
           <span className="si-meta-icon-wrap">
             <ShieldAlert size={14} />
@@ -68,19 +71,11 @@ export function InsightSidebar({
             {riskLabel ? (
               <span className={`si-risk-badge ${riskTone}`}>{riskLabel} risk</span>
             ) : (
-              <span className="si-meta-value si-meta-value--muted">—</span>
+              <span className="si-meta-value si-meta-value--muted">-</span>
             )}
           </div>
         </div>
-        <div className="si-meta-row">
-          <span className="si-meta-icon-wrap">
-            <Layers size={14} />
-          </span>
-          <div>
-            <p className="si-meta-key">Site type</p>
-            <p className="si-meta-value">{siteType ?? 'Unavailable'}</p>
-          </div>
-        </div>
+
         <div className="si-meta-row">
           <span className="si-meta-icon-wrap">
             <Trees size={14} />
@@ -98,7 +93,7 @@ export function InsightSidebar({
           <Gauge size={16} aria-hidden />
         </div>
         <p className="si-probability-card-desc">
-          Shows site vulnerability on a 1–3 scale, where 1 is low vulnerability and 3 is high vulnerability.
+          Shows site vulnerability on a 1-3 scale, where 1 is low vulnerability and 3 is high vulnerability.
         </p>
         {vulnerabilityScore != null ? (
           <>
