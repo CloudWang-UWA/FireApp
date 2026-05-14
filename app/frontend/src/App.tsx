@@ -209,6 +209,10 @@ function App() {
       return
     }
 
+    if (currentUser) {
+      return
+    }
+
     let isCancelled = false
 
     async function loadCurrentUser() {
@@ -245,7 +249,7 @@ function App() {
     return () => {
       isCancelled = true
     }
-  }, [authToken])
+  }, [authToken, currentUser])
 
   // Handle login and registration with the same form flow
   async function submitAuthForm(event: FormEvent<HTMLFormElement>) {
@@ -298,13 +302,17 @@ function App() {
     .charAt(0)
     .toUpperCase()
 
-  if (authToken && isAuthLoading && !currentUser) {
+  if (isAuthLoading && !currentUser) {
     return (
       <main className="auth-shell">
         <section className="auth-gate-card auth-gate-card--compact">
           <p className="eyebrow">Heritage Fire Watch</p>
-          <h1>Checking your session</h1>
-          <p className="intro">Please wait while we restore your account.</p>
+          <h1>{authToken ? 'Checking your session' : 'Signing you in'}</h1>
+          <p className="intro">
+            {authToken
+              ? 'Please wait while we restore your account.'
+              : 'Please wait while we sign you in.'}
+          </p>
         </section>
       </main>
     )
