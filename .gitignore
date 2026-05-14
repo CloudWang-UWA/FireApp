@@ -22,3 +22,4 @@ app/backend/.env
 /fuel.tif
 
 /data_change.zip
+venv/

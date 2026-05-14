@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { GeoJSON, ImageOverlay, MapContainer, Pane, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import type { LatLng, Layer as LeafletLayer, Map as LeafletMap } from 'leaflet'
+import { useNavigate } from 'react-router-dom'
 
 import type { ExportBounds } from '../../api/export'
 import { API_BASE_URL, BASEMAP_CONFIG, INITIAL_CENTER, LAYER_CONFIG } from '../../config/map'
@@ -81,12 +82,18 @@ export function MapView({
   layers,
   visibleLayers,
   onBoundsChange,
+  onViewSiteInsights,
 }: {
   basemap: BasemapKey
   layers: LayerStateMap
   visibleLayers: Record<LayerKey, boolean>
   onBoundsChange: (bounds: ExportBounds) => void
+  onViewSiteInsights?: (selection: {
+    layerKey: LayerKey
+    feature: GeoJSON.Feature
+  }) => void
 }) {
+  const navigate = useNavigate()
   const renderOrder: LayerKey[] = [
     'fuel',
     'slope',
@@ -239,6 +246,20 @@ export function MapView({
               }
               onEachFeature={(feature: GeoJSON.Feature, layer: LeafletLayer) => {
                 layer.bindPopup(buildPopupContent(key, feature.properties))
+                layer.on('popupopen', (event) => {
+                  const popupElement = event.popup.getElement()
+                  const link = popupElement?.querySelector<HTMLAnchorElement>(
+                    '.map-popup-insights-btn',
+                  )
+                  if (!link) return
+
+                  link.onclick = (clickEvent) => {
+                    clickEvent.preventDefault()
+                    onViewSiteInsights?.({ layerKey: key, feature })
+                    const url = new URL(link.href)
+                    navigate(`${url.pathname}${url.search}`)
+                  }
+                })
               }}
             />
           )

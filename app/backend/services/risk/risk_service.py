@@ -1,6 +1,6 @@
 from .risk_model import calculate_hazard
-from .risk_model import calculate_site_vulnerability
 from .risk_model import calculate_granite_influence
+from .risk_model import calculate_site_vulnerability
 
 
 def get_risk_status() -> dict:

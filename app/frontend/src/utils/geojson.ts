@@ -82,6 +82,10 @@ function buildPopupRows(rows: Array<[string, unknown, boolean?]>) {
     .join('')
 }
 
+function withInsightsLink(body: string, href: string) {
+  return `${body}<div class="map-popup-insights-wrap"><a class="map-popup-insights-btn" href="${href}">View Site Insights</a></div>`
+}
+
 export function prepareLayerData(layerKey: LayerKey, data: GeoJsonData): GeoJsonData {
   if (
     layerKey !== 'recorded_site_priority' &&
@@ -163,7 +167,13 @@ export function buildPopupContent(
       ['recorded_site_priority_level', properties.recorded_site_priority_level, true],
     ]
 
-    return buildPopupRows(rows)
+    const achRaw = properties.ach_identifier
+    const achStr =
+      achRaw != null && String(achRaw).trim() !== '' ? String(achRaw).trim() : null
+    const href = achStr
+      ? `/resources/heritage-site-insights?siteId=${encodeURIComponent(achStr)}`
+      : '/resources/heritage-site-insights'
+    return withInsightsLink(buildPopupRows(rows), href)
   }
 
   if (layerKey === 'precaution_zone') {
@@ -183,7 +193,7 @@ export function buildPopupContent(
       ['Priority level', properties.site_priority_level, true],
     ]
 
-    return buildPopupRows(rows)
+    return withInsightsLink(buildPopupRows(rows), '/resources/heritage-site-insights')
   }
 
   // Keep popups short enough that they do not take over the map.
