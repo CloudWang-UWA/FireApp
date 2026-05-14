@@ -1,13 +1,12 @@
 import { useId } from 'react'
 import type { SiteInsightsApiResponse } from '../../api/risk'
-import { Gem, History, MapPin, Mountain, Flame, Shield, Target } from 'lucide-react'
+import { History, MapPin, Mountain, Flame, Shield, Target } from 'lucide-react'
 import { LocationPreviewCard } from './LocationPreviewCard'
 import {
   formatApiLevel,
   formatFireHistory,
   formatScoreAsPercent,
   hasFireHistory,
-  hasGraniteData,
   nonEmptyString,
   roundSlopeOneDecimal,
   riskLevelTone,
@@ -605,49 +604,6 @@ export function SiteInsightsMainPanels({ api }: { api: SiteInsightsApiResponse }
                 <History size={18} strokeWidth={1.5} />
               </span>
               <p>No recorded fire history available</p>
-            </div>
-          )}
-        </section>
-
-        <section className="si-dash-card">
-          <div className="si-dash-card-head">
-            <div>
-              <h2>Granite Outcrop</h2>
-              <p>
-                Shows whether nearby granite outcrops may influence fire behavior around heritage sites.
-              </p>
-            </div>
-            <span className="si-dash-icon" aria-hidden>
-              <Gem size={20} />
-            </span>
-          </div>
-          {hasGraniteData(api) ? (
-            <div className="si-dash-stat-grid" style={{ marginTop: '0.25rem' }}>
-              <div className="si-dash-chip">
-                <span className="si-dash-chip-label">Granite score</span>
-                <span className="si-dash-chip-value">
-                  {api.granite_score != null &&
-                  typeof api.granite_score === 'number' &&
-                  !Number.isNaN(api.granite_score)
-                    ? String(api.granite_score)
-                    : '—'}
-                </span>
-              </div>
-              <div className="si-dash-chip">
-                <span className="si-dash-chip-label">Granite level</span>
-                {formatApiLevel(api.granite_level) ? (
-                  <span className={levelBadgeClass(api.granite_level)}>{formatApiLevel(api.granite_level)}</span>
-                ) : (
-                  <span className="si-dash-chip-value">—</span>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="si-dash-empty si-dash-empty--granite">
-              <span className="si-dash-empty-icon" aria-hidden>
-                <Gem size={18} strokeWidth={1.5} />
-              </span>
-              <p>No granite outcrop influence detected</p>
             </div>
           )}
         </section>
