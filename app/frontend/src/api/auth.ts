@@ -2,6 +2,7 @@ import { API_BASE_URL, TOKEN_STORAGE_KEY } from '../config/map'
 import type { AuthFormState, AuthUser } from '../types/auth'
 
 const USER_STORAGE_KEY = 'auth_user'
+const SESSION_CHECK_TIMEOUT_MS = 10000
 
 type AuthPayload = {
   error?: string
@@ -119,11 +120,12 @@ export async function login(form: AuthFormState) {
   return payload
 }
 
-export async function getCurrentUser(token: string) {
+export async function getCurrentUser(token: string, signal?: AbortSignal) {
   const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    signal,
   })
 
   const payload = await parseResponse(response)
@@ -143,12 +145,20 @@ export async function bootstrapSession() {
     return null
   }
 
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(
+    () => controller.abort(),
+    SESSION_CHECK_TIMEOUT_MS,
+  )
+
   try {
-    const payload = await getCurrentUser(token)
+    const payload = await getCurrentUser(token, controller.signal)
     return payload.user ?? null
   } catch {
     clearStoredAuth()
     return null
+  } finally {
+    window.clearTimeout(timeoutId)
   }
 }
 
