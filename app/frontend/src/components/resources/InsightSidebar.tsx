@@ -9,9 +9,11 @@ import {
 
 export function InsightSidebar({
   insights,
+  onExportSite,
   onBackToMap,
 }: {
   insights: SiteInsightsApiResponse | null
+  onExportSite?: () => void
   onBackToMap?: () => void
 }) {
   const siteName = insights ? nonEmptyString(insights.site_name) : undefined
@@ -144,6 +146,9 @@ export function InsightSidebar({
       </section>
 
       <div className="si-sidebar-actions">
+        <button className="primary-button" type="button" disabled={!insights} onClick={onExportSite}>
+          Export this site
+        </button>
         <button className="secondary-button" type="button" onClick={onBackToMap}>
           Back to map
         </button>

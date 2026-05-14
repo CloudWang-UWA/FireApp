@@ -151,6 +151,64 @@ function findRecordedSite(
   )
 }
 
+function csvCell(value: unknown): string {
+  if (value == null) return ''
+  const text = String(value)
+  if (!/[",\r\n]/.test(text)) return text
+  return `"${text.replace(/"/g, '""')}"`
+}
+
+function fileSafeName(value: unknown): string {
+  const raw = nativeText(value) ?? 'site-insights'
+  return raw
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'site-insights'
+}
+
+function downloadCurrentSiteCsv(insights: SiteInsightsApiResponse) {
+  const fields: Array<[string, unknown]> = [
+    ['site_id', insights.site_id],
+    ['site_name', insights.site_name],
+    ['source', insights.site_type],
+    ['ach_identifier', insights.ach_identifier],
+    ['area_name', insights.area_name],
+    ['place_type', insights.place_type],
+    ['latitude', insights.latitude],
+    ['longitude', insights.longitude],
+    ['risk_level', insights.risk_level],
+    ['risk_score', insights.risk_score],
+    ['site_priority_level', insights.site_priority_level],
+    ['site_priority_score', insights.site_priority_score],
+    ['site_vulnerability_score', insights.site_vulnerability_score],
+    ['hazard_level', insights.hazard_level],
+    ['hazard_score', insights.hazard_score],
+    ['slope_deg', insights.slope_deg],
+    ['fuel_code', insights.fuel_code],
+    ['fuel_label', insights.fuel_label],
+    ['fire_year', insights.fire_year],
+    ['fire_type', insights.fire_type],
+    ['granite_score', insights.granite_score],
+    ['granite_level', insights.granite_level],
+  ]
+
+  const csv = [
+    fields.map(([key]) => csvCell(key)).join(','),
+    fields.map(([, value]) => csvCell(value)).join(','),
+  ].join('\r\n')
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+  const objectUrl = window.URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = objectUrl
+  anchor.download = `${fileSafeName(insights.site_name ?? insights.site_id)}-site-insights.csv`
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  window.URL.revokeObjectURL(objectUrl)
+}
+
 export function HeritageSiteInsights({
   onBackToMap,
   recordedSiteData,
@@ -242,7 +300,11 @@ export function HeritageSiteInsights({
       ) : null}
 
       <section className="si-layout">
-        <InsightSidebar insights={insights} onBackToMap={onBackToMap} />
+        <InsightSidebar
+          insights={insights}
+          onExportSite={insights ? () => downloadCurrentSiteCsv(insights) : undefined}
+          onBackToMap={onBackToMap}
+        />
 
         <main className="si-main">
           {insights ? (
