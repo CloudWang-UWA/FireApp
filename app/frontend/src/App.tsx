@@ -732,7 +732,7 @@ const aboutPage = currentUser ? (
     {topbar}
     <section className="map-body map-body--profile">
       <section className="profile-view">
-        <div className="profile-card">
+        <div className="profile-card profile-card--wide">
           <AboutPage />
           <div className="profile-actions">
             <button className="secondary-button" onClick={() => navigate('/app')} type="button">
