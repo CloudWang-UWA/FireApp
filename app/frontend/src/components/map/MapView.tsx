@@ -68,8 +68,14 @@ function MapBoundsTracker({
   return null
 }
 
-function getPriorityColor(level: unknown) {
-  // Stop-light risk colours: high = red, medium = yellow/orange, low = green.
+function getPriorityColor(level: unknown, useColourBlindRiskColours: boolean) {
+  if (useColourBlindRiskColours) {
+    if (level === 3) return '#cc79a7'
+    if (level === 2) return '#e69f00'
+    if (level === 1) return '#0072b2'
+    return '#d9d9d9'
+  }
+
   if (level === 3) return '#d73027'
   if (level === 2) return '#f59e0b'
   if (level === 1) return '#22c55e'
@@ -81,12 +87,14 @@ export function MapView({
   basemap,
   layers,
   visibleLayers,
+  useColourBlindRiskColours,
   onBoundsChange,
   onViewSiteInsights,
 }: {
   basemap: BasemapKey
   layers: LayerStateMap
   visibleLayers: Record<LayerKey, boolean>
+  useColourBlindRiskColours: boolean
   onBoundsChange: (bounds: ExportBounds) => void
   onViewSiteInsights?: (selection: {
     layerKey: LayerKey
@@ -180,13 +188,16 @@ export function MapView({
 
           return (
             <GeoJSON
-              key={key}
+              key={`${key}-${useColourBlindRiskColours ? 'accessible' : 'default'}`}
               data={data}
               pane={layerPaneMap[key]}
               style={(feature) => {
                 if (key === 'precaution_zone') {
                   const level = feature?.properties?.precaution_zone_level
-                  const fillColor = getPriorityColor(level)
+                  const fillColor = getPriorityColor(
+                    level,
+                    useColourBlindRiskColours,
+                  )
 
                   return {
                     color: 'transparent',
@@ -198,7 +209,10 @@ export function MapView({
 
                 if (key === 'recorded_site_priority') {
                   const level = feature?.properties?.recorded_site_priority_level
-                  const fillColor = getPriorityColor(level)
+                  const fillColor = getPriorityColor(
+                    level,
+                    useColourBlindRiskColours,
+                  )
 
                   return {
                     color: fillColor,
@@ -210,7 +224,10 @@ export function MapView({
 
                 if (key === 'uploaded_site_priority') {
                   const level = feature?.properties?.site_priority_level
-                  const fillColor = getPriorityColor(level)
+                  const fillColor = getPriorityColor(
+                    level,
+                    useColourBlindRiskColours,
+                  )
 
                   return {
                     color: fillColor,
@@ -229,23 +246,35 @@ export function MapView({
                   fillOpacity: 0.12,
                 }
               }}
-              pointToLayer={(_feature, latlng: LatLng) =>
-                L.circleMarker(latlng, {
+              pointToLayer={(_feature, latlng: LatLng) => {
+                const priorityLevel =
+                  key === 'recorded_site_priority'
+                    ? _feature?.properties?.recorded_site_priority_level
+                    : key === 'uploaded_site_priority'
+                      ? _feature?.properties?.site_priority_level
+                      : null
+                const riskColor =
+                  priorityLevel == null
+                    ? null
+                    : getPriorityColor(priorityLevel, useColourBlindRiskColours)
+
+                return L.circleMarker(latlng, {
                   pane: layerPaneMap[key],
                   radius: 6,
-                  color: key === 'uploaded_site_priority' ? '#8c510a' : (color ?? '#6b7280'),
-                  fillColor:
-                    key === 'uploaded_site_priority'
-                      ? getPriorityColor(
-                          _feature?.properties?.site_priority_level,
-                        )
-                      : (color ?? '#6b7280'),
+                  color: riskColor ?? color ?? '#6b7280',
+                  fillColor: riskColor ?? color ?? '#6b7280',
                   fillOpacity: 0.8,
                   weight: 1,
                 })
-              }
+              }}
               onEachFeature={(feature: GeoJSON.Feature, layer: LeafletLayer) => {
-                layer.bindPopup(buildPopupContent(key, feature.properties))
+                layer.bindPopup(
+                  buildPopupContent(
+                    key,
+                    feature.properties,
+                    useColourBlindRiskColours,
+                  ),
+                )
                 layer.on('popupopen', (event) => {
                   const popupElement = event.popup.getElement()
                   const link = popupElement?.querySelector<HTMLAnchorElement>(
