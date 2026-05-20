@@ -49,12 +49,12 @@ export const LAYER_CONFIG: Array<{
   },
   {
     key: 'fuel',
-    label: 'Fuel (overlay)',
+    label: 'Fuel',
     kind: 'image_overlay',
   },
   {
     key: 'slope',
-    label: 'Slope (overlay)',
+    label: 'Slope',
     kind: 'image_overlay',
   },
 ]

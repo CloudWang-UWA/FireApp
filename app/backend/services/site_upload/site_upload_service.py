@@ -239,3 +239,19 @@ def save_uploaded_site_photo(site_id: int, user_id: int, photo: FileStorage) -> 
     return {
         "site": uploaded_site.to_dict(),
     }
+
+
+def delete_uploaded_site(site_id: int) -> dict:
+    uploaded_site = db.session.get(UploadedSite, site_id)
+    if uploaded_site is None:
+        abort(404, description="Uploaded site was not found")
+
+    photo_path = BACKEND_DIR / uploaded_site.photo_path if uploaded_site.photo_path else None
+
+    db.session.delete(uploaded_site)
+    db.session.commit()
+
+    if photo_path is not None and photo_path.exists():
+        photo_path.unlink()
+
+    return {"message": "Uploaded site deleted"}

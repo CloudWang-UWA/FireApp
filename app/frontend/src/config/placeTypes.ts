@@ -17,7 +17,6 @@ export const PLACE_TYPE_OPTIONS = [
   'Mission',
   'Modified Tree',
   'Ochre',
-  'Other',
   'Painting',
   'Plant Resource',
   'Quarry',
@@ -29,6 +28,7 @@ export const PLACE_TYPE_OPTIONS = [
   'Sub surface cultural material',
   'Traditional Structure',
   'Water Source',
+  'Other',
 ] as const
 
 export type PlaceTypeOption = (typeof PLACE_TYPE_OPTIONS)[number]

@@ -23,6 +23,7 @@ import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
 import { SiteUpload } from './components/site-upload/SiteUpload'
 import { HeritageSiteInsights } from './components/resources/HeritageSiteInsights'
+import { SiteOverview } from './components/site-overview/SiteOverview'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
 import { fetchLayer, fetchOverlay } from './api/layers'
@@ -322,14 +323,68 @@ function App() {
   }
 
   const loginPage = (
-    <main className="auth-shell">
+    <main className="auth-shell auth-shell--login">
+      <div className="auth-background-brand" aria-hidden="true">
+        <p>Heritage Fire Watch</p>
+        <span>Albany, WA Region</span>
+      </div>
+      <div className="auth-background-panel" aria-label="Project information">
+        <div className="auth-background-logos">
+          <div className="auth-partner-row">
+            <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
+            <div>
+              <strong>Wagyl Kaip Southern Noongar</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+          <div className="auth-partner-row">
+            <img
+              src="/logos/uwa-university-perth-seeklogo.png"
+              alt="University of Western Australia logo"
+            />
+            <div>
+              <strong>University of Western Australia</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p>
+            Developed with Wagyl Kaip Southern Noongar (WKSN) Aboriginal
+            Corporation and The University of Western Australia.
+          </p>
+          <p>This app respects ICIP and IDaS principles.</p>
+          <p>
+            Authorised use only. Sensitive heritage information should not be
+            misused, redistributed, or made publicly available without permission.
+          </p>
+        </div>
+      </div>
+      <p className="auth-copyright">
+        &copy; 2026 Heritage Fire Watch · Albany, WA Region
+        <br />
+        Heritage images sourced from the City of Albany
+        Aboriginal Cultural Heritage page.
+      </p>
+      <div className="auth-background-images" aria-hidden="true">
+        <img
+          src="/images/heritage-thumbnails/Heritage_Tamungup__Kalgan_Rivermouth.jpg"
+          alt=""
+        />
+        <img
+          src="/images/heritage-thumbnails/Heritage_Kep_Mardjit__Vancouver_Spring.jpg"
+          alt=""
+        />
+        <img
+          src="/images/heritage-thumbnails/Heritage_Manitchpurting__rocky_outcrop_NW_of_Mt_Melville_summit__jpg.png"
+          alt=""
+        />
+      </div>
       <section className="auth-gate-card">
         <div className="auth-gate-copy">
-          <p className="eyebrow">Heritage Fire Watch</p>
-          <h1>Sign in to continue</h1>
+          <h1>Heritage Fire Watch</h1>
           <p className="intro">
-            Access the heritage fire vulnerability map by signing in with your
-            account first.
+            Sign in to access Heritage Fire Watch and view heritage site fire vulnerability information.
           </p>
         </div>
 
@@ -378,6 +433,14 @@ function App() {
             type="button"
           >
             Risk Map
+          </button>
+
+          <button
+            className={isActive('/sites') ? 'topbar-nav is-active' : 'topbar-nav'}
+            onClick={() => navigate('/sites')}
+            type="button"
+          >
+            Site Overview
           </button>
 
           <button
@@ -498,7 +561,45 @@ function App() {
     ) : null
 
   const pendingPage = currentUser ? (
-    <main className="auth-shell">
+    <main className="auth-shell auth-shell--login auth-shell--pending">
+      <div className="auth-background-panel" aria-label="Project information">
+        <div className="auth-background-logos">
+          <div className="auth-partner-row">
+            <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
+            <div>
+              <strong>Wagyl Kaip Southern Noongar</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+          <div className="auth-partner-row">
+            <img
+              src="/logos/uwa-university-perth-seeklogo.png"
+              alt="University of Western Australia logo"
+            />
+            <div>
+              <strong>University of Western Australia</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p>
+            Developed with Wagyl Kaip Southern Noongar (WKSN) Aboriginal
+            Corporation and The University of Western Australia.
+          </p>
+          <p>This app respects ICIP and IDaS principles.</p>
+          <p>
+            Authorised use only. Sensitive heritage information should not be
+            misused, redistributed, or made publicly available without permission.
+          </p>
+        </div>
+      </div>
+      <p className="auth-copyright">
+        &copy; 2026 Heritage Fire Watch · Albany, WA Region
+        <br />
+        Heritage images and place names sourced from the City of Albany
+        Aboriginal Cultural Heritage page.
+      </p>
       <section className="auth-gate-card auth-gate-card--compact">
         <div className="auth-gate-copy">
           <p className="eyebrow">Account pending</p>
@@ -508,12 +609,14 @@ function App() {
           </p>
         </div>
 
-        <div className="status-card">
-          <p className="auth-user-name">{currentUser.displayName}</p>
-          <p className="auth-user-email">{currentUser.email}</p>
-          <p className="auth-user-role">
-            Role: <strong>{currentUser.role}</strong>
-          </p>
+        <div className="status-card pending-account-card">
+          <div>
+            <p className="auth-user-name">{currentUser.displayName}</p>
+            <p className="auth-user-email">{currentUser.email}</p>
+            <p className="auth-user-role">
+              Status: <strong>{currentUser.role}</strong>
+            </p>
+          </div>
 
           <button
             className="primary-button danger-button"
@@ -541,6 +644,26 @@ function App() {
       </section>
     </main>
   ) : null
+
+const siteOverviewPage = currentUser ? (
+  <main className="map-shell">
+    {topbar}
+    <section className="map-body map-body--overview">
+      <section className="map-stage map-stage--overview">
+        <SiteOverview
+          authToken={authToken}
+          currentUser={currentUser}
+          layers={layers}
+          onDeleteUploadedSite={() => loadMapLayer('uploaded_site_priority')}
+          onViewSite={(selection) => {
+            setSelectedInsightFeature(selection)
+            navigate('/resources/heritage-site-insights')
+          }}
+        />
+      </section>
+    </section>
+  </main>
+) : null
 
 const heritageSiteInsightsPage = currentUser ? (
   <main className="map-shell">
@@ -587,6 +710,7 @@ return (
     aboutPage={aboutPage}
     adminPage={adminPage}
     siteUploadPage={siteUploadPage}
+    siteOverviewPage={siteOverviewPage}
     heritageSiteInsightsPage={heritageSiteInsightsPage}
     />
   )

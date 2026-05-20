@@ -76,3 +76,14 @@ export async function deleteUser(token: string, userId: number) {
 
   return parseAdminResponse(response)
 }
+
+export async function deleteUploadedSite(token: string, siteId: number) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/uploaded-sites/${siteId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  return parseAdminResponse(response)
+}

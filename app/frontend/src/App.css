@@ -1,15 +1,125 @@
 .auth-shell {
+  position: relative;
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 1.5rem;
+  overflow: hidden;
   background:
     radial-gradient(circle at top left, rgba(245, 210, 160, 0.34), transparent 24%),
     radial-gradient(circle at bottom right, rgba(53, 92, 154, 0.18), transparent 24%),
     linear-gradient(135deg, #f6f0e4 0%, #eef3eb 48%, #e7eef6 100%);
 }
 
+.auth-shell--login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(16, 28, 24, 0.76), rgba(16, 28, 24, 0.34) 46%, rgba(16, 28, 24, 0.62)),
+    linear-gradient(180deg, rgba(16, 28, 24, 0.16), rgba(16, 28, 24, 0.74));
+  pointer-events: none;
+}
+
+.auth-shell--login {
+  background:
+    linear-gradient(135deg, rgba(17, 63, 58, 0.12), rgba(20, 63, 59, 0.16)),
+    url('/images/heritage-thumbnails/Heritage_Tamungup__Kalgan_Rivermouth.jpg') center / cover no-repeat;
+}
+
+.auth-shell--login .auth-gate-card {
+  width: min(100%, 1040px);
+  transform: translateY(-4.8rem);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.auth-shell--login .auth-gate-copy {
+  align-self: center;
+  color: #fffaf3;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.34);
+}
+
+.auth-shell--login .eyebrow {
+  color: rgba(255, 232, 204, 0.92);
+}
+
+.auth-shell--login .auth-gate-copy h1 {
+  color: #fffaf3;
+  font-size: clamp(3rem, 5vw, 4.9rem);
+  max-width: 7.5ch;
+}
+
+.auth-shell--login .intro {
+  color: rgba(255, 250, 243, 0.88);
+  max-width: 38ch;
+  font-size: 1.05rem;
+}
+
+.auth-shell--login .status-card {
+  background: rgba(255, 252, 247, 0.94);
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.auth-shell--pending .auth-gate-card--compact {
+  width: min(100%, 600px);
+  display: grid;
+  grid-template-columns: 1fr;
+  background: rgba(255, 252, 247, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.auth-shell--pending .auth-gate-copy {
+  color: #2c2118;
+  text-shadow: none;
+}
+
+.auth-shell--pending .auth-gate-copy h1 {
+  color: #2c2118;
+  font-size: clamp(2rem, 4vw, 3rem);
+  max-width: none;
+}
+
+.auth-shell--pending .eyebrow {
+  color: #84553a;
+}
+
+.auth-shell--pending .intro {
+  color: #50453e;
+  max-width: none;
+}
+
+.pending-account-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pending-account-card .auth-user-role strong {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(212, 138, 70, 0.16);
+  color: #8a4a18;
+  font-size: 0.86rem;
+}
+
+.pending-account-card .danger-button {
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
 .auth-gate-card {
+  position: relative;
+  z-index: 2;
   width: min(100%, 920px);
   display: grid;
   grid-template-columns: minmax(260px, 1fr) minmax(320px, 420px);
@@ -30,6 +140,129 @@
 
 .auth-gate-copy {
   padding: 0.5rem 0.25rem;
+}
+
+.auth-background-brand {
+  display: none;
+}
+
+.auth-background-brand p {
+  margin: 0;
+  max-width: none;
+  font-size: clamp(1.1rem, 1.8vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.auth-background-brand span {
+  display: block;
+  margin-top: 0.45rem;
+  color: rgba(132, 85, 58, 0.5);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.auth-background-panel {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: clamp(3.2rem, 6vh, 4.6rem);
+  transform: translateX(-50%);
+  width: min(1040px, calc(100vw - 3rem));
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: 1.2rem;
+  align-items: stretch;
+  padding: 0.95rem 1.05rem;
+  border-radius: 18px;
+  background: rgba(18, 32, 28, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 250, 243, 0.78);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.auth-copyright {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 0.85rem;
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(255, 250, 243, 0.68);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.auth-background-panel p {
+  margin: 0;
+}
+
+.auth-background-panel p + p {
+  margin-top: 0.38rem;
+}
+
+.auth-background-logos {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 0;
+}
+
+.auth-partner-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  padding: 0.42rem 0.52rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-partner-row img {
+  width: 62px;
+  height: 46px;
+  object-fit: contain;
+  padding: 0.35rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.auth-partner-row strong,
+.auth-partner-row span {
+  display: block;
+}
+
+.auth-partner-row strong {
+  color: rgba(255, 250, 243, 0.92);
+  font-size: 0.83rem;
+  line-height: 1.2;
+}
+
+.auth-partner-row span {
+  margin-top: 0.15rem;
+  color: rgba(255, 232, 204, 0.72);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.auth-background-images {
+  display: none;
+}
+
+.auth-background-images img {
+  width: 118px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 14px 34px rgba(60, 50, 35, 0.12);
 }
 
 .auth-gate-copy h1,
@@ -249,12 +482,23 @@
   overflow: hidden;
 }
 
+.map-body--overview {
+  grid-template-columns: 1fr;
+  overflow: hidden;
+}
+
 .map-stage--insights {
   height: 100%;
   overflow-y: auto;
 }
 
 .map-stage--upload {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.map-stage--overview {
   height: 100%;
   overflow-y: auto;
   padding: 1rem;
@@ -773,6 +1017,12 @@
   gap: 0.75rem;
 }
 
+.layer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
 .layer-item {
   display: flex;
   align-items: center;
@@ -791,6 +1041,49 @@
   color: #6b625a;
   font-size: 0.84rem;
   text-align: right;
+}
+
+.fuel-legend {
+  margin-left: 1.8rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 12px;
+  background: rgba(20, 63, 59, 0.06);
+  border: 1px solid rgba(20, 63, 59, 0.1);
+}
+
+.fuel-legend p {
+  margin: 0 0 0.45rem;
+  color: #4f5f5c;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.fuel-legend-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 0.55rem;
+}
+
+.fuel-legend-list--single {
+  grid-template-columns: 1fr;
+}
+
+.fuel-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #4d4741;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.fuel-legend-swatch {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex: 0 0 auto;
+  border-radius: 3px;
+  border: 1px solid rgba(44, 33, 24, 0.18);
 }
 
 .summary-list {
@@ -1056,6 +1349,12 @@
   object-fit: cover;
 }
 
+.about-image-credit {
+  margin-top: 0.85rem;
+  color: rgb(111, 136, 134);
+  font-size: 0.86rem;
+}
+
 .logo-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1063,25 +1362,43 @@
   margin-top: 0.85rem;
 }
 
-.logo {
+.partner-card {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.85rem;
   border-radius: 16px;
   padding: 0.85rem;
-  min-height: 130px;
-  text-align: center;
+  min-height: 96px;
   font-size: 0.9rem;
   border: 1px solid rgba(108, 91, 68, 0.14);
   background: #ffffff;
   overflow: hidden;
 }
 
-.logo img {
+.partner-card img {
   display: block;
-  max-width: 100%;
-  max-height: 110px;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
+}
+
+.partner-card h3 {
+  margin: 0;
+}
+
+.partner-card p {
+  margin-top: 0.2rem;
+  color: rgb(111, 136, 134);
+}
+
+.about-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.about-contact-grid p + p {
+  margin-top: 0.28rem;
 }
 
 .placeholder {
