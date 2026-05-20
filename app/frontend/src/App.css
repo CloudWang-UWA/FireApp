@@ -1043,6 +1043,59 @@
   text-align: right;
 }
 
+.display-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  color: #2c2118;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.display-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.display-toggle-track {
+  position: relative;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: rgba(108, 91, 68, 0.18);
+  border: 1px solid rgba(108, 91, 68, 0.18);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.display-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(44, 33, 24, 0.22);
+  transition: transform 0.2s ease;
+}
+
+.display-toggle input:checked + .display-toggle-track {
+  background: rgb(20, 63, 59);
+  border-color: rgb(20, 63, 59);
+}
+
+.display-toggle input:checked + .display-toggle-track .display-toggle-knob {
+  transform: translateX(20px);
+}
+
+.display-toggle input:focus-visible + .display-toggle-track {
+  outline: 3px solid rgba(20, 63, 59, 0.24);
+  outline-offset: 3px;
+}
+
 .fuel-legend {
   margin-left: 1.8rem;
   padding: 0.55rem 0.65rem;

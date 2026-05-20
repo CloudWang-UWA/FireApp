@@ -19,6 +19,7 @@ import { Auth } from './components/auth/Auth'
 import { Profile } from './components/auth/Profile'
 import { Export } from './components/export/Export'
 import { Basemap } from './components/map/Basemap'
+import { DisplayOptions } from './components/map/DisplayOptions'
 import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
 import { SiteUpload } from './components/site-upload/SiteUpload'
@@ -133,6 +134,8 @@ function App() {
     slope: false,
   })
   const [basemap, setBasemap] = useState<BasemapKey>('osm')
+  const [useColourBlindRiskColours, setUseColourBlindRiskColours] =
+    useState(false)
   const [mapBounds, setMapBounds] = useState<ExportBounds | null>(null)
   const [authMode, setAuthMode] = useState<AuthMode>('login')
   const [authToken, setAuthToken] = useState<string>(storedToken)
@@ -558,6 +561,10 @@ function App() {
               setVisibleLayers={setVisibleLayers}
             />
             <Basemap basemap={basemap} setBasemap={setBasemap} />
+            <DisplayOptions
+              useColourBlindRiskColours={useColourBlindRiskColours}
+              setUseColourBlindRiskColours={setUseColourBlindRiskColours}
+            />
             <Export mapBounds={mapBounds} />
           </div>
         </aside>
@@ -567,6 +574,7 @@ function App() {
             basemap={basemap}
             layers={layers}
             visibleLayers={visibleLayers}
+            useColourBlindRiskColours={useColourBlindRiskColours}
             onBoundsChange={setMapBounds}
             onViewSiteInsights={setSelectedInsightFeature}
           />
