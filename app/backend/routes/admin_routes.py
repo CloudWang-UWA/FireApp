@@ -2,6 +2,7 @@ from flask import Blueprint, abort, jsonify, request
 from werkzeug.security import generate_password_hash
 
 from models.user import User, db
+from services.site_upload.site_upload_service import delete_uploaded_site
 from services.auth_service import require_admin
 
 
@@ -88,3 +89,8 @@ def reject_user(user_id: int):
     db.session.commit()
 
     return jsonify({"message": "User deleted"})
+
+
+@admin_bp.delete("/uploaded-sites/<int:site_id>")
+def remove_uploaded_site(site_id: int):
+    return jsonify(delete_uploaded_site(site_id))

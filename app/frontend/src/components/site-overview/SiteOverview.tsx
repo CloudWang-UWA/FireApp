@@ -1,9 +1,14 @@
 import { useMemo, useState } from 'react'
+import { deleteUploadedSite } from '../../api/admin'
 import type { LayerKey, LayerStateMap } from '../../types/map'
+import type { AuthUser } from '../../types/auth'
 import './SiteOverview.css'
 
 type SiteOverviewProps = {
+  authToken: string
+  currentUser: AuthUser
   layers: LayerStateMap
+  onDeleteUploadedSite: () => void
   onViewSite: (selection: {
     layerKey: LayerKey
     feature: GeoJSON.Feature
@@ -77,6 +82,11 @@ function siteName(properties: GeoJSON.GeoJsonProperties, fallbackId: string) {
   )
 }
 
+function numericSiteId(value: string): number | null {
+  const parsed = Number(value)
+  return Number.isInteger(parsed) ? parsed : null
+}
+
 function buildRows(layers: LayerStateMap): SiteRow[] {
   const layerKeys: LayerKey[] = [
     'recorded_site_priority',
@@ -121,11 +131,19 @@ function buildRows(layers: LayerStateMap): SiteRow[] {
   return [...rowsBySite.values()]
 }
 
-export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
+export function SiteOverview({
+  authToken,
+  currentUser,
+  layers,
+  onDeleteUploadedSite,
+  onViewSite,
+}: SiteOverviewProps) {
   const rows = useMemo(() => buildRows(layers), [layers])
   const [searchText, setSearchText] = useState('')
   const [sourceFilter, setSourceFilter] = useState('all')
   const [riskFilter, setRiskFilter] = useState('all')
+  const [deleteError, setDeleteError] = useState('')
+  const [deletingSiteId, setDeletingSiteId] = useState<number | null>(null)
   const sourceOptions: FilterOption[] = [
     { value: 'registered', label: 'ACHIS Registered' },
     { value: 'lodged', label: 'ACHIS Lodged' },
@@ -155,6 +173,32 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
     layers.uploaded_site_priority.isLoading
   const error =
     layers.recorded_site_priority.error || layers.uploaded_site_priority.error
+  const canDeleteUploadedSites = currentUser.role === 'admin'
+
+  async function handleDeleteUploadedSite(row: SiteRow) {
+    const siteId = numericSiteId(row.id)
+    if (siteId === null) {
+      setDeleteError('This uploaded site cannot be deleted because it has no valid ID.')
+      return
+    }
+
+    const confirmed = window.confirm(`Delete uploaded site "${row.name}"?`)
+    if (!confirmed) return
+
+    setDeleteError('')
+    setDeletingSiteId(siteId)
+
+    try {
+      await deleteUploadedSite(authToken, siteId)
+      onDeleteUploadedSite()
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error ? error.message : 'Uploaded site could not be deleted',
+      )
+    } finally {
+      setDeletingSiteId(null)
+    }
+  }
 
   return (
     <section className="site-overview">
@@ -162,9 +206,7 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
         <div>
           <p className="eyebrow">Site overview</p>
           <h1>All Sites</h1>
-          <p className="intro">
-            Recorded and uploaded site priority records in one list.
-          </p>
+          <p className="intro">Showing all recorded and uploaded sites.</p>
         </div>
         <div className="site-overview-count">
           <strong>{filteredRows.length}</strong>
@@ -216,6 +258,7 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
 
       <div className="site-overview-table-wrap">
         {error ? <p className="feedback error">{error}</p> : null}
+        {deleteError ? <p className="feedback error">{deleteError}</p> : null}
 
         <table className="site-overview-table">
           <thead>
@@ -224,7 +267,8 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
               <th>Source</th>
               <th>Risk level</th>
               <th>Place type</th>
-              <th aria-label="Actions" />
+              <th>Insights</th>
+              {canDeleteUploadedSites ? <th>Manage</th> : null}
             </tr>
           </thead>
           <tbody>
@@ -257,6 +301,20 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
                     View insights
                   </button>
                 </td>
+                {canDeleteUploadedSites ? (
+                  <td>
+                    {row.layerKey === 'uploaded_site_priority' ? (
+                        <button
+                          className="secondary-button site-overview-remove"
+                          disabled={deletingSiteId === numericSiteId(row.id)}
+                          onClick={() => void handleDeleteUploadedSite(row)}
+                          type="button"
+                        >
+                          {deletingSiteId === numericSiteId(row.id) ? 'Removing...' : 'Remove'}
+                        </button>
+                    ) : null}
+                  </td>
+                ) : null}
               </tr>
             ))}
           </tbody>

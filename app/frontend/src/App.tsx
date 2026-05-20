@@ -557,7 +557,10 @@ const siteOverviewPage = currentUser ? (
     <section className="map-body map-body--overview">
       <section className="map-stage map-stage--overview">
         <SiteOverview
+          authToken={authToken}
+          currentUser={currentUser}
           layers={layers}
+          onDeleteUploadedSite={() => loadMapLayer('uploaded_site_priority')}
           onViewSite={(selection) => {
             setSelectedInsightFeature(selection)
             navigate('/resources/heritage-site-insights')

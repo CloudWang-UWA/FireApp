@@ -142,6 +142,19 @@
   white-space: nowrap;
 }
 
+.site-overview-remove {
+  white-space: nowrap;
+  color: #b91c1c;
+  border-color: rgba(185, 28, 28, 0.28);
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.site-overview-remove:hover {
+  color: #991b1b;
+  border-color: rgba(185, 28, 28, 0.42);
+  background: rgba(254, 242, 242, 0.92);
+}
+
 .site-overview-empty {
   margin: 0;
   padding: 1.25rem;
