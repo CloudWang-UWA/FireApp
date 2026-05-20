@@ -7,7 +7,13 @@ const FUEL_LEGEND_ITEMS = [
   { code: 510, label: 'Shrubland' },
   { code: 631, label: 'Grassland' },
   { code: 800, label: 'Wetlands' },
-  { code: 950, label: 'Built-up' },
+  { code: 640, label: 'Croplands' },
+]
+
+const SLOPE_LEGEND_ITEMS = [
+  { color: '#3f83be', label: 'Low: 0-5 degrees' },
+  { color: '#f59e0b', label: 'Medium: 5-15 degrees' },
+  { color: '#dc2626', label: 'High: 15+ degrees' },
 ]
 
 function fuelColor(code: number) {
@@ -81,13 +87,30 @@ export function Layers({
 
             {key === 'fuel' && visibleLayers.fuel && layers.fuel.overlay ? (
               <div className="fuel-legend">
-                <p>Common fuel classes</p>
+                <p>Common fuel types</p>
                 <div className="fuel-legend-list">
                   {FUEL_LEGEND_ITEMS.map((item) => (
                     <span className="fuel-legend-item" key={item.code}>
                       <span
                         className="fuel-legend-swatch"
                         style={{ backgroundColor: fuelColor(item.code) }}
+                      />
+                      {item.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {key === 'slope' && visibleLayers.slope && layers.slope.overlay ? (
+              <div className="fuel-legend">
+                <p>Slope degrees</p>
+                <div className="fuel-legend-list fuel-legend-list--single">
+                  {SLOPE_LEGEND_ITEMS.map((item) => (
+                    <span className="fuel-legend-item" key={item.label}>
+                      <span
+                        className="fuel-legend-swatch"
+                        style={{ backgroundColor: item.color }}
                       />
                       {item.label}
                     </span>

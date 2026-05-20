@@ -166,7 +166,7 @@ export function MapView({
                 key={key}
                 url={resolveImageUrl(overlay.image_url)}
                 bounds={overlay.bounds}
-                opacity={0.65}
+                opacity={key === 'slope' ? 1 : 0.65}
                 pane={layerPaneMap[key]}
               />
             )
