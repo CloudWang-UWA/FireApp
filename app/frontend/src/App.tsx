@@ -323,11 +323,63 @@ function App() {
   }
 
   const loginPage = (
-    <main className="auth-shell">
+    <main className="auth-shell auth-shell--login">
+      <div className="auth-background-brand" aria-hidden="true">
+        <p>Heritage Fire Watch</p>
+        <span>Albany, WA Region</span>
+      </div>
+      <div className="auth-background-panel" aria-label="Project information">
+        <div className="auth-background-logos">
+          <div className="auth-partner-row">
+            <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
+            <div>
+              <strong>Wagyl Kaip Southern Noongar</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+          <div className="auth-partner-row">
+            <img
+              src="/logos/uwa-university-perth-seeklogo.png"
+              alt="University of Western Australia logo"
+            />
+            <div>
+              <strong>University of Western Australia</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p>
+            Developed with Wagyl Kaip Southern Noongar (WKSN) Aboriginal
+            Corporation and The University of Western Australia.
+          </p>
+          <p>This app respects ICIP and IDaS principles.</p>
+          <p>
+            Authorised use only. Sensitive heritage information should not be
+            misused, redistributed, or made publicly available without permission.
+          </p>
+        </div>
+      </div>
+      <p className="auth-copyright">
+        &copy; 2026 Heritage Fire Watch · Albany, WA Region
+      </p>
+      <div className="auth-background-images" aria-hidden="true">
+        <img
+          src="/images/heritage-thumbnails/Heritage_Tamungup__Kalgan_Rivermouth.jpg"
+          alt=""
+        />
+        <img
+          src="/images/heritage-thumbnails/Heritage_Kep_Mardjit__Vancouver_Spring.jpg"
+          alt=""
+        />
+        <img
+          src="/images/heritage-thumbnails/Heritage_Manitchpurting__rocky_outcrop_NW_of_Mt_Melville_summit__jpg.png"
+          alt=""
+        />
+      </div>
       <section className="auth-gate-card">
         <div className="auth-gate-copy">
-          <p className="eyebrow">Heritage Fire Watch</p>
-          <h1>Sign in to continue</h1>
+          <h1>Heritage Fire Watch</h1>
           <p className="intro">
             Access the heritage fire vulnerability map by signing in with your
             account first.
