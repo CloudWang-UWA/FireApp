@@ -29,7 +29,7 @@
 
 .auth-shell--login .auth-gate-card {
   width: min(100%, 1040px);
-  transform: translateY(-3.25rem);
+  transform: translateY(-4.8rem);
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -116,7 +116,7 @@
   position: absolute;
   z-index: 1;
   left: 50%;
-  bottom: clamp(2.5rem, 5vh, 3.8rem);
+  bottom: clamp(3.2rem, 6vh, 4.6rem);
   transform: translateX(-50%);
   width: min(1040px, calc(100vw - 3rem));
   display: grid;
@@ -143,6 +143,7 @@
   margin: 0;
   color: rgba(255, 250, 243, 0.68);
   font-size: 0.76rem;
+  line-height: 1.35;
   text-align: center;
 }
 

@@ -362,6 +362,9 @@ function App() {
       </div>
       <p className="auth-copyright">
         &copy; 2026 Heritage Fire Watch · Albany, WA Region
+        <br />
+        Heritage images sourced from the City of Albany
+        Aboriginal Cultural Heritage page.
       </p>
       <div className="auth-background-images" aria-hidden="true">
         <img
@@ -381,8 +384,7 @@ function App() {
         <div className="auth-gate-copy">
           <h1>Heritage Fire Watch</h1>
           <p className="intro">
-            Access the heritage fire vulnerability map by signing in with your
-            account first.
+            Sign in to access Heritage Fire Watch and view heritage site fire vulnerability information.
           </p>
         </div>
 
