@@ -2,9 +2,9 @@ import { LAYER_CONFIG } from '../../config/map'
 import type { LayerKey, LayerStateMap } from '../../types/map'
 
 const FUEL_LEGEND_ITEMS = [
-  { code: 230, label: 'Low open forest' },
-  { code: 423, label: 'Woodland, grassy understory' },
-  { code: 510, label: 'Tall shrubland' },
+  { code: 230, label: 'Forest' },
+  { code: 423, label: 'Woodland' },
+  { code: 510, label: 'Shrubland' },
   { code: 631, label: 'Grassland' },
   { code: 800, label: 'Wetlands' },
   { code: 950, label: 'Built-up' },
