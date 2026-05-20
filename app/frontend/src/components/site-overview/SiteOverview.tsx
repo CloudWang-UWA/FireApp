@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import type { LayerKey, LayerStateMap } from '../../types/map'
 import './SiteOverview.css'
 
@@ -12,11 +13,18 @@ type SiteOverviewProps = {
 type SiteRow = {
   id: string
   name: string
+  sourceKey: string
   source: string
+  riskKey: string
   placeType: string
   riskLevel: string
   layerKey: LayerKey
   feature: GeoJSON.Feature
+}
+
+type FilterOption = {
+  value: string
+  label: string
 }
 
 function text(value: unknown): string {
@@ -24,25 +32,31 @@ function text(value: unknown): string {
   return String(value).trim()
 }
 
-function levelLabel(value: unknown): string {
+function levelInfo(value: unknown) {
   const level = Number(value)
 
-  if (level === 3) return 'High'
-  if (level === 2) return 'Medium'
-  if (level === 1) return 'Low'
+  if (level === 3) return { key: 'high', label: 'High' }
+  if (level === 2) return { key: 'medium', label: 'Medium' }
+  if (level === 1) return { key: 'low', label: 'Low' }
 
-  return text(value) || 'Unknown'
+  return { key: 'unknown', label: 'Unknown' }
 }
 
-function sourceLabel(value: unknown, layerKey: LayerKey): string {
-  if (layerKey === 'uploaded_site_priority') return 'Uploaded'
+function riskClassName(level: string): string {
+  return level.toLowerCase().replace(/\s+/g, '-')
+}
+
+function sourceInfo(value: unknown, layerKey: LayerKey) {
+  if (layerKey === 'uploaded_site_priority') {
+    return { key: 'uploaded', label: 'Uploaded' }
+  }
 
   const source = text(value).toLowerCase()
-  if (source === 'registered') return 'ACHIS Registered'
-  if (source === 'lodged') return 'ACHIS Lodged'
-  if (source === 'council') return 'Council'
+  if (source === 'registered') return { key: 'registered', label: 'ACHIS Registered' }
+  if (source === 'lodged') return { key: 'lodged', label: 'ACHIS Lodged' }
+  if (source === 'council') return { key: 'council', label: 'Council' }
 
-  return text(value) || 'Recorded'
+  return { key: source || 'recorded', label: text(value) || 'Recorded' }
 }
 
 function siteId(properties: GeoJSON.GeoJsonProperties, fallback: number) {
@@ -68,34 +82,74 @@ function buildRows(layers: LayerStateMap): SiteRow[] {
     'recorded_site_priority',
     'uploaded_site_priority',
   ]
+  const rowsBySite = new Map<string, SiteRow>()
 
-  return layerKeys.flatMap((layerKey) => {
+  layerKeys.forEach((layerKey) => {
     const features = layers[layerKey].geojson?.features ?? []
 
-    return features.map((feature, index) => {
+    features.forEach((feature, index) => {
       const properties = feature.properties ?? {}
       const id = siteId(properties, index)
       const isUploaded = layerKey === 'uploaded_site_priority'
+      const source = sourceInfo(properties.source, layerKey)
+      const risk = levelInfo(
+        isUploaded
+          ? properties.site_priority_level
+          : properties.recorded_site_priority_level,
+      )
+      const rowKey = `${layerKey}-${source.key}-${id}`
 
-      return {
+      const row = {
         id,
         name: siteName(properties, id),
-        source: sourceLabel(properties.source, layerKey),
+        sourceKey: source.key,
+        source: source.label,
         placeType: text(properties.place_type) || 'Not specified',
-        riskLevel: levelLabel(
-          isUploaded
-            ? properties.site_priority_level
-            : properties.recorded_site_priority_level,
-        ),
+        riskKey: risk.key,
+        riskLevel: risk.label,
         layerKey,
         feature,
       }
+      const existing = rowsBySite.get(rowKey)
+
+      if (!existing || (existing.riskKey === 'unknown' && row.riskKey !== 'unknown')) {
+        rowsBySite.set(rowKey, row)
+      }
     })
   })
+
+  return [...rowsBySite.values()]
 }
 
 export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
-  const rows = buildRows(layers)
+  const rows = useMemo(() => buildRows(layers), [layers])
+  const [searchText, setSearchText] = useState('')
+  const [sourceFilter, setSourceFilter] = useState('all')
+  const [riskFilter, setRiskFilter] = useState('all')
+  const sourceOptions: FilterOption[] = [
+    { value: 'registered', label: 'ACHIS Registered' },
+    { value: 'lodged', label: 'ACHIS Lodged' },
+    { value: 'council', label: 'Council' },
+    { value: 'uploaded', label: 'Uploaded' },
+  ].filter((option) => rows.some((row) => row.sourceKey === option.value))
+  const riskOptions: FilterOption[] = [
+    { value: 'high', label: 'High' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'low', label: 'Low' },
+    { value: 'unknown', label: 'Unknown' },
+  ]
+  const filteredRows = rows.filter((row) => {
+    const query = searchText.trim().toLowerCase()
+    const matchesSearch =
+      !query ||
+      row.name.toLowerCase().includes(query) ||
+      row.id.toLowerCase().includes(query) ||
+      row.placeType.toLowerCase().includes(query)
+    const matchesSource = sourceFilter === 'all' || row.sourceKey === sourceFilter
+    const matchesRisk = riskFilter === 'all' || row.riskKey === riskFilter
+
+    return matchesSearch && matchesSource && matchesRisk
+  })
   const isLoading =
     layers.recorded_site_priority.isLoading ||
     layers.uploaded_site_priority.isLoading
@@ -113,10 +167,52 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
           </p>
         </div>
         <div className="site-overview-count">
-          <strong>{rows.length}</strong>
-          <span>sites</span>
+          <strong>{filteredRows.length}</strong>
+          <span>{filteredRows.length === rows.length ? 'sites' : `of ${rows.length}`}</span>
         </div>
       </header>
+
+      <section className="site-overview-filters" aria-label="Site filters">
+        <label className="field">
+          Search
+          <input
+            onChange={(event) => setSearchText(event.target.value)}
+            placeholder="Name, site ID, or place type"
+            type="search"
+            value={searchText}
+          />
+        </label>
+
+        <label className="field">
+          Source
+          <select
+            onChange={(event) => setSourceFilter(event.target.value)}
+            value={sourceFilter}
+          >
+            <option value="all">All sources</option>
+            {sourceOptions.map((source) => (
+              <option key={source.value} value={source.value}>
+                {source.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="field">
+          Risk level
+          <select
+            onChange={(event) => setRiskFilter(event.target.value)}
+            value={riskFilter}
+          >
+            <option value="all">All risk levels</option>
+            {riskOptions.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </section>
 
       <div className="site-overview-table-wrap">
         {error ? <p className="feedback error">{error}</p> : null}
@@ -132,7 +228,7 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {filteredRows.map((row) => (
               <tr key={`${row.layerKey}-${row.id}`}>
                 <td>
                   <strong>{row.name}</strong>
@@ -141,7 +237,7 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
                 <td>{row.source}</td>
                 <td>
                   <span
-                    className={`risk-pill risk-pill--${row.riskLevel.toLowerCase()}`}
+                    className={`risk-pill risk-pill--${riskClassName(row.riskLevel)}`}
                   >
                     {row.riskLevel}
                   </span>
@@ -168,6 +264,10 @@ export function SiteOverview({ layers, onViewSite }: SiteOverviewProps) {
 
         {!isLoading && rows.length === 0 ? (
           <p className="site-overview-empty">No sites available yet.</p>
+        ) : null}
+
+        {!isLoading && rows.length > 0 && filteredRows.length === 0 ? (
+          <p className="site-overview-empty">No sites match these filters.</p>
         ) : null}
 
         {isLoading ? (
