@@ -12,6 +12,7 @@ export function AppRoutes({
   aboutPage,
   adminPage,
   siteUploadPage,
+  siteOverviewPage,
   heritageSiteInsightsPage,
 }: {
   currentUser: AuthUser | null
@@ -23,6 +24,7 @@ export function AppRoutes({
   aboutPage: ReactNode
   adminPage?: ReactNode
   siteUploadPage: ReactNode
+  siteOverviewPage: ReactNode
   heritageSiteInsightsPage: ReactNode
 }) {
   if (isAuthLoading) {
@@ -87,6 +89,17 @@ export function AppRoutes({
           currentUser
             ? canAccessApp
               ? siteUploadPage
+              : pendingPage
+            : <Navigate replace to="/login" />
+        }
+      />
+
+      <Route
+        path="/sites"
+        element={
+          currentUser
+            ? canAccessApp
+              ? siteOverviewPage
               : pendingPage
             : <Navigate replace to="/login" />
         }

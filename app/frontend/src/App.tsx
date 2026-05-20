@@ -23,6 +23,7 @@ import { Layers } from './components/map/Layers'
 import { MapView } from './components/map/MapView'
 import { SiteUpload } from './components/site-upload/SiteUpload'
 import { HeritageSiteInsights } from './components/resources/HeritageSiteInsights'
+import { SiteOverview } from './components/site-overview/SiteOverview'
 import { LAYER_CONFIG } from './config/map'
 import { AppRoutes } from './routes/AppRoutes'
 import { fetchLayer, fetchOverlay } from './api/layers'
@@ -381,6 +382,14 @@ function App() {
           </button>
 
           <button
+            className={isActive('/sites') ? 'topbar-nav is-active' : 'topbar-nav'}
+            onClick={() => navigate('/sites')}
+            type="button"
+          >
+            Site Overview
+          </button>
+
+          <button
             className={
               isActive('/resources/heritage-site-insights')
                 ? 'topbar-nav is-active'
@@ -542,6 +551,23 @@ function App() {
     </main>
   ) : null
 
+const siteOverviewPage = currentUser ? (
+  <main className="map-shell">
+    {topbar}
+    <section className="map-body map-body--overview">
+      <section className="map-stage map-stage--overview">
+        <SiteOverview
+          layers={layers}
+          onViewSite={(selection) => {
+            setSelectedInsightFeature(selection)
+            navigate('/resources/heritage-site-insights')
+          }}
+        />
+      </section>
+    </section>
+  </main>
+) : null
+
 const heritageSiteInsightsPage = currentUser ? (
   <main className="map-shell">
     {topbar}
@@ -587,6 +613,7 @@ return (
     aboutPage={aboutPage}
     adminPage={adminPage}
     siteUploadPage={siteUploadPage}
+    siteOverviewPage={siteOverviewPage}
     heritageSiteInsightsPage={heritageSiteInsightsPage}
     />
   )

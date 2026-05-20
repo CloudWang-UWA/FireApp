@@ -249,12 +249,23 @@
   overflow: hidden;
 }
 
+.map-body--overview {
+  grid-template-columns: 1fr;
+  overflow: hidden;
+}
+
 .map-stage--insights {
   height: 100%;
   overflow-y: auto;
 }
 
 .map-stage--upload {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.map-stage--overview {
   height: 100%;
   overflow-y: auto;
   padding: 1rem;
