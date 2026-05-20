@@ -308,7 +308,46 @@ function App() {
 
   if (isAuthLoading && !currentUser) {
     return (
-      <main className="auth-shell">
+      <main className="auth-shell auth-shell--login auth-shell--pending">
+        <div className="auth-background-panel" aria-label="Project information">
+          <div className="auth-background-logos">
+            <div className="auth-partner-row">
+              <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
+              <div>
+                <strong>Wagyl Kaip Southern Noongar</strong>
+                <span>Partner</span>
+              </div>
+            </div>
+            <div className="auth-partner-row">
+              <img
+                src="/logos/uwa-university-perth-seeklogo.png"
+                alt="University of Western Australia logo"
+              />
+              <div>
+                <strong>University of Western Australia</strong>
+                <span>Partner</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p>
+              Developed with Wagyl Kaip Southern Noongar (WKSN) Aboriginal
+              Corporation and The University of Western Australia.
+            </p>
+            <p>This app respects ICIP and IDaS principles.</p>
+            <p>
+              Authorised use only. Sensitive heritage information should not be
+              misused, redistributed, or made publicly available without
+              permission.
+            </p>
+          </div>
+        </div>
+        <p className="auth-copyright">
+          &copy; 2026 Heritage Fire Watch · Albany, WA Region
+          <br />
+          Heritage images and place names sourced from the City of Albany
+          Aboriginal Cultural Heritage page.
+        </p>
         <section className="auth-gate-card auth-gate-card--compact">
           <p className="eyebrow">Heritage Fire Watch</p>
           <h1>{authToken ? 'Checking your session' : 'Signing you in'}</h1>
