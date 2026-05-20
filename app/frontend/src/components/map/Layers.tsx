@@ -1,6 +1,23 @@
 import { LAYER_CONFIG } from '../../config/map'
 import type { LayerKey, LayerStateMap } from '../../types/map'
 
+const FUEL_LEGEND_ITEMS = [
+  { code: 230, label: 'Low open forest' },
+  { code: 423, label: 'Woodland, grassy understory' },
+  { code: 510, label: 'Tall shrubland' },
+  { code: 631, label: 'Grassland' },
+  { code: 800, label: 'Wetlands' },
+  { code: 950, label: 'Built-up' },
+]
+
+function fuelColor(code: number) {
+  const red = ((code * 37) % 180) + 50
+  const green = ((code * 67) % 180) + 50
+  const blue = ((code * 97) % 180) + 50
+
+  return `rgb(${red}, ${green}, ${blue})`
+}
+
 // Layer control panel for toggling map layers
 export function Layers({
   layers,
@@ -42,24 +59,43 @@ export function Layers({
       <div className="layer-list">
         {/* Render available layers from configuration */}
         {LAYER_CONFIG.map(({ key, label }) => (
-          <label className="layer-item" key={key}>
-            <span className="layer-toggle">
-              <input
-                type="checkbox"
-                checked={visibleLayers[key]}
-                onChange={() =>
-                  setVisibleLayers((current) => ({
-                    ...current,
-                    [key]: !current[key],
-                  }))
-                }
-              />
-              <span>{label}</span>
-            </span>
-            {getLayerMeta(key) ? (
-              <span className="layer-meta">{getLayerMeta(key)}</span>
+          <div className="layer-group" key={key}>
+            <label className="layer-item">
+              <span className="layer-toggle">
+                <input
+                  type="checkbox"
+                  checked={visibleLayers[key]}
+                  onChange={() =>
+                    setVisibleLayers((current) => ({
+                      ...current,
+                      [key]: !current[key],
+                    }))
+                  }
+                />
+                <span>{label}</span>
+              </span>
+              {getLayerMeta(key) ? (
+                <span className="layer-meta">{getLayerMeta(key)}</span>
+              ) : null}
+            </label>
+
+            {key === 'fuel' && visibleLayers.fuel && layers.fuel.overlay ? (
+              <div className="fuel-legend">
+                <p>Common fuel classes</p>
+                <div className="fuel-legend-list">
+                  {FUEL_LEGEND_ITEMS.map((item) => (
+                    <span className="fuel-legend-item" key={item.code}>
+                      <span
+                        className="fuel-legend-swatch"
+                        style={{ backgroundColor: fuelColor(item.code) }}
+                      />
+                      {item.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
             ) : null}
-          </label>
+          </div>
         ))}
       </div>
     </div>
