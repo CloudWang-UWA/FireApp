@@ -188,7 +188,7 @@ export function MapView({
 
           return (
             <GeoJSON
-              key={key}
+              key={`${key}-${useColourBlindRiskColours ? 'accessible' : 'default'}`}
               data={data}
               pane={layerPaneMap[key]}
               style={(feature) => {
@@ -268,7 +268,13 @@ export function MapView({
                 })
               }}
               onEachFeature={(feature: GeoJSON.Feature, layer: LeafletLayer) => {
-                layer.bindPopup(buildPopupContent(key, feature.properties))
+                layer.bindPopup(
+                  buildPopupContent(
+                    key,
+                    feature.properties,
+                    useColourBlindRiskColours,
+                  ),
+                )
                 layer.on('popupopen', (event) => {
                   const popupElement = event.popup.getElement()
                   const link = popupElement?.querySelector<HTMLAnchorElement>(

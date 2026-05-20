@@ -9,7 +9,7 @@ export function DisplayOptions({
     <div className="status-card">
       <h2>Display</h2>
       <label className="display-toggle">
-        <span>Colour-blind friendly risk colours</span>
+        <span>Colour-blind friendly colours</span>
         <input
           type="checkbox"
           checked={useColourBlindRiskColours}

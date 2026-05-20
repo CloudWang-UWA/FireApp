@@ -52,8 +52,15 @@ function getLevelLabel(level: unknown) {
   return String(level)
 }
 
-function getLevelColor(level: unknown) {
+function getLevelColor(level: unknown, useColourBlindRiskColours = false) {
   const numericLevel = Number(level)
+
+  if (useColourBlindRiskColours) {
+    if (numericLevel === 3) return '#cc79a7'
+    if (numericLevel === 2) return '#e69f00'
+    if (numericLevel === 1) return '#0072b2'
+    return '#4b5563'
+  }
 
   if (numericLevel === 3) return '#d73027'
   if (numericLevel === 2) return '#f59e0b'
@@ -69,12 +76,15 @@ function formatPopupValue(value: unknown) {
   return String(value)
 }
 
-function buildPopupRows(rows: Array<[string, unknown, boolean?]>) {
+function buildPopupRows(
+  rows: Array<[string, unknown, boolean?]>,
+  useColourBlindRiskColours = false,
+) {
   return rows
     .filter(([, value]) => value !== null && value !== undefined && value !== '')
     .map(([label, value, isLevel]) => {
       if (isLevel) {
-        return `<div><strong>${label}:</strong> <span style="color: ${getLevelColor(value)}; font-weight: 700;">${getLevelLabel(value)}</span></div>`
+        return `<div><strong>${label}:</strong> <span style="color: ${getLevelColor(value, useColourBlindRiskColours)}; font-weight: 700;">${getLevelLabel(value)}</span></div>`
       }
 
       return `<div><strong>${label}:</strong> ${formatPopupValue(value)}</div>`
@@ -138,6 +148,7 @@ export function getCombinedLayerBounds(layers: LayerStateMap) {
 export function buildPopupContent(
   layerKey: LayerKey,
   properties: GeoJSON.GeoJsonProperties | null | undefined,
+  useColourBlindRiskColours = false,
 ) {
   if (!properties || Object.keys(properties).length === 0) {
     return '<strong>No properties</strong>'
@@ -173,7 +184,10 @@ export function buildPopupContent(
     const href = achStr
       ? `/resources/heritage-site-insights?siteId=${encodeURIComponent(achStr)}`
       : '/resources/heritage-site-insights'
-    return withInsightsLink(buildPopupRows(rows), href)
+    return withInsightsLink(
+      buildPopupRows(rows, useColourBlindRiskColours),
+      href,
+    )
   }
 
   if (layerKey === 'precaution_zone') {
@@ -182,7 +196,7 @@ export function buildPopupContent(
       ['Risk level', properties.precaution_zone_level, true],
     ]
 
-    return buildPopupRows(rows)
+    return buildPopupRows(rows, useColourBlindRiskColours)
   }
 
   if (layerKey === 'uploaded_site_priority') {
@@ -193,7 +207,10 @@ export function buildPopupContent(
       ['Priority level', properties.site_priority_level, true],
     ]
 
-    return withInsightsLink(buildPopupRows(rows), '/resources/heritage-site-insights')
+    return withInsightsLink(
+      buildPopupRows(rows, useColourBlindRiskColours),
+      '/resources/heritage-site-insights',
+    )
   }
 
   // Keep popups short enough that they do not take over the map.
