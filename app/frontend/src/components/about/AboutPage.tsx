@@ -94,7 +94,7 @@ export function AboutPage() {
             <h3>Sean Winter</h3>
             <p>Cultural and Statutory Fire Coordinator</p>
             <p>Wagyl Kaip Southern Noongar Aboriginal Corporation</p>
-            <p>Email: sean.winter@uwa.edu.au</p>
+            <p>Email: sean.winter@wagylkaip.org.au</p>
           </div>
         </div>
       </section>
@@ -136,6 +136,10 @@ export function AboutPage() {
             <div className="thumbnail-caption">Manitchpurting</div>
           </div>
         </div>
+        <p className="about-image-credit">
+          Heritage images and place names sourced from the City of Albany
+          Aboriginal Cultural Heritage page.
+        </p>
       </section>
     </article>
   )

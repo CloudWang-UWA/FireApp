@@ -561,7 +561,45 @@ function App() {
     ) : null
 
   const pendingPage = currentUser ? (
-    <main className="auth-shell">
+    <main className="auth-shell auth-shell--login auth-shell--pending">
+      <div className="auth-background-panel" aria-label="Project information">
+        <div className="auth-background-logos">
+          <div className="auth-partner-row">
+            <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
+            <div>
+              <strong>Wagyl Kaip Southern Noongar</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+          <div className="auth-partner-row">
+            <img
+              src="/logos/uwa-university-perth-seeklogo.png"
+              alt="University of Western Australia logo"
+            />
+            <div>
+              <strong>University of Western Australia</strong>
+              <span>Partner</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p>
+            Developed with Wagyl Kaip Southern Noongar (WKSN) Aboriginal
+            Corporation and The University of Western Australia.
+          </p>
+          <p>This app respects ICIP and IDaS principles.</p>
+          <p>
+            Authorised use only. Sensitive heritage information should not be
+            misused, redistributed, or made publicly available without permission.
+          </p>
+        </div>
+      </div>
+      <p className="auth-copyright">
+        &copy; 2026 Heritage Fire Watch · Albany, WA Region
+        <br />
+        Heritage images and place names sourced from the City of Albany
+        Aboriginal Cultural Heritage page.
+      </p>
       <section className="auth-gate-card auth-gate-card--compact">
         <div className="auth-gate-copy">
           <p className="eyebrow">Account pending</p>
@@ -571,12 +609,14 @@ function App() {
           </p>
         </div>
 
-        <div className="status-card">
-          <p className="auth-user-name">{currentUser.displayName}</p>
-          <p className="auth-user-email">{currentUser.email}</p>
-          <p className="auth-user-role">
-            Role: <strong>{currentUser.role}</strong>
-          </p>
+        <div className="status-card pending-account-card">
+          <div>
+            <p className="auth-user-name">{currentUser.displayName}</p>
+            <p className="auth-user-email">{currentUser.email}</p>
+            <p className="auth-user-role">
+              Status: <strong>{currentUser.role}</strong>
+            </p>
+          </div>
 
           <button
             className="primary-button danger-button"

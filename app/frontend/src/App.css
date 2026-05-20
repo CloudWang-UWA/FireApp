@@ -65,6 +65,58 @@
   backdrop-filter: blur(12px);
 }
 
+.auth-shell--pending .auth-gate-card--compact {
+  width: min(100%, 600px);
+  display: grid;
+  grid-template-columns: 1fr;
+  background: rgba(255, 252, 247, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.auth-shell--pending .auth-gate-copy {
+  color: #2c2118;
+  text-shadow: none;
+}
+
+.auth-shell--pending .auth-gate-copy h1 {
+  color: #2c2118;
+  font-size: clamp(2rem, 4vw, 3rem);
+  max-width: none;
+}
+
+.auth-shell--pending .eyebrow {
+  color: #84553a;
+}
+
+.auth-shell--pending .intro {
+  color: #50453e;
+  max-width: none;
+}
+
+.pending-account-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pending-account-card .auth-user-role strong {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(212, 138, 70, 0.16);
+  color: #8a4a18;
+  font-size: 0.86rem;
+}
+
+.pending-account-card .danger-button {
+  flex: 0 0 auto;
+  margin-top: 0;
+}
+
 .auth-gate-card {
   position: relative;
   z-index: 2;
@@ -1295,6 +1347,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.about-image-credit {
+  margin-top: 0.85rem;
+  color: rgb(111, 136, 134);
+  font-size: 0.86rem;
 }
 
 .logo-row {
