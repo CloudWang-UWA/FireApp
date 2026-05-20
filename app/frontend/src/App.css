@@ -882,8 +882,14 @@
   gap: 1rem;
   align-content: start;
   color: #2c2118;
-  max-width: 920px;
+  max-width: min(96vw, 1640px);
   margin: 0 auto;
+}
+
+@media (min-width: 1680px) {
+  .site-upload-page {
+    max-width: min(94vw, 1720px);
+  }
 }
 
 .site-upload-header,
