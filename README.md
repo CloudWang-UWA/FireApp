@@ -71,6 +71,8 @@ cd ../..
 
 ### Run Data Processing
 
+If `app/backend/data/` already contains the processed data files, you can skip both **Run Data Processing** and **Run Risk Analysis** and go directly to **Run Backend Locally**.
+
 The ETL pipeline generates processed outputs under:
 
 ```text
@@ -95,6 +97,8 @@ fire-vulnerability-etl --raw-data-dir app/data/raw --output-dir app/data/derived
 ```
 
 ### Run Risk Analysis
+
+If `app/backend/data/` already contains the processed backend data files, skip this step and continue to **Run Backend Locally**.
 
 The main risk layers are precomputed in the backend using the processed spatial datasets, so the frontend can load them directly on the map.
 
