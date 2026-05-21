@@ -339,11 +339,12 @@ function App() {
             </p>
             <p>This app respects ICIP and IDaS principles.</p>
             <p>
-              Authorised use only. Sensitive heritage information should not be
-              misused, redistributed, or made publicly available without
-              permission.
-            </p>
-          </div>
+            Authorised use only. Sensitive heritage information should not be
+            misused, redistributed, or made publicly available without
+            permission.
+          </p>
+          <p>Contact: heritage@wagylkaip.org.au · sean.winter@wagylkaip.org.au</p>
+        </div>
         </div>
         <p className="auth-copyright">
           &copy; 2026 Heritage Fire Watch · Albany, WA Region
@@ -400,6 +401,7 @@ function App() {
             Authorised use only. Sensitive heritage information should not be
             misused, redistributed, or made publicly available without permission.
           </p>
+          <p>Contact: heritage@wagylkaip.org.au · sean.winter@wagylkaip.org.au</p>
         </div>
       </div>
       <p className="auth-copyright">
@@ -630,6 +632,7 @@ function App() {
             Authorised use only. Sensitive heritage information should not be
             misused, redistributed, or made publicly available without permission.
           </p>
+          <p>Contact: heritage@wagylkaip.org.au · sean.winter@wagylkaip.org.au</p>
         </div>
       </div>
       <p className="auth-copyright">
