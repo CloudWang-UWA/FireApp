@@ -5,17 +5,16 @@ export function AboutPage() {
         <p className="about-eyebrow">Heritage Fire Watch</p>
         <h1>About</h1>
         <p className="about-lead">
-          Heritage Fire Watch (Albany, WA Region) is a map-based decision support
-          tool for exploring fire vulnerability context around heritage sites.
+          Heritage Fire Watch is a map-based planning support tool for viewing 
+          cultural heritage sites and indicative fire vulnerability in the Albany area.
         </p>
       </header>
 
       <section className="about-section">
         <h2>What this tool does</h2>
         <p>
-          This application brings layers, basemaps, and site information into one
-          coherent workflow so users with different levels of technical expertise
-          can explore context and generate insights.
+          This application brings heritage site information, environmental layers, 
+          and risk information into one interface so users can explore site context easily.
         </p>
       </section>
 
@@ -46,8 +45,7 @@ export function AboutPage() {
       <section className="about-section">
         <h2>ICIP / IDaS / Conditions of use</h2>
         <p className="about-muted">
-          ICIP / IDaS and conditions of use information is provided in the project
-          documentation.
+          Please respect ICIP, IDaS, and the conditions of use when viewing or using cultural heritage information.
         </p>
       </section>
 

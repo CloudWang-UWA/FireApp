@@ -57,8 +57,7 @@ export function Export({
     <div className="status-card">
       <h2>Export</h2>
       <p>
-        Export records from the current visible map area as a spreadsheet-ready
-        file.
+        Export records from the current visible map area as a CSV file for use in Excel or other tools.
       </p>
 
       <label className="field">
