@@ -261,6 +261,16 @@ export function SiteOverview({
         {deleteError ? <p className="feedback error">{deleteError}</p> : null}
 
         <table className="site-overview-table">
+          <colgroup>
+            <col className="site-overview-col-site" />
+            <col className="site-overview-col-source" />
+            <col className="site-overview-col-risk" />
+            <col className="site-overview-col-place" />
+            <col className="site-overview-col-insights" />
+            {canDeleteUploadedSites ? (
+              <col className="site-overview-col-manage" />
+            ) : null}
+          </colgroup>
           <thead>
             <tr>
               <th>Site</th>
