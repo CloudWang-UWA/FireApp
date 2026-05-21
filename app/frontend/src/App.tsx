@@ -317,7 +317,7 @@ function App() {
             <div className="auth-partner-row">
               <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
               <div>
-                <strong>Wagyl Kaip Southern Noongar</strong>
+                <strong>Wagyl Kaip Southern Noongar Aboriginal Corporation</strong>
                 <span>Partner</span>
               </div>
             </div>
@@ -375,7 +375,7 @@ function App() {
           <div className="auth-partner-row">
             <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
             <div>
-              <strong>Wagyl Kaip Southern Noongar</strong>
+              <strong>Wagyl Kaip Southern Noongar Aboriginal Corporation</strong>
               <span>Partner</span>
             </div>
           </div>
@@ -497,15 +497,6 @@ function App() {
             Site Insights
           </button>
 
-          {/* Reports is hidden until its page route is fully implemented. */}
-          {/* <button
-            className={isActive('/reports') ? 'topbar-nav is-active' : 'topbar-nav'}
-            onClick={() => navigate('/reports')}
-            type="button"
-          >
-            Reports
-          </button> */}
-
           <button
             className={isActive('/about') ? 'topbar-nav is-active' : 'topbar-nav'}
             onClick={() => navigate('/about')}
@@ -614,7 +605,7 @@ function App() {
           <div className="auth-partner-row">
             <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
             <div>
-              <strong>Wagyl Kaip Southern Noongar</strong>
+              <strong>Wagyl Kaip Southern Noongar Aboriginal Corporation</strong>
               <span>Partner</span>
             </div>
           </div>

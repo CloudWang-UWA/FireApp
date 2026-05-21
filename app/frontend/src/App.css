@@ -172,7 +172,7 @@
   transform: translateX(-50%);
   width: min(1040px, calc(100vw - 3rem));
   display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
   gap: 1.2rem;
   align-items: stretch;
   padding: 0.95rem 1.05rem;
