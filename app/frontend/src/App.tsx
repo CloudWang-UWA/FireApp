@@ -317,7 +317,7 @@ function App() {
             <div className="auth-partner-row">
               <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
               <div>
-                <strong>Wagyl Kaip Southern Noongar</strong>
+                <strong>Wagyl Kaip Southern Noongar Aboriginal Corporation</strong>
                 <span>Partner</span>
               </div>
             </div>
@@ -375,7 +375,7 @@ function App() {
           <div className="auth-partner-row">
             <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
             <div>
-              <strong>Wagyl Kaip Southern Noongar</strong>
+              <strong>Wagyl Kaip Southern Noongar Aboriginal Corporation</strong>
               <span>Partner</span>
             </div>
           </div>
@@ -605,7 +605,7 @@ function App() {
           <div className="auth-partner-row">
             <img src="/logos/WKSNLogo.webp" alt="Wagyl Kaip logo" />
             <div>
-              <strong>Wagyl Kaip Southern Noongar</strong>
+              <strong>Wagyl Kaip Southern Noongar Aboriginal Corporation</strong>
               <span>Partner</span>
             </div>
           </div>
