@@ -882,8 +882,14 @@
   gap: 1rem;
   align-content: start;
   color: #2c2118;
-  max-width: 920px;
+  max-width: min(96vw, 1640px);
   margin: 0 auto;
+}
+
+@media (min-width: 1680px) {
+  .site-upload-page {
+    max-width: min(94vw, 1720px);
+  }
 }
 
 .site-upload-header,
@@ -1478,6 +1484,43 @@
   background: rgba(255, 252, 247, 0.88);
   border: 1px solid rgba(78, 58, 34, 0.12);
   box-shadow: 0 20px 50px rgba(55, 48, 39, 0.1);
+}
+
+.profile-card--wide {
+  max-width: min(96vw, 1640px);
+  padding: clamp(1.5rem, 2.4vw, 2.5rem);
+}
+
+@media (min-width: 1280px) {
+  .profile-card--wide .about-layout {
+    gap: 1.5rem;
+  }
+
+  .profile-card--wide .about-hero,
+  .profile-card--wide .about-section {
+    padding: clamp(1.4rem, 1.8vw, 2rem) clamp(1.6rem, 2.1vw, 2.4rem);
+  }
+
+  .profile-card--wide .about-lead {
+    max-width: 78ch;
+    font-size: 1.1rem;
+  }
+
+  .profile-card--wide .about-two-col,
+  .profile-card--wide .about-contact-grid {
+    gap: clamp(1.25rem, 2vw, 2rem);
+  }
+
+  .profile-card--wide .logo-row,
+  .profile-card--wide .thumbnail-grid {
+    gap: clamp(0.85rem, 1.4vw, 1.4rem);
+  }
+}
+
+@media (min-width: 1680px) {
+  .profile-card--wide {
+    max-width: min(94vw, 1720px);
+  }
 }
 
 .profile-header {
