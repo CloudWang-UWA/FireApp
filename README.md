@@ -19,6 +19,10 @@ Newly registered users are pending by default and need administrator approval be
 
 See [`app/README.md`](app/README.md) for the application architecture, feature areas, project structure, API endpoints, and local development notes.
 
+## Technical Documents
+
+See [`docs/`](docs/) for project technical documentation.
+
 ## Local Setup
 
 ### Prerequisites

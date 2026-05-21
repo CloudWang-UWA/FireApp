@@ -1,7 +1,7 @@
-# Documentation
+# Technical Documents
 
-This directory groups project documents by purpose so that final deliverables and working summaries do not get mixed together.
+This directory groups technical documentation.
 
-- `D1/`: Deliverable 1 submission materials.
-- `data-processing/`: technical documentation for the Albany/Mount Barker data processing workflow and generated outputs.
-- `project-foundation/`: week 1 foundation documents and planning summaries that informed later work, but are not themselves part of Deliverable 1.
+- `data-processing/`: technical documentation for the Albany data processing workflow and generated outputs.
+- `new-site-upload-module/`: notes for the new site upload workflow.
+- `risk-assessment-module/`: documentation for the risk model and generated risk outputs.
