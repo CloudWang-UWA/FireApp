@@ -32,13 +32,12 @@ export function AboutPage() {
             </ul>
           </div>
           <div>
-            <h3>Site Upload & Resources</h3>
+            <h3>Site Upload & Site Insights</h3>
             <ul className="about-list">
               <li>Use Site Upload to record a newly identified site.</li>
               <li>
-                Use Site Insights (Resources) for Heritage Site Insights content.
+                Use Site Insights to review details for selected heritage sites.
               </li>
-              <li>Reports is a placeholder until report outputs are defined.</li>
             </ul>
           </div>
         </div>
