@@ -40,6 +40,13 @@ export function AboutPage() {
             </ul>
           </div>
         </div>
+        <p className="about-muted about-guide-link">
+          For detailed instructions, view the{' '}
+          <a href="/user-manual.pdf" target="_blank" rel="noreferrer">
+            user guide
+          </a>
+          .
+        </p>
       </section>
 
       <section className="about-section">
