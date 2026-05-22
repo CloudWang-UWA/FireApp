@@ -8,6 +8,12 @@ Live app: https://heritage-fire-watch.vercel.app/
 
 Newly registered users are pending by default and need administrator approval before they can access the main application.
 
+## Admin Access for Review
+
+For the deployed version, please use the admin account details shared with the facilitator.
+
+For local development, register with `group21@uwa.com` to create the default local admin account, then sign in again so the account is updated to `admin`.
+
 ## Tech Stack
 
 - Frontend: React, TypeScript, Vite, Leaflet
