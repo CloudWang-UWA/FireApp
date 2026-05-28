@@ -40,6 +40,7 @@ class SiteUploadServiceTests(unittest.TestCase):
             email="tester@example.com",
             password_hash="just a test user",
             display_name="Test User",
+            username="testuser",
         )
         db.session.add(self.user)
         db.session.commit()
