@@ -13,7 +13,7 @@ jobs:
   local-setup:
     name: Validate local setup on macOS
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Check out repository
@@ -35,18 +35,27 @@ jobs:
           cache: npm
           cache-dependency-path: app/frontend/package-lock.json
 
+      # =========================
+      # Backend dependencies
+      # =========================
       - name: Install backend dependencies
         run: python -m pip install -r app/backend/requirements.txt
 
+      # =========================
+      # ETL install
+      # =========================
       - name: Install ETL package
         run: python -m pip install -e app/etl
 
+      # =========================
+      # Frontend install (early OK for caching)
+      # =========================
       - name: Install frontend dependencies
         working-directory: app/frontend
         run: npm ci
 
       # =========================
-      # Raw data download section
+      # Raw data download
       # =========================
       - name: Install gdown
         run: python -m pip install gdown
@@ -56,9 +65,33 @@ jobs:
           mkdir -p app/data/raw
           gdown --folder "https://drive.google.com/drive/folders/1DvnN04IMejH7PDkVcPO-_DFWbq35BOTg" -O app/data/raw
 
+      # =========================
+      # ETL pipeline
+      # =========================
+      - name: Run ETL pipeline
+        run: |
+          fire-vulnerability-etl \
+            --raw-data-dir app/data/raw \
+            --output-dir app/data/derived
+
+      # =========================
+      # Risk analysis pipeline
+      # =========================
+      - name: Run risk analysis scripts
+        shell: bash
+        run: |
+          cd app/backend/scripts/risk
+          bash run_all.sh
+
+      # =========================
+      # Verify ETL CLI
+      # =========================
       - name: Verify ETL CLI is installed
         run: fire-vulnerability-etl --help
 
+      # =========================
+      # Backend runtime check
+      # =========================
       - name: Start backend and check health endpoint
         shell: bash
         run: |
@@ -74,13 +107,18 @@ jobs:
             sleep 1
           done
 
+          echo "Backend failed to start"
           cat backend.log
           kill "$backend_pid"
           exit 1
 
+      # =========================
+      # Frontend build check
+      # =========================
       - name: Build frontend
         working-directory: app/frontend
         run: npm run build
+
 
   useful-checks:
     name: Run README useful checks on macOS
@@ -107,6 +145,9 @@ jobs:
       - name: Install ETL package
         run: python -m pip install -e app/etl
 
+      # =========================
+      # Tests
+      # =========================
       - name: Run backend tests
         run: python -m pytest app/backend/tests
 
